@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioVerse — Biologia em 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bio-dark:#0a1628;--bio-mid:#102040;--bio-accent:#00e5a0;--bio-accent2:#00b4d8;
+    --bio-text:#e8f4f0;--bio-muted:#7a9e90;--bio-card:#0f2035;--bio-border:#1a3a50;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bio-dark);color:var(--bio-text);min-height:100vh;overflow-x:hidden}
+  h1,h2,h3{font-family:'Syne',sans-serif}
+  .screen{display:none;min-height:100vh;animation:fadeIn .4s ease}
+  .screen.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  nav{display:flex;justify-content:space-between;align-items:center;padding:1.2rem 2rem;border-bottom:1px solid var(--bio-border);background:rgba(10,22,40,.95);position:sticky;top:0;z-index:100}
+  .logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--bio-accent);letter-spacing:.5px}
+  .nav-btns{display:flex;gap:.6rem}
+  .btn{padding:.55rem 1.2rem;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
+  .btn-ghost{background:transparent;color:var(--bio-text);border:1px solid var(--bio-border)}
+  .btn-ghost:hover{border-color:var(--bio-accent);color:var(--bio-accent)}
+  .btn-primary{background:var(--bio-accent);color:var(--bio-dark)}
+  .btn-primary:hover{background:#00ffb3;transform:translateY(-1px)}
+  .btn-danger{background:#c0392b;color:#fff}
+  .btn-danger:hover{background:#e74c3c}
+  .btn-sm{padding:.4rem .9rem;font-size:.8rem}
+
+  .hero{padding:5rem 2rem 4rem;max-width:860px;margin:0 auto;text-align:center}
+  .hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.2rem}
+  .hero h1 span{color:var(--bio-accent)}
+  .hero p{font-size:1.05rem;color:var(--bio-muted);max-width:540px;margin:0 auto 2rem;line-height:1.7}
+  .hero-pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
+  .pill{background:var(--bio-card);border:1px solid var(--bio-border);padding:.35rem .9rem;border-radius:20px;font-size:.8rem;color:var(--bio-muted)}
+  .hero-cta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+
+  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;padding:2rem;max-width:860px;margin:0 auto}
+  .feat-card{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:12px;padding:1.2rem}
+  .feat-icon{font-size:1.6rem;margin-bottom:.6rem}
+  .feat-card h3{font-size:.95rem;margin-bottom:.3rem;color:var(--bio-text)}
+  .feat-card p{font-size:.82rem;color:var(--bio-muted);line-height:1.5}
+
+  .auth-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px);padding:2rem}
+  .auth-card{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:16px;padding:2.5rem;width:100%;max-width:400px}
+  .auth-card h2{font-size:1.5rem;margin-bottom:.4rem}
+  .auth-card p{font-size:.85rem;color:var(--bio-muted);margin-bottom:1.8rem}
+  .form-group{margin-bottom:1.1rem}
+  .form-group label{display:block;font-size:.82rem;color:var(--bio-muted);margin-bottom:.4rem}
+  .form-group input{width:100%;background:#0a1628;border:1px solid var(--bio-border);border-radius:8px;padding:.65rem .9rem;color:var(--bio-text);font-family:'DM Sans',sans-serif;font-size:.9rem;transition:border-color .2s}
+  .form-group input:focus{outline:none;border-color:var(--bio-accent)}
+  .form-full{width:100%;margin-top:.4rem}
+  .auth-switch{text-align:center;margin-top:1.2rem;font-size:.83rem;color:var(--bio-muted)}
+  .auth-switch a{color:var(--bio-accent);cursor:pointer;text-decoration:none}
+  .auth-switch a:hover{text-decoration:underline}
+  .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.2rem}
+  .plan-opt{border:1px solid var(--bio-border);border-radius:10px;padding:.9rem;cursor:pointer;transition:all .2s}
+  .plan-opt:hover,.plan-opt.selected{border-color:var(--bio-accent);background:rgba(0,229,160,.07)}
+  .plan-opt h4{font-size:.9rem;margin-bottom:.2rem}
+  .plan-opt p{font-size:.78rem;color:var(--bio-muted)}
+  .plan-price{font-size:1.1rem;font-weight:700;color:var(--bio-accent);margin-top:.3rem}
+
+  .modules-wrap{padding:2rem;max-width:980px;margin:0 auto}
+  .modules-wrap h2{font-size:1.5rem;margin-bottom:.3rem}
+  .modules-wrap .sub{font-size:.88rem;color:var(--bio-muted);margin-bottom:2rem}
+  .modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem}
+  .module-card{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s}
+  .module-card:hover{border-color:var(--bio-accent);transform:translateY(-3px)}
+  .module-thumb{height:140px;display:flex;align-items:center;justify-content:center;font-size:4rem}
+  .module-body{padding:1rem 1.1rem 1.2rem}
+  .module-body h3{font-size:1rem;margin-bottom:.3rem}
+  .module-body p{font-size:.8rem;color:var(--bio-muted);line-height:1.5}
+  .module-meta{display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap}
+  .tag{background:#0a1628;border:1px solid var(--bio-border);border-radius:20px;padding:.2rem .65rem;font-size:.72rem;color:var(--bio-muted)}
+
+  .viewer-wrap{padding:1.5rem 2rem;max-width:980px;margin:0 auto}
+  .viewer-layout{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start}
+  @media(max-width:680px){.viewer-layout{grid-template-columns:1fr}}
+  .canvas-wrap{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:14px;height:420px;position:relative;overflow:hidden}
+  #bio-canvas{width:100%;height:100%;display:block}
+  .spot{position:absolute;width:28px;height:28px;background:var(--bio-accent);border-radius:50%;border:3px solid var(--bio-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--bio-dark);transition:transform .15s;z-index:10}
+  .spot:hover{transform:scale(1.2)}
+  .spot-label{position:absolute;background:var(--bio-dark);border:1px solid var(--bio-accent);border-radius:10px;padding:.5rem .9rem;font-size:.78rem;max-width:180px;z-index:20;white-space:normal;line-height:1.4;pointer-events:none;opacity:0;transition:opacity .2s}
+  .spot-label.show{opacity:1}
+  .spot-label h4{font-size:.8rem;color:var(--bio-accent);margin-bottom:.2rem}
+  .controls-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.72rem;color:var(--bio-muted);background:rgba(10,22,40,.8);padding:.3rem .8rem;border-radius:20px}
+  .viewer-side h2{font-size:1.2rem;margin-bottom:.3rem}
+  .viewer-side p{font-size:.83rem;color:var(--bio-muted);line-height:1.6;margin-bottom:1.2rem}
+  .structures-list h3{font-size:.85rem;color:var(--bio-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.7rem}
+  .struct-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;border-radius:8px;cursor:pointer;transition:background .2s;font-size:.85rem}
+  .struct-item:hover{background:var(--bio-card)}
+  .struct-item.active{background:rgba(0,229,160,.1);color:var(--bio-accent)}
+  .struct-dot{width:10px;height:10px;border-radius:50%;background:var(--bio-accent);flex-shrink:0}
+  .video-btn{display:flex;align-items:center;gap:.6rem;width:100%;background:var(--bio-card);border:1px solid var(--bio-border);border-radius:10px;padding:.8rem 1rem;cursor:pointer;color:var(--bio-text);font-family:'DM Sans',sans-serif;font-size:.85rem;transition:border-color .2s;margin-top:1rem}
+  .video-btn:hover{border-color:var(--bio-accent2)}
+  .play-icon{width:32px;height:32px;border-radius:50%;background:var(--bio-accent2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem}
+  .video-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:center;justify-content:center}
+  .video-modal.open{display:flex}
+  .video-modal-inner{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:16px;padding:1.5rem;width:90%;max-width:640px}
+  .video-modal-inner h3{margin-bottom:1rem}
+  .video-placeholder{background:#0a1628;border-radius:10px;height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;color:var(--bio-muted);font-size:.88rem}
+  .big-play{width:60px;height:60px;border-radius:50%;background:var(--bio-accent2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff}
+
+  .admin-wrap{padding:2rem;max-width:980px;margin:0 auto}
+  .admin-wrap h2{font-size:1.5rem;margin-bottom:.3rem}
+  .admin-layout{display:grid;grid-template-columns:240px 1fr;gap:1.5rem;margin-top:1.5rem}
+  @media(max-width:640px){.admin-layout{grid-template-columns:1fr}}
+  .admin-nav{display:flex;flex-direction:column;gap:.3rem}
+  .admin-tab{background:transparent;border:none;border-radius:8px;padding:.65rem .9rem;text-align:left;font-family:'DM Sans',sans-serif;font-size:.88rem;cursor:pointer;color:var(--bio-muted);transition:all .2s;display:flex;align-items:center;gap:.6rem}
+  .admin-tab:hover{background:var(--bio-card);color:var(--bio-text)}
+  .admin-tab.active{background:rgba(0,229,160,.1);color:var(--bio-accent)}
+  .admin-panel{display:none}
+  .admin-panel.active{display:block}
+  .admin-panel h3{font-size:1.1rem;margin-bottom:1rem}
+  .module-list-item{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:10px;padding:.9rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+  .module-list-item .left{display:flex;align-items:center;gap:.7rem}
+  .module-thumb-sm{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:#0a1628}
+  .item-title{font-size:.9rem;font-weight:500}
+  .item-sub{font-size:.78rem;color:var(--bio-muted)}
+  .item-actions{display:flex;gap:.4rem}
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:150;align-items:center;justify-content:center}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:16px;padding:2rem;width:90%;max-width:500px;max-height:90vh;overflow-y:auto}
+  .modal h3{font-size:1.2rem;margin-bottom:1.2rem}
+  .modal-footer{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.2rem}
+  .alert{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);border-radius:8px;padding:.65rem 1rem;font-size:.83rem;color:var(--bio-accent);margin-bottom:1rem;display:none}
+  .alert.show{display:block}
+  .users-table{width:100%;border-collapse:collapse;font-size:.85rem}
+  .users-table th{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--bio-border);color:var(--bio-muted);font-weight:500;font-size:.78rem}
+  .users-table td{padding:.6rem .8rem;border-bottom:1px solid rgba(26,58,80,.5)}
+  .badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:500}
+  .badge-green{background:rgba(0,229,160,.15);color:var(--bio-accent)}
+  .badge-gray{background:rgba(122,158,144,.15);color:var(--bio-muted)}
+  .stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.5rem}
+  .stat-card{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:10px;padding:1rem}
+  .stat-card .num{font-size:1.8rem;font-weight:700;font-family:'Syne',sans-serif;color:var(--bio-accent)}
+  .stat-card .lbl{font-size:.78rem;color:var(--bio-muted);margin-top:.2rem}
+  .spots-config{margin-top:1rem;border:1px solid var(--bio-border);border-radius:10px;padding:1rem}
+  .spots-config h4{font-size:.85rem;color:var(--bio-muted);margin-bottom:.7rem}
+  .spot-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;margin-bottom:.5rem;align-items:center}
+  .spot-row input{font-size:.8rem;padding:.4rem .6rem;background:#0a1628;border:1px solid var(--bio-border);border-radius:6px;color:var(--bio-text);font-family:'DM Sans',sans-serif}
+  .mini-btn{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#e74c3c;border-radius:6px;padding:.3rem .6rem;cursor:pointer;font-size:.75rem}
+  .add-spot-btn{background:transparent;border:1px dashed var(--bio-border);color:var(--bio-muted);border-radius:6px;padding:.4rem .8rem;cursor:pointer;font-size:.8rem;width:100%;margin-top:.3rem;transition:all .2s}
+  .add-spot-btn:hover{border-color:var(--bio-accent);color:var(--bio-accent)}
+  .emoji-picker{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
+  .emoji-opt{font-size:1.4rem;cursor:pointer;padding:.3rem;border-radius:6px;border:1px solid transparent;transition:all .15s}
+  .emoji-opt:hover,.emoji-opt.sel{border-color:var(--bio-accent);background:rgba(0,229,160,.1)}
+</style>
+</head>
+<body>
+
+<div id="screen-home" class="screen active">
+  <nav>
+    <div class="logo">🔬 BioVerse</div>
+    <div class="nav-btns">
+      <button class="btn btn-ghost" onclick="go('login')">Entrar</button>
+      <button class="btn btn-primary" onclick="go('register')">Assinar</button>
+    </div>
+  </nav>
+  <div class="hero">
+    <h1>Aprenda Biologia em <span>3D interativo</span></h1>
+    <p>Explore estruturas celulares, moléculas e organismos em modelos tridimensionais com legendas explicativas e videoaulas.</p>
+    <div class="hero-pills">
+      <span class="pill">🧬 Biologia Celular</span>
+      <span class="pill">⚗️ Bioquímica</span>
+      <span class="pill">🔬 Histologia</span>
+      <span class="pill">🧫 Genética</span>
+      <span class="pill">🌿 Botânica</span>
+    </div>
+    <div class="hero-cta">
+      <button class="btn btn-primary" style="padding:.7rem 1.8rem;font-size:.95rem" onclick="go('register')">Começar agora</button>
+      <button class="btn btn-ghost" style="padding:.7rem 1.8rem;font-size:.95rem" onclick="go('login')">Já tenho conta</button>
+    </div>
+  </div>
+  <div class="features">
+    <div class="feat-card"><div class="feat-icon">🔭</div><h3>Modelos 3D reais</h3><p>Objetos exportados do Cinema 4D com texturas profissionais, rotativos e com zoom.</p></div>
+    <div class="feat-card"><div class="feat-icon">📍</div><h3>Spots inteligentes</h3><p>Clique em pontos do modelo para ler a legenda de cada estrutura. Os spots seguem a rotação.</p></div>
+    <div class="feat-card"><div class="feat-icon">🎬</div><h3>Videoaulas curtas</h3><p>Cada módulo inclui um vídeo de ~5 min explicando o tema de forma clara e objetiva.</p></div>
+    <div class="feat-card"><div class="feat-icon">⚡</div><h3>Aprenda no seu ritmo</h3><p>Acesse de qualquer dispositivo, volte quantas vezes quiser.</p></div>
+  </div>
+</div>
+
+<div id="screen-login" class="screen">
+  <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>Bem-vindo de volta</h2>
+      <p>Entre para acessar os módulos</p>
+      <div class="form-group"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <button class="btn btn-primary form-full" onclick="doLogin()">Entrar</button>
+      <div class="auth-switch">Não tem conta? <a onclick="go('register')">Assinar agora</a></div>
+      <div class="auth-switch" style="margin-top:.5rem"><a onclick="goAdmin()">🔧 Área admin (demo)</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-register" class="screen">
+  <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>Criar conta</h2>
+      <p>Escolha um plano e comece a aprender</p>
+      <div class="plan-grid">
+        <div class="plan-opt selected" id="plan-mensal" onclick="selectPlan('mensal')">
+          <h4>Mensal</h4><p>Flexível, cancele quando quiser</p>
+          <div class="plan-price">R$ 29/mês</div>
+        </div>
+        <div class="plan-opt" id="plan-anual" onclick="selectPlan('anual')">
+          <h4>Anual</h4><p>Economize 30%</p>
+          <div class="plan-price">R$ 19/mês</div>
+        </div>
+      </div>
+      <div class="form-group"><label>Nome</label><input type="text" id="reg-name" placeholder="Seu nome"></div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="reg-pass" placeholder="min. 8 caracteres"></div>
+      <button class="btn btn-primary form-full" onclick="doRegister()">Criar conta e assinar</button>
+      <div class="auth-switch">Já tem conta? <a onclick="go('login')">Entrar</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-modules" class="screen">
+  <nav>
+    <div class="logo">🔬 BioVerse</div>
+    <div class="nav-btns">
+      <span id="user-name-nav" style="font-size:.85rem;color:var(--bio-muted);margin-right:.5rem"></span>
+      <button class="btn btn-ghost btn-sm" onclick="go('home')">Sair</button>
+    </div>
+  </nav>
+  <div class="modules-wrap">
+    <h2>Módulos de Biologia</h2>
+    <p class="sub">Clique em um módulo para explorar as estruturas 3D</p>
+    <div class="modules-grid" id="modules-grid"></div>
+  </div>
+</div>
+
+<div id="screen-viewer" class="screen">
+  <nav>
+    <div class="logo">🔬 BioVerse</div>
+    <div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('modules')">← Módulos</button></div>
+  </nav>
+  <div class="viewer-wrap">
+    <div class="viewer-layout">
+      <div>
+        <div class="canvas-wrap" id="canvas-wrap">
+          <canvas id="bio-canvas"></canvas>
+          <div class="controls-hint">Arraste para girar • Scroll para zoom</div>
+        </div>
+      </div>
+      <div class="viewer-side">
+        <h2 id="viewer-title">Célula Animal</h2>
+        <p id="viewer-desc">Explore as principais estruturas clicando nos pontos destacados.</p>
+        <div class="structures-list">
+          <h3>Estruturas</h3>
+          <div id="struct-list"></div>
+        </div>
+        <button class="video-btn" onclick="openVideo()">
+          <div class="play-icon">▶</div>
+          <div><div style="font-weight:500">Assistir videoaula</div><div style="font-size:.75rem;color:var(--bio-muted);margin-top:.1rem">~5 min — explicação completa</div></div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-admin" class="screen">
+  <nav>
+    <div class="logo">🔬 BioVerse <span style="font-size:.7rem;color:var(--bio-muted);margin-left:.4rem">ADMIN</span></div>
+    <div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('modules')">← Ver site</button></div>
+  </nav>
+  <div class="admin-wrap">
+    <h2>Painel Administrativo</h2>
+    <div class="admin-layout">
+      <div class="admin-nav">
+        <button class="admin-tab active" onclick="adminTab('dashboard',this)">📊 Dashboard</button>
+        <button class="admin-tab" onclick="adminTab('modulos',this)">📦 Módulos</button>
+        <button class="admin-tab" onclick="adminTab('usuarios',this)">👥 Usuários</button>
+      </div>
+      <div>
+        <div class="admin-panel active" id="ap-dashboard">
+          <h3>Visão geral</h3>
+          <div class="stat-cards">
+            <div class="stat-card"><div class="num" id="stat-modulos">0</div><div class="lbl">Módulos</div></div>
+            <div class="stat-card"><div class="num">47</div><div class="lbl">Alunos</div></div>
+            <div class="stat-card"><div class="num">38</div><div class="lbl">Assinantes</div></div>
+          </div>
+          <div style="background:var(--bio-card);border:1px solid var(--bio-border);border-radius:10px;padding:1rem;font-size:.85rem;color:var(--bio-muted)">
+            <p style="margin-bottom:.5rem;font-weight:500;color:var(--bio-text)">Como usar este painel</p>
+            <p style="margin-bottom:.4rem">1. Vá em <strong style="color:var(--bio-accent)">Módulos</strong> → clique em <strong style="color:var(--bio-accent)">Novo módulo</strong></p>
+            <p style="margin-bottom:.4rem">2. Preencha nome, emoji, descrição, link do vídeo e textos dos spots</p>
+            <p style="margin-bottom:.4rem">3. Clique em <strong style="color:var(--bio-accent)">Salvar</strong> — o módulo aparece na plataforma imediatamente</p>
+            <p>4. Para importar modelo .glb real, hospede na Vercel + GitHub (gratuitos)</p>
+          </div>
+        </div>
+        <div class="admin-panel" id="ap-modulos">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="margin:0">Módulos</h3>
+            <button class="btn btn-primary btn-sm" onclick="openNewModule()">+ Novo módulo</button>
+          </div>
+          <div class="alert" id="mod-alert">✅ Módulo salvo com sucesso!</div>
+          <div id="admin-mod-list"></div>
+        </div>
+        <div class="admin-panel" id="ap-usuarios">
+          <h3>Usuários cadastrados</h3>
+          <table class="users-table">
+            <thead><tr><th>Nome</th><th>E-mail</th><th>Plano</th><th>Status</th></tr></thead>
+            <tbody id="users-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="module-modal">
+  <div class="modal">
+    <h3 id="modal-title">Novo módulo</h3>
+    <div class="form-group"><label>Nome do módulo</label><input type="text" id="m-name" placeholder="Ex: Biologia Celular"></div>
+    <div class="form-group"><label>Emoji / ícone</label>
+      <div class="emoji-picker" id="emoji-picker"></div>
+    </div>
+    <div class="form-group"><label>Descrição curta</label><input type="text" id="m-desc" placeholder="Ex: Explore as estruturas da célula animal e vegetal"></div>
+    <div class="form-group"><label>Link do vídeo (YouTube/Vimeo)</label><input type="text" id="m-video" placeholder="https://youtube.com/..."></div>
+    <div class="form-group"><label>Arquivo 3D (.glb) — nome do arquivo</label><input type="text" id="m-glb" placeholder="celula.glb"></div>
+    <div class="spots-config">
+      <h4>Spots (pontos clicáveis no modelo)</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;margin-bottom:.4rem">
+        <span style="font-size:.73rem;color:var(--bio-muted)">Nome</span>
+        <span style="font-size:.73rem;color:var(--bio-muted)">Legenda</span>
+        <span style="font-size:.73rem;color:var(--bio-muted)">Pos (x,y,z)</span>
+        <span></span>
+      </div>
+      <div id="spots-rows"></div>
+      <button class="add-spot-btn" onclick="addSpotRow()">+ Adicionar spot</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveModule()">Salvar módulo</button>
+    </div>
+  </div>
+</div>
+
+<div class="video-modal" id="video-modal">
+  <div class="video-modal-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <h3 id="video-title">Videoaula</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeVideo()">✕ Fechar</button>
+    </div>
+    <div class="video-placeholder" id="video-container">
+      <div class="big-play">▶</div>
+      <p id="video-url-hint">Configure o link do vídeo no painel admin</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const EMOJIS=['🧬','⚗️','🔬','🧫','🌿','🦠','🧪','🫀','🫁','🧠','🦴','🌱','🐠','🐛','🌺','🍃'];
+let modules=[
+  {id:1,name:'Biologia Celular',emoji:'🧬',desc:'Explore a célula animal com suas organelas em 3D',video:'',glb:'celula.glb',spots:[
+    {name:'Núcleo',desc:'Contém o DNA e controla as funções celulares',x:0,y:0.3,z:0},
+    {name:'Mitocôndria',desc:'Produz energia (ATP) para a célula — a usina celular',x:0.6,y:-0.2,z:0.2},
+    {name:'Membrana plasmática',desc:'Regula a entrada e saída de substâncias',x:0,y:0,z:0.9},
+    {name:'Retículo endoplasmático',desc:'Síntese e transporte de proteínas e lipídios',x:-0.5,y:0.1,z:0.3}
+  ]},
+  {id:2,name:'Bioquímica',emoji:'⚗️',desc:'ATP, proteínas e metabolismo energético',video:'',glb:'atp.glb',spots:[
+    {name:'Adenina',desc:'Base nitrogenada do ATP',x:0.4,y:0.5,z:0},
+    {name:'Grupos fosfato',desc:'Ligações de alta energia que armazenam ATP',x:-0.4,y:0.2,z:0.1}
+  ]},
+  {id:3,name:'Histologia',emoji:'🔬',desc:'Tecidos do corpo humano em detalhes microscópicos',video:'',glb:'tecido.glb',spots:[
+    {name:'Fibra muscular',desc:'Unidade contrátil do músculo esquelético',x:0,y:0.5,z:0},
+    {name:'Núcleo periférico',desc:'Núcleo localizado na periferia das fibras musculares',x:0.5,y:-0.3,z:0}
+  ]}
+];
+let users=[{name:'Ana Silva',email:'ana@email.com',plan:'Anual',status:'Ativo'},{name:'Carlos Melo',email:'carlos@email.com',plan:'Mensal',status:'Ativo'},{name:'Juliana Costa',email:'juli@email.com',plan:'Mensal',status:'Inativo'}];
+let currentModule=null,editingId=null,selectedEmoji='🧬',scene,camera,renderer,mesh,animId,isDragging=false,prevMouse={x:0,y:0},rotX=0,rotY=0,zoom=3,spotEls=[];
+
+function go(s){
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen-'+s).classList.add('active');
+  if(s==='modules')renderModules();
+  if(s==='admin'){renderAdminMods();renderUsers();document.getElementById('stat-modulos').textContent=modules.length}
+}
+function doLogin(){
+  const e=document.getElementById('login-email').value;
+  if(!e){alert('Preencha o e-mail');return}
+  document.getElementById('user-name-nav').textContent=e.split('@')[0];
+  go('modules');
+}
+function doRegister(){
+  const n=document.getElementById('reg-name').value;
+  if(!n){alert('Preencha o nome');return}
+  document.getElementById('user-name-nav').textContent=n;
+  go('modules');
+}
+function goAdmin(){go('admin')}
+function selectPlan(p){
+  document.querySelectorAll('.plan-opt').forEach(x=>x.classList.remove('selected'));
+  document.getElementById('plan-'+p).classList.add('selected');
+}
+function renderModules(){
+  const g=document.getElementById('modules-grid');g.innerHTML='';
+  modules.forEach(m=>{
+    const bg=['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a'][m.id%5];
+    g.innerHTML+=`<div class="module-card" onclick="openModule(${m.id})">
+      <div class="module-thumb" style="background:${bg}">${m.emoji}</div>
+      <div class="module-body">
+        <h3>${m.name}</h3>
+        <p>${m.desc}</p>
+        <div class="module-meta">
+          <span class="tag">${m.spots.length} spots</span>
+          <span class="tag">${m.video?'Vídeo disponível':'Sem vídeo'}</span>
+        </div>
+      </div>
+    </div>`;
+  });
+}
+function openModule(id){
+  currentModule=modules.find(m=>m.id===id);
+  document.getElementById('viewer-title').textContent=currentModule.name;
+  document.getElementById('viewer-desc').textContent=currentModule.desc;
+  renderStructList();
+  go('viewer');
+  setTimeout(()=>{initThree();},100);
+}
+function renderStructList(){
+  const l=document.getElementById('struct-list');l.innerHTML='';
+  currentModule.spots.forEach((s,i)=>{
+    l.innerHTML+=`<div class="struct-item" id="si-${i}" onclick="focusSpot(${i})">
+      <div class="struct-dot"></div>${s.name}
+    </div>`;
+  });
+}
+function focusSpot(i){
+  document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById('si-'+i);
+  if(el)el.classList.add('active');
+  const sl=document.getElementById('sl-'+i);
+  if(sl){document.querySelectorAll('.spot-label').forEach(x=>x.classList.remove('show'));sl.classList.add('show');}
+}
+function openVideo(){
+  document.getElementById('video-title').textContent=currentModule?currentModule.name+' — Videoaula':'Videoaula';
+  const vc=document.getElementById('video-container');
+  if(currentModule&&currentModule.video){
+    const url=currentModule.video;
+    let embed='';
+    if(url.includes('youtube')||url.includes('youtu.be')){
+      const vid=url.split('v=')[1]||url.split('/').pop();
+      embed=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen style="border-radius:10px"></iframe>`;
+    }else if(url.includes('vimeo')){
+      const vid=url.split('/').pop();
+      embed=`<iframe width="100%" height="100%" src="https://player.vimeo.com/video/${vid}" frameborder="0" allowfullscreen style="border-radius:10px"></iframe>`;
+    }
+    if(embed){vc.innerHTML=embed;vc.style.height='320px';document.getElementById('video-modal').classList.add('open');return;}
+  }
+  document.getElementById('video-url-hint').textContent=currentModule&&currentModule.video?currentModule.video:'Configure o link do vídeo no painel admin';
+  document.getElementById('video-modal').classList.add('open');
+}
+function closeVideo(){document.getElementById('video-modal').classList.remove('open')}
+
+function initThree(){
+  if(animId)cancelAnimationFrame(animId);
+  const wrap=document.getElementById('canvas-wrap');
+  const canvas=document.getElementById('bio-canvas');
+  const W=wrap.clientWidth,H=wrap.clientHeight;
+  renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setSize(W,H);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
+  camera.position.z=zoom;
+  const ambLight=new THREE.AmbientLight(0xffffff,0.6);scene.add(ambLight);
+  const dirLight=new THREE.DirectionalLight(0x00e5a0,1);dirLight.position.set(2,3,4);scene.add(dirLight);
+  const dirLight2=new THREE.DirectionalLight(0x00b4d8,0.6);dirLight2.position.set(-3,1,-2);scene.add(dirLight2);
+  buildDemoModel();
+  addSpots();
+  canvas.addEventListener('mousedown',e=>{isDragging=true;prevMouse={x:e.clientX,y:e.clientY}});
+  canvas.addEventListener('mousemove',e=>{if(!isDragging)return;const dx=e.clientX-prevMouse.x,dy=e.clientY-prevMouse.y;rotY+=dx*.01;rotX+=dy*.01;prevMouse={x:e.clientX,y:e.clientY}});
+  canvas.addEventListener('mouseup',()=>{isDragging=false});
+  canvas.addEventListener('wheel',e=>{zoom=Math.max(1.5,Math.min(6,zoom+e.deltaY*.005));camera.position.z=zoom});
+  animate();
+}
+function buildDemoModel(){
+  const geo=new THREE.SphereGeometry(0.95,64,64);
+  const mat=new THREE.MeshStandardMaterial({color:0x1a5c3a,roughness:.4,metalness:.2});
+  mesh=new THREE.Mesh(geo,mat);scene.add(mesh);
+  const nGeo=new THREE.SphereGeometry(.28,32,32);
+  const nMat=new THREE.MeshStandardMaterial({color:0x00e5a0,roughness:.3,metalness:.1});
+  const nucleus=new THREE.Mesh(nGeo,nMat);nucleus.position.set(0,0.3,0.5);mesh.add(nucleus);
+  const mMat=new THREE.MeshStandardMaterial({color:0xff6b35,roughness:.5});
+  [-0.4,0.4].forEach(x=>{
+    const mGeo=new THREE.SphereGeometry(.12,16,16);
+    const m2=new THREE.Mesh(mGeo,mMat);m2.position.set(x*1.2,-0.2,0.5);mesh.add(m2)
+  });
+  const rGeo=new THREE.TorusGeometry(.3,.04,8,32);
+  const rMat=new THREE.MeshStandardMaterial({color:0x00b4d8,roughness:.6});
+  const re=new THREE.Mesh(rGeo,rMat);re.position.set(-0.4,0.1,0.4);re.rotation.x=.8;mesh.add(re);
+}
+function addSpots(){
+  document.querySelectorAll('.spot,.spot-label').forEach(e=>e.remove());
+  spotEls=[];
+  const wrap=document.getElementById('canvas-wrap');
+  currentModule.spots.forEach((s,i)=>{
+    const sp=document.createElement('div');sp.className='spot';sp.id='spot-'+i;sp.textContent=i+1;
+    const sl=document.createElement('div');sl.className='spot-label';sl.id='sl-'+i;
+    sl.innerHTML=`<h4>${s.name}</h4><p>${s.desc}</p>`;
+    sp.onclick=()=>{
+      document.querySelectorAll('.spot-label').forEach(x=>x.classList.remove('show'));
+      document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
+      const already=sl.classList.contains('show');
+      if(!already){sl.classList.add('show');const si=document.getElementById('si-'+i);if(si)si.classList.add('active');}
+    };
+    wrap.appendChild(sp);wrap.appendChild(sl);
+    spotEls.push({el:sp,label:sl,pos3d:new THREE.Vector3(s.x,s.y,s.z)});
+  });
+}
+function animate(){
+  animId=requestAnimationFrame(animate);
+  if(!isDragging){rotY+=.006}
+  mesh.rotation.x=rotX;mesh.rotation.y=rotY;
+  renderer.render(scene,camera);
+  const wrap=document.getElementById('canvas-wrap');
+  const W=wrap.clientWidth,H=wrap.clientHeight;
+  spotEls.forEach(({el,label,pos3d})=>{
+    const worldPos=pos3d.clone();
+    mesh.localToWorld(worldPos);
+    const projected=worldPos.clone().project(camera);
+    const px=(projected.x*.5+.5)*W;
+    const py=(-.5*projected.y+.5)*H;
+    el.style.left=(px-14)+'px';el.style.top=(py-14)+'px';
+    label.style.left=(px+18)+'px';
+    label.style.top=(py-20)+'px';
+    const behind=projected.z>1;
+    el.style.opacity=behind?'0':'1';el.style.pointerEvents=behind?'none':'all';
+  });
+}
+
+function adminTab(name,btn){
+  document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ap-'+name).classList.add('active');
+}
+function renderAdminMods(){
+  const l=document.getElementById('admin-mod-list');l.innerHTML='';
+  modules.forEach(m=>{
+    l.innerHTML+=`<div class="module-list-item">
+      <div class="left"><div class="module-thumb-sm">${m.emoji}</div>
+      <div><div class="item-title">${m.name}</div><div class="item-sub">${m.spots.length} spots · ${m.video?'Com vídeo':'Sem vídeo'}</div></div></div>
+      <div class="item-actions">
+        <button class="btn btn-ghost btn-sm" onclick="editModule(${m.id})">✏️ Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteModule(${m.id})">🗑</button>
+      </div>
+    </div>`;
+  });
+}
+function renderUsers(){
+  const tb=document.getElementById('users-tbody');tb.innerHTML='';
+  users.forEach(u=>{
+    tb.innerHTML+=`<tr><td>${u.name}</td><td style="color:var(--bio-muted)">${u.email}</td><td>${u.plan}</td><td><span class="badge ${u.status==='Ativo'?'badge-green':'badge-gray'}">${u.status}</span></td></tr>`;
+  });
+}
+function openNewModule(){
+  editingId=null;selectedEmoji='🧬';
+  document.getElementById('modal-title').textContent='Novo módulo';
+  document.getElementById('m-name').value='';
+  document.getElementById('m-desc').value='';
+  document.getElementById('m-video').value='';
+  document.getElementById('m-glb').value='';
+  buildEmojiPicker();
+  buildSpotRows([]);
+  document.getElementById('module-modal').classList.add('open');
+}
+function editModule(id){
+  const m=modules.find(x=>x.id===id);editingId=id;selectedEmoji=m.emoji;
+  document.getElementById('modal-title').textContent='Editar módulo';
+  document.getElementById('m-name').value=m.name;
+  document.getElementById('m-desc').value=m.desc;
+  document.getElementById('m-video').value=m.video||'';
+  document.getElementById('m-glb').value=m.glb||'';
+  buildEmojiPicker();
+  buildSpotRows(m.spots);
+  document.getElementById('module-modal').classList.add('open');
+}
+function deleteModule(id){
+  if(!confirm('Excluir este módulo?'))return;
+  modules=modules.filter(m=>m.id!==id);
+  renderAdminMods();renderModules();
+  document.getElementById('stat-modulos').textContent=modules.length;
+}
+function closeModal(){document.getElementById('module-modal').classList.remove('open')}
+function buildEmojiPicker(){
+  const p=document.getElementById('emoji-picker');p.innerHTML='';
+  EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selectedEmoji?' sel':''}" onclick="pickEmoji('${e}',this)">${e}</span>`});
+}
+function pickEmoji(e,el){selectedEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel')}
+function buildSpotRows(spots){
+  const c=document.getElementById('spots-rows');c.innerHTML='';
+  spots.forEach(s=>addSpotRow(s));
+}
+function addSpotRow(s){
+  const c=document.getElementById('spots-rows');
+  const row=document.createElement('div');row.className='spot-row';
+  row.innerHTML=`<input type="text" placeholder="Nome" value="${s?s.name:''}" class="spot-name">
+    <input type="text" placeholder="Legenda" value="${s?s.desc:''}" class="spot-desc">
+    <input type="text" placeholder="0,0,0" value="${s?`${s.x},${s.y},${s.z}`:''}" class="spot-pos">
+    <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
+  c.appendChild(row);
+}
+function saveModule(){
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){alert('Preencha o nome do módulo');return}
+  const spots=[];
+  document.querySelectorAll('#spots-rows .spot-row').forEach(row=>{
+    const n=row.querySelector('.spot-name').value.trim();
+    const d=row.querySelector('.spot-desc').value.trim();
+    const pos=row.querySelector('.spot-pos').value.split(',').map(Number);
+    if(n)spots.push({name:n,desc:d||n,x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
+  });
+  if(editingId){
+    const idx=modules.findIndex(m=>m.id===editingId);
+    modules[idx]={...modules[idx],name,emoji:selectedEmoji,desc:document.getElementById('m-desc').value,video:document.getElementById('m-video').value,glb:document.getElementById('m-glb').value,spots};
+  }else{
+    modules.push({id:Date.now(),name,emoji:selectedEmoji,desc:document.getElementById('m-desc').value,video:document.getElementById('m-video').value,glb:document.getElementById('m-glb').value,spots});
+  }
+  closeModal();renderAdminMods();renderModules();
+  document.getElementById('stat-modulos').textContent=modules.length;
+  const al=document.getElementById('mod-alert');al.classList.add('show');setTimeout(()=>al.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>
