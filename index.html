@@ -16,10 +16,9 @@
   .screen{display:none;min-height:100vh;animation:fadeIn .4s ease}
   .screen.active{display:block}
   @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
   nav{display:flex;justify-content:space-between;align-items:center;padding:1.2rem 2rem;border-bottom:1px solid var(--bio-border);background:rgba(10,22,40,.95);position:sticky;top:0;z-index:100}
   .logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--bio-accent);letter-spacing:.5px}
-  .nav-btns{display:flex;gap:.6rem}
+  .nav-btns{display:flex;gap:.6rem;align-items:center}
   .btn{padding:.55rem 1.2rem;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
   .btn-ghost{background:transparent;color:var(--bio-text);border:1px solid var(--bio-border)}
   .btn-ghost:hover{border-color:var(--bio-accent);color:var(--bio-accent)}
@@ -28,7 +27,6 @@
   .btn-danger{background:#c0392b;color:#fff}
   .btn-danger:hover{background:#e74c3c}
   .btn-sm{padding:.4rem .9rem;font-size:.8rem}
-
   .hero{padding:5rem 2rem 4rem;max-width:860px;margin:0 auto;text-align:center}
   .hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.2rem}
   .hero h1 span{color:var(--bio-accent)}
@@ -36,17 +34,15 @@
   .hero-pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
   .pill{background:var(--bio-card);border:1px solid var(--bio-border);padding:.35rem .9rem;border-radius:20px;font-size:.8rem;color:var(--bio-muted)}
   .hero-cta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
-
   .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;padding:2rem;max-width:860px;margin:0 auto}
   .feat-card{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:12px;padding:1.2rem}
   .feat-icon{font-size:1.6rem;margin-bottom:.6rem}
-  .feat-card h3{font-size:.95rem;margin-bottom:.3rem;color:var(--bio-text)}
+  .feat-card h3{font-size:.95rem;margin-bottom:.3rem}
   .feat-card p{font-size:.82rem;color:var(--bio-muted);line-height:1.5}
-
   .auth-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px);padding:2rem}
   .auth-card{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:16px;padding:2.5rem;width:100%;max-width:400px}
   .auth-card h2{font-size:1.5rem;margin-bottom:.4rem}
-  .auth-card p{font-size:.85rem;color:var(--bio-muted);margin-bottom:1.8rem}
+  .auth-card p.sub{font-size:.85rem;color:var(--bio-muted);margin-bottom:1.8rem}
   .form-group{margin-bottom:1.1rem}
   .form-group label{display:block;font-size:.82rem;color:var(--bio-muted);margin-bottom:.4rem}
   .form-group input{width:100%;background:#0a1628;border:1px solid var(--bio-border);border-radius:8px;padding:.65rem .9rem;color:var(--bio-text);font-family:'DM Sans',sans-serif;font-size:.9rem;transition:border-color .2s}
@@ -54,14 +50,12 @@
   .form-full{width:100%;margin-top:.4rem}
   .auth-switch{text-align:center;margin-top:1.2rem;font-size:.83rem;color:var(--bio-muted)}
   .auth-switch a{color:var(--bio-accent);cursor:pointer;text-decoration:none}
-  .auth-switch a:hover{text-decoration:underline}
   .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.2rem}
   .plan-opt{border:1px solid var(--bio-border);border-radius:10px;padding:.9rem;cursor:pointer;transition:all .2s}
   .plan-opt:hover,.plan-opt.selected{border-color:var(--bio-accent);background:rgba(0,229,160,.07)}
   .plan-opt h4{font-size:.9rem;margin-bottom:.2rem}
   .plan-opt p{font-size:.78rem;color:var(--bio-muted)}
   .plan-price{font-size:1.1rem;font-weight:700;color:var(--bio-accent);margin-top:.3rem}
-
   .modules-wrap{padding:2rem;max-width:980px;margin:0 auto}
   .modules-wrap h2{font-size:1.5rem;margin-bottom:.3rem}
   .modules-wrap .sub{font-size:.88rem;color:var(--bio-muted);margin-bottom:2rem}
@@ -74,7 +68,7 @@
   .module-body p{font-size:.8rem;color:var(--bio-muted);line-height:1.5}
   .module-meta{display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap}
   .tag{background:#0a1628;border:1px solid var(--bio-border);border-radius:20px;padding:.2rem .65rem;font-size:.72rem;color:var(--bio-muted)}
-
+  .loading{text-align:center;padding:3rem;color:var(--bio-muted);font-size:.9rem}
   .viewer-wrap{padding:1.5rem 2rem;max-width:980px;margin:0 auto}
   .viewer-layout{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start}
   @media(max-width:680px){.viewer-layout{grid-template-columns:1fr}}
@@ -82,12 +76,12 @@
   #bio-canvas{width:100%;height:100%;display:block}
   .spot{position:absolute;width:28px;height:28px;background:var(--bio-accent);border-radius:50%;border:3px solid var(--bio-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--bio-dark);transition:transform .15s;z-index:10}
   .spot:hover{transform:scale(1.2)}
-  .spot-label{position:absolute;background:var(--bio-dark);border:1px solid var(--bio-accent);border-radius:10px;padding:.5rem .9rem;font-size:.78rem;max-width:180px;z-index:20;white-space:normal;line-height:1.4;pointer-events:none;opacity:0;transition:opacity .2s}
+  .spot-label{position:absolute;background:var(--bio-dark);border:1px solid var(--bio-accent);border-radius:10px;padding:.5rem .9rem;font-size:.78rem;max-width:180px;z-index:20;line-height:1.4;pointer-events:none;opacity:0;transition:opacity .2s}
   .spot-label.show{opacity:1}
   .spot-label h4{font-size:.8rem;color:var(--bio-accent);margin-bottom:.2rem}
-  .controls-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.72rem;color:var(--bio-muted);background:rgba(10,22,40,.8);padding:.3rem .8rem;border-radius:20px}
+  .controls-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.72rem;color:var(--bio-muted);background:rgba(10,22,40,.8);padding:.3rem .8rem;border-radius:20px;white-space:nowrap}
   .viewer-side h2{font-size:1.2rem;margin-bottom:.3rem}
-  .viewer-side p{font-size:.83rem;color:var(--bio-muted);line-height:1.6;margin-bottom:1.2rem}
+  .viewer-side>p{font-size:.83rem;color:var(--bio-muted);line-height:1.6;margin-bottom:1.2rem}
   .structures-list h3{font-size:.85rem;color:var(--bio-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.7rem}
   .struct-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;border-radius:8px;cursor:pointer;transition:background .2s;font-size:.85rem}
   .struct-item:hover{background:var(--bio-card)}
@@ -102,18 +96,17 @@
   .video-modal-inner h3{margin-bottom:1rem}
   .video-placeholder{background:#0a1628;border-radius:10px;height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;color:var(--bio-muted);font-size:.88rem}
   .big-play{width:60px;height:60px;border-radius:50%;background:var(--bio-accent2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff}
-
   .admin-wrap{padding:2rem;max-width:980px;margin:0 auto}
-  .admin-wrap h2{font-size:1.5rem;margin-bottom:.3rem}
-  .admin-layout{display:grid;grid-template-columns:240px 1fr;gap:1.5rem;margin-top:1.5rem}
+  .admin-wrap>h2{font-size:1.5rem;margin-bottom:.3rem}
+  .admin-layout{display:grid;grid-template-columns:200px 1fr;gap:1.5rem;margin-top:1.5rem}
   @media(max-width:640px){.admin-layout{grid-template-columns:1fr}}
   .admin-nav{display:flex;flex-direction:column;gap:.3rem}
-  .admin-tab{background:transparent;border:none;border-radius:8px;padding:.65rem .9rem;text-align:left;font-family:'DM Sans',sans-serif;font-size:.88rem;cursor:pointer;color:var(--bio-muted);transition:all .2s;display:flex;align-items:center;gap:.6rem}
+  .admin-tab{background:transparent;border:none;border-radius:8px;padding:.65rem .9rem;text-align:left;font-family:'DM Sans',sans-serif;font-size:.88rem;cursor:pointer;color:var(--bio-muted);transition:all .2s}
   .admin-tab:hover{background:var(--bio-card);color:var(--bio-text)}
   .admin-tab.active{background:rgba(0,229,160,.1);color:var(--bio-accent)}
   .admin-panel{display:none}
   .admin-panel.active{display:block}
-  .admin-panel h3{font-size:1.1rem;margin-bottom:1rem}
+  .admin-panel>h3{font-size:1.1rem;margin-bottom:1rem}
   .module-list-item{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:10px;padding:.9rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
   .module-list-item .left{display:flex;align-items:center;gap:.7rem}
   .module-thumb-sm{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:#0a1628}
@@ -125,8 +118,10 @@
   .modal{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:16px;padding:2rem;width:90%;max-width:500px;max-height:90vh;overflow-y:auto}
   .modal h3{font-size:1.2rem;margin-bottom:1.2rem}
   .modal-footer{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.2rem}
-  .alert{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);border-radius:8px;padding:.65rem 1rem;font-size:.83rem;color:var(--bio-accent);margin-bottom:1rem;display:none}
+  .alert{border-radius:8px;padding:.65rem 1rem;font-size:.83rem;margin-bottom:1rem;display:none}
   .alert.show{display:block}
+  .alert-success{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--bio-accent)}
+  .alert-error{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:#e74c3c}
   .users-table{width:100%;border-collapse:collapse;font-size:.85rem}
   .users-table th{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--bio-border);color:var(--bio-muted);font-weight:500;font-size:.78rem}
   .users-table td{padding:.6rem .8rem;border-bottom:1px solid rgba(26,58,80,.5)}
@@ -147,10 +142,13 @@
   .emoji-picker{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
   .emoji-opt{font-size:1.4rem;cursor:pointer;padding:.3rem;border-radius:6px;border:1px solid transparent;transition:all .15s}
   .emoji-opt:hover,.emoji-opt.sel{border-color:var(--bio-accent);background:rgba(0,229,160,.1)}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,229,160,.3);border-top-color:var(--bio-accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
+<!-- HOME -->
 <div id="screen-home" class="screen active">
   <nav>
     <div class="logo">🔬 BioVerse</div>
@@ -182,30 +180,32 @@
   </div>
 </div>
 
+<!-- LOGIN -->
 <div id="screen-login" class="screen">
   <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
   <div class="auth-wrap">
     <div class="auth-card">
       <h2>Bem-vindo de volta</h2>
-      <p>Entre para acessar os módulos</p>
+      <p class="sub">Entre para acessar os módulos</p>
       <div class="form-group"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com"></div>
       <div class="form-group"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
       <button class="btn btn-primary form-full" onclick="doLogin()">Entrar</button>
       <div class="auth-switch">Não tem conta? <a onclick="go('register')">Assinar agora</a></div>
-      <div class="auth-switch" style="margin-top:.5rem"><a onclick="goAdmin()">🔧 Área admin (demo)</a></div>
+      <div class="auth-switch" style="margin-top:.5rem"><a onclick="goAdmin()">🔧 Área admin</a></div>
     </div>
   </div>
 </div>
 
+<!-- CADASTRO -->
 <div id="screen-register" class="screen">
   <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
   <div class="auth-wrap">
     <div class="auth-card">
       <h2>Criar conta</h2>
-      <p>Escolha um plano e comece a aprender</p>
+      <p class="sub">Escolha um plano e comece a aprender</p>
       <div class="plan-grid">
         <div class="plan-opt selected" id="plan-mensal" onclick="selectPlan('mensal')">
-          <h4>Mensal</h4><p>Flexível, cancele quando quiser</p>
+          <h4>Mensal</h4><p>Cancele quando quiser</p>
           <div class="plan-price">R$ 29/mês</div>
         </div>
         <div class="plan-opt" id="plan-anual" onclick="selectPlan('anual')">
@@ -216,12 +216,13 @@
       <div class="form-group"><label>Nome</label><input type="text" id="reg-name" placeholder="Seu nome"></div>
       <div class="form-group"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
       <div class="form-group"><label>Senha</label><input type="password" id="reg-pass" placeholder="min. 8 caracteres"></div>
-      <button class="btn btn-primary form-full" onclick="doRegister()">Criar conta e assinar</button>
+      <button class="btn btn-primary form-full" onclick="doRegister()">Criar conta</button>
       <div class="auth-switch">Já tem conta? <a onclick="go('login')">Entrar</a></div>
     </div>
   </div>
 </div>
 
+<!-- MÓDULOS -->
 <div id="screen-modules" class="screen">
   <nav>
     <div class="logo">🔬 BioVerse</div>
@@ -233,10 +234,11 @@
   <div class="modules-wrap">
     <h2>Módulos de Biologia</h2>
     <p class="sub">Clique em um módulo para explorar as estruturas 3D</p>
-    <div class="modules-grid" id="modules-grid"></div>
+    <div class="modules-grid" id="modules-grid"><div class="loading"><span class="spinner"></span>Carregando módulos...</div></div>
   </div>
 </div>
 
+<!-- VIEWER 3D -->
 <div id="screen-viewer" class="screen">
   <nav>
     <div class="logo">🔬 BioVerse</div>
@@ -251,8 +253,8 @@
         </div>
       </div>
       <div class="viewer-side">
-        <h2 id="viewer-title">Célula Animal</h2>
-        <p id="viewer-desc">Explore as principais estruturas clicando nos pontos destacados.</p>
+        <h2 id="viewer-title"></h2>
+        <p id="viewer-desc"></p>
         <div class="structures-list">
           <h3>Estruturas</h3>
           <div id="struct-list"></div>
@@ -266,6 +268,7 @@
   </div>
 </div>
 
+<!-- ADMIN -->
 <div id="screen-admin" class="screen">
   <nav>
     <div class="logo">🔬 BioVerse <span style="font-size:.7rem;color:var(--bio-muted);margin-left:.4rem">ADMIN</span></div>
@@ -283,16 +286,15 @@
         <div class="admin-panel active" id="ap-dashboard">
           <h3>Visão geral</h3>
           <div class="stat-cards">
-            <div class="stat-card"><div class="num" id="stat-modulos">0</div><div class="lbl">Módulos</div></div>
-            <div class="stat-card"><div class="num">47</div><div class="lbl">Alunos</div></div>
-            <div class="stat-card"><div class="num">38</div><div class="lbl">Assinantes</div></div>
+            <div class="stat-card"><div class="num" id="stat-modulos">—</div><div class="lbl">Módulos</div></div>
+            <div class="stat-card"><div class="num" id="stat-users">—</div><div class="lbl">Usuários</div></div>
           </div>
           <div style="background:var(--bio-card);border:1px solid var(--bio-border);border-radius:10px;padding:1rem;font-size:.85rem;color:var(--bio-muted)">
-            <p style="margin-bottom:.5rem;font-weight:500;color:var(--bio-text)">Como usar este painel</p>
-            <p style="margin-bottom:.4rem">1. Vá em <strong style="color:var(--bio-accent)">Módulos</strong> → clique em <strong style="color:var(--bio-accent)">Novo módulo</strong></p>
-            <p style="margin-bottom:.4rem">2. Preencha nome, emoji, descrição, link do vídeo e textos dos spots</p>
-            <p style="margin-bottom:.4rem">3. Clique em <strong style="color:var(--bio-accent)">Salvar</strong> — o módulo aparece na plataforma imediatamente</p>
-            <p>4. Para importar modelo .glb real, hospede na Vercel + GitHub (gratuitos)</p>
+            <p style="margin-bottom:.6rem;font-weight:500;color:var(--bio-text)">Como usar</p>
+            <p style="margin-bottom:.3rem">1. Vá em <strong style="color:var(--bio-accent)">Módulos</strong> → <strong style="color:var(--bio-accent)">Novo módulo</strong></p>
+            <p style="margin-bottom:.3rem">2. Preencha nome, emoji, descrição, vídeo e spots</p>
+            <p style="margin-bottom:.3rem">3. Clique em <strong style="color:var(--bio-accent)">Salvar</strong> — salva no banco de dados!</p>
+            <p>4. O módulo aparece para todos os alunos na hora ✅</p>
           </div>
         </div>
         <div class="admin-panel" id="ap-modulos">
@@ -300,37 +302,34 @@
             <h3 style="margin:0">Módulos</h3>
             <button class="btn btn-primary btn-sm" onclick="openNewModule()">+ Novo módulo</button>
           </div>
-          <div class="alert" id="mod-alert">✅ Módulo salvo com sucesso!</div>
-          <div id="admin-mod-list"></div>
+          <div class="alert alert-success" id="mod-alert"></div>
+          <div class="alert alert-error" id="mod-error"></div>
+          <div id="admin-mod-list"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
         </div>
         <div class="admin-panel" id="ap-usuarios">
           <h3>Usuários cadastrados</h3>
-          <table class="users-table">
-            <thead><tr><th>Nome</th><th>E-mail</th><th>Plano</th><th>Status</th></tr></thead>
-            <tbody id="users-tbody"></tbody>
-          </table>
+          <div id="users-list"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- MODAL MÓDULO -->
 <div class="modal-bg" id="module-modal">
   <div class="modal">
     <h3 id="modal-title">Novo módulo</h3>
     <div class="form-group"><label>Nome do módulo</label><input type="text" id="m-name" placeholder="Ex: Biologia Celular"></div>
-    <div class="form-group"><label>Emoji / ícone</label>
-      <div class="emoji-picker" id="emoji-picker"></div>
-    </div>
-    <div class="form-group"><label>Descrição curta</label><input type="text" id="m-desc" placeholder="Ex: Explore as estruturas da célula animal e vegetal"></div>
-    <div class="form-group"><label>Link do vídeo (YouTube/Vimeo)</label><input type="text" id="m-video" placeholder="https://youtube.com/..."></div>
-    <div class="form-group"><label>Arquivo 3D (.glb) — nome do arquivo</label><input type="text" id="m-glb" placeholder="celula.glb"></div>
+    <div class="form-group"><label>Emoji</label><div class="emoji-picker" id="emoji-picker"></div></div>
+    <div class="form-group"><label>Descrição</label><input type="text" id="m-desc" placeholder="Ex: Explore as estruturas da célula animal"></div>
+    <div class="form-group"><label>Link do vídeo (YouTube ou Vimeo)</label><input type="text" id="m-video" placeholder="https://youtube.com/watch?v=..."></div>
+    <div class="form-group"><label>Arquivo 3D (.glb)</label><input type="text" id="m-glb" placeholder="celula.glb"></div>
     <div class="spots-config">
-      <h4>Spots (pontos clicáveis no modelo)</h4>
+      <h4>Spots — pontos clicáveis no modelo</h4>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;margin-bottom:.4rem">
         <span style="font-size:.73rem;color:var(--bio-muted)">Nome</span>
         <span style="font-size:.73rem;color:var(--bio-muted)">Legenda</span>
-        <span style="font-size:.73rem;color:var(--bio-muted)">Pos (x,y,z)</span>
+        <span style="font-size:.73rem;color:var(--bio-muted)">x,y,z</span>
         <span></span>
       </div>
       <div id="spots-rows"></div>
@@ -338,232 +337,255 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveModule()">Salvar módulo</button>
+      <button class="btn btn-primary" id="save-btn" onclick="saveModule()">Salvar módulo</button>
     </div>
   </div>
 </div>
 
+<!-- MODAL VÍDEO -->
 <div class="video-modal" id="video-modal">
   <div class="video-modal-inner">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
       <h3 id="video-title">Videoaula</h3>
       <button class="btn btn-ghost btn-sm" onclick="closeVideo()">✕ Fechar</button>
     </div>
-    <div class="video-placeholder" id="video-container">
-      <div class="big-play">▶</div>
-      <p id="video-url-hint">Configure o link do vídeo no painel admin</p>
+    <div id="video-container" style="height:320px">
+      <div class="video-placeholder"><div class="big-play">▶</div><p id="video-url-hint">Configure o link no painel admin</p></div>
     </div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const EMOJIS=['🧬','⚗️','🔬','🧫','🌿','🦠','🧪','🫀','🫁','🧠','🦴','🌱','🐠','🐛','🌺','🍃'];
-let modules=[
-  {id:1,name:'Biologia Celular',emoji:'🧬',desc:'Explore a célula animal com suas organelas em 3D',video:'',glb:'celula.glb',spots:[
-    {name:'Núcleo',desc:'Contém o DNA e controla as funções celulares',x:0,y:0.3,z:0},
-    {name:'Mitocôndria',desc:'Produz energia (ATP) para a célula — a usina celular',x:0.6,y:-0.2,z:0.2},
-    {name:'Membrana plasmática',desc:'Regula a entrada e saída de substâncias',x:0,y:0,z:0.9},
-    {name:'Retículo endoplasmático',desc:'Síntese e transporte de proteínas e lipídios',x:-0.5,y:0.1,z:0.3}
-  ]},
-  {id:2,name:'Bioquímica',emoji:'⚗️',desc:'ATP, proteínas e metabolismo energético',video:'',glb:'atp.glb',spots:[
-    {name:'Adenina',desc:'Base nitrogenada do ATP',x:0.4,y:0.5,z:0},
-    {name:'Grupos fosfato',desc:'Ligações de alta energia que armazenam ATP',x:-0.4,y:0.2,z:0.1}
-  ]},
-  {id:3,name:'Histologia',emoji:'🔬',desc:'Tecidos do corpo humano em detalhes microscópicos',video:'',glb:'tecido.glb',spots:[
-    {name:'Fibra muscular',desc:'Unidade contrátil do músculo esquelético',x:0,y:0.5,z:0},
-    {name:'Núcleo periférico',desc:'Núcleo localizado na periferia das fibras musculares',x:0.5,y:-0.3,z:0}
-  ]}
-];
-let users=[{name:'Ana Silva',email:'ana@email.com',plan:'Anual',status:'Ativo'},{name:'Carlos Melo',email:'carlos@email.com',plan:'Mensal',status:'Ativo'},{name:'Juliana Costa',email:'juli@email.com',plan:'Mensal',status:'Inativo'}];
-let currentModule=null,editingId=null,selectedEmoji='🧬',scene,camera,renderer,mesh,animId,isDragging=false,prevMouse={x:0,y:0},rotX=0,rotY=0,zoom=3,spotEls=[];
+// ======= SUPABASE CONFIG =======
+const SB_URL = 'https://ayymsfzpeswdjpgebsvb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5eW1zZnpwZXN3ZGpwZ2Vic3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODI1NjUsImV4cCI6MjA5Mzc1ODU2NX0.DvKcrvY61Y4qViEOj3rMUuIPWZpZhXboMom_NiNwSEo';
 
+async function sbFetch(path, method='GET', body=null){
+  const opts = {
+    method,
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method==='POST' ? 'return=representation' : ''
+    }
+  };
+  if(body) opts.body = JSON.stringify(body);
+  const res = await fetch(SB_URL + '/rest/v1/' + path, opts);
+  if(!res.ok){ const e = await res.text(); throw new Error(e); }
+  const txt = await res.text();
+  return txt ? JSON.parse(txt) : [];
+}
+
+// ======= STATE =======
+const EMOJIS = ['🧬','⚗️','🔬','🧫','🌿','🦠','🧪','🫀','🫁','🧠','🦴','🌱','🐠','🐛','🌺','🍃'];
+let currentModule=null, editingId=null, selectedEmoji='🧬';
+let scene, camera, renderer, mesh, animId;
+let isDragging=false, prevMouse={x:0,y:0}, rotX=0, rotY=0, zoom=3, spotEls=[];
+
+// ======= NAVEGAÇÃO =======
 function go(s){
   document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
   document.getElementById('screen-'+s).classList.add('active');
-  if(s==='modules')renderModules();
-  if(s==='admin'){renderAdminMods();renderUsers();document.getElementById('stat-modulos').textContent=modules.length}
+  if(s==='modules') loadModules();
+  if(s==='admin') loadAdmin();
 }
 function doLogin(){
-  const e=document.getElementById('login-email').value;
+  const e = document.getElementById('login-email').value;
   if(!e){alert('Preencha o e-mail');return}
-  document.getElementById('user-name-nav').textContent=e.split('@')[0];
+  document.getElementById('user-name-nav').textContent = e.split('@')[0];
   go('modules');
 }
 function doRegister(){
-  const n=document.getElementById('reg-name').value;
+  const n = document.getElementById('reg-name').value;
   if(!n){alert('Preencha o nome');return}
-  document.getElementById('user-name-nav').textContent=n;
+  document.getElementById('user-name-nav').textContent = n;
   go('modules');
 }
-function goAdmin(){go('admin')}
+function goAdmin(){ go('admin'); }
 function selectPlan(p){
   document.querySelectorAll('.plan-opt').forEach(x=>x.classList.remove('selected'));
   document.getElementById('plan-'+p).classList.add('selected');
 }
-function renderModules(){
-  const g=document.getElementById('modules-grid');g.innerHTML='';
-  modules.forEach(m=>{
-    const bg=['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a'][m.id%5];
-    g.innerHTML+=`<div class="module-card" onclick="openModule(${m.id})">
-      <div class="module-thumb" style="background:${bg}">${m.emoji}</div>
+
+// ======= MÓDULOS =======
+async function loadModules(){
+  const g = document.getElementById('modules-grid');
+  g.innerHTML = '<div class="loading"><span class="spinner"></span>Carregando módulos...</div>';
+  try {
+    const mods = await sbFetch('modules?order=id');
+    renderModules(mods);
+  } catch(e){
+    g.innerHTML = '<div class="loading" style="color:#e74c3c">Erro ao carregar. Verifique a tabela no Supabase.</div>';
+  }
+}
+
+function renderModules(mods){
+  const g = document.getElementById('modules-grid');
+  if(!mods.length){ g.innerHTML='<div class="loading">Nenhum módulo ainda. Crie um no painel admin!</div>'; return; }
+  const bgs = ['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a'];
+  g.innerHTML = mods.map((m,i)=>`
+    <div class="module-card" onclick='openModule(${JSON.stringify(m)})'>
+      <div class="module-thumb" style="background:${bgs[i%5]}">${m.emoji||'🧬'}</div>
       <div class="module-body">
         <h3>${m.name}</h3>
-        <p>${m.desc}</p>
+        <p>${m.desc||''}</p>
         <div class="module-meta">
-          <span class="tag">${m.spots.length} spots</span>
+          <span class="tag">${(m.spots||[]).length} spots</span>
           <span class="tag">${m.video?'Vídeo disponível':'Sem vídeo'}</span>
         </div>
       </div>
-    </div>`;
-  });
+    </div>`).join('');
 }
-function openModule(id){
-  currentModule=modules.find(m=>m.id===id);
-  document.getElementById('viewer-title').textContent=currentModule.name;
-  document.getElementById('viewer-desc').textContent=currentModule.desc;
+
+function openModule(m){
+  if(typeof m === 'string') m = JSON.parse(m);
+  currentModule = m;
+  currentModule.spots = m.spots || [];
+  document.getElementById('viewer-title').textContent = m.name;
+  document.getElementById('viewer-desc').textContent = m.desc||'';
   renderStructList();
   go('viewer');
-  setTimeout(()=>{initThree();},100);
+  setTimeout(initThree, 100);
 }
+
+// ======= VIEWER 3D =======
 function renderStructList(){
-  const l=document.getElementById('struct-list');l.innerHTML='';
+  const l = document.getElementById('struct-list'); l.innerHTML='';
   currentModule.spots.forEach((s,i)=>{
-    l.innerHTML+=`<div class="struct-item" id="si-${i}" onclick="focusSpot(${i})">
-      <div class="struct-dot"></div>${s.name}
-    </div>`;
+    l.innerHTML += `<div class="struct-item" id="si-${i}" onclick="focusSpot(${i})"><div class="struct-dot"></div>${s.name}</div>`;
   });
 }
 function focusSpot(i){
   document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
-  const el=document.getElementById('si-'+i);
-  if(el)el.classList.add('active');
-  const sl=document.getElementById('sl-'+i);
-  if(sl){document.querySelectorAll('.spot-label').forEach(x=>x.classList.remove('show'));sl.classList.add('show');}
+  const el=document.getElementById('si-'+i); if(el)el.classList.add('active');
+  document.querySelectorAll('.spot-label').forEach(x=>x.classList.remove('show'));
+  const sl=document.getElementById('sl-'+i); if(sl)sl.classList.add('show');
 }
 function openVideo(){
-  document.getElementById('video-title').textContent=currentModule?currentModule.name+' — Videoaula':'Videoaula';
-  const vc=document.getElementById('video-container');
-  if(currentModule&&currentModule.video){
-    const url=currentModule.video;
+  document.getElementById('video-title').textContent = (currentModule?currentModule.name:'')+' — Videoaula';
+  const vc = document.getElementById('video-container');
+  const url = currentModule&&currentModule.video;
+  if(url){
     let embed='';
     if(url.includes('youtube')||url.includes('youtu.be')){
-      const vid=url.split('v=')[1]||url.split('/').pop();
+      const vid=url.includes('v=')?url.split('v=')[1].split('&')[0]:url.split('/').pop();
       embed=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen style="border-radius:10px"></iframe>`;
-    }else if(url.includes('vimeo')){
+    } else if(url.includes('vimeo')){
       const vid=url.split('/').pop();
       embed=`<iframe width="100%" height="100%" src="https://player.vimeo.com/video/${vid}" frameborder="0" allowfullscreen style="border-radius:10px"></iframe>`;
     }
-    if(embed){vc.innerHTML=embed;vc.style.height='320px';document.getElementById('video-modal').classList.add('open');return;}
+    if(embed){vc.innerHTML=embed;vc.style.background='#000';}
+  } else {
+    vc.innerHTML='<div class="video-placeholder"><div class="big-play">▶</div><p>Configure o link no painel admin</p></div>';
   }
-  document.getElementById('video-url-hint').textContent=currentModule&&currentModule.video?currentModule.video:'Configure o link do vídeo no painel admin';
   document.getElementById('video-modal').classList.add('open');
 }
-function closeVideo(){document.getElementById('video-modal').classList.remove('open')}
+function closeVideo(){ document.getElementById('video-modal').classList.remove('open'); }
 
 function initThree(){
-  if(animId)cancelAnimationFrame(animId);
-  const wrap=document.getElementById('canvas-wrap');
-  const canvas=document.getElementById('bio-canvas');
-  const W=wrap.clientWidth,H=wrap.clientHeight;
-  renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  renderer.setSize(W,H);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  scene=new THREE.Scene();
-  camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
-  camera.position.z=zoom;
-  const ambLight=new THREE.AmbientLight(0xffffff,0.6);scene.add(ambLight);
-  const dirLight=new THREE.DirectionalLight(0x00e5a0,1);dirLight.position.set(2,3,4);scene.add(dirLight);
-  const dirLight2=new THREE.DirectionalLight(0x00b4d8,0.6);dirLight2.position.set(-3,1,-2);scene.add(dirLight2);
-  buildDemoModel();
-  addSpots();
-  canvas.addEventListener('mousedown',e=>{isDragging=true;prevMouse={x:e.clientX,y:e.clientY}});
-  canvas.addEventListener('mousemove',e=>{if(!isDragging)return;const dx=e.clientX-prevMouse.x,dy=e.clientY-prevMouse.y;rotY+=dx*.01;rotX+=dy*.01;prevMouse={x:e.clientX,y:e.clientY}});
-  canvas.addEventListener('mouseup',()=>{isDragging=false});
-  canvas.addEventListener('wheel',e=>{zoom=Math.max(1.5,Math.min(6,zoom+e.deltaY*.005));camera.position.z=zoom});
-  animate();
-}
-function buildDemoModel(){
-  const geo=new THREE.SphereGeometry(0.95,64,64);
-  const mat=new THREE.MeshStandardMaterial({color:0x1a5c3a,roughness:.4,metalness:.2});
-  mesh=new THREE.Mesh(geo,mat);scene.add(mesh);
-  const nGeo=new THREE.SphereGeometry(.28,32,32);
-  const nMat=new THREE.MeshStandardMaterial({color:0x00e5a0,roughness:.3,metalness:.1});
-  const nucleus=new THREE.Mesh(nGeo,nMat);nucleus.position.set(0,0.3,0.5);mesh.add(nucleus);
-  const mMat=new THREE.MeshStandardMaterial({color:0xff6b35,roughness:.5});
-  [-0.4,0.4].forEach(x=>{
-    const mGeo=new THREE.SphereGeometry(.12,16,16);
-    const m2=new THREE.Mesh(mGeo,mMat);m2.position.set(x*1.2,-0.2,0.5);mesh.add(m2)
-  });
-  const rGeo=new THREE.TorusGeometry(.3,.04,8,32);
-  const rMat=new THREE.MeshStandardMaterial({color:0x00b4d8,roughness:.6});
-  const re=new THREE.Mesh(rGeo,rMat);re.position.set(-0.4,0.1,0.4);re.rotation.x=.8;mesh.add(re);
-}
-function addSpots(){
+  if(animId) cancelAnimationFrame(animId);
   document.querySelectorAll('.spot,.spot-label').forEach(e=>e.remove());
   spotEls=[];
   const wrap=document.getElementById('canvas-wrap');
+  const canvas=document.getElementById('bio-canvas');
+  const W=wrap.clientWidth, H=wrap.clientHeight;
+  renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setSize(W,H); renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
+  camera.position.z=zoom;
+  scene.add(new THREE.AmbientLight(0xffffff,0.6));
+  const dl=new THREE.DirectionalLight(0x00e5a0,1); dl.position.set(2,3,4); scene.add(dl);
+  const dl2=new THREE.DirectionalLight(0x00b4d8,0.6); dl2.position.set(-3,1,-2); scene.add(dl2);
+  buildDemoModel();
+  addSpots();
+  rotX=0; rotY=0; zoom=3;
+  canvas.addEventListener('mousedown',e=>{isDragging=true;prevMouse={x:e.clientX,y:e.clientY}});
+  canvas.addEventListener('mousemove',e=>{if(!isDragging)return;rotY+=(e.clientX-prevMouse.x)*.01;rotX+=(e.clientY-prevMouse.y)*.01;prevMouse={x:e.clientX,y:e.clientY}});
+  canvas.addEventListener('mouseup',()=>isDragging=false);
+  canvas.addEventListener('mouseleave',()=>isDragging=false);
+  canvas.addEventListener('wheel',e=>{zoom=Math.max(1.5,Math.min(6,zoom+e.deltaY*.005));camera.position.z=zoom;e.preventDefault()},{passive:false});
+  animate();
+}
+function buildDemoModel(){
+  mesh=new THREE.Mesh(new THREE.SphereGeometry(0.95,64,64),new THREE.MeshStandardMaterial({color:0x1a5c3a,roughness:.4,metalness:.2}));
+  scene.add(mesh);
+  const nuc=new THREE.Mesh(new THREE.SphereGeometry(.28,32,32),new THREE.MeshStandardMaterial({color:0x00e5a0,roughness:.3}));
+  nuc.position.set(0,0.3,0.5); mesh.add(nuc);
+  const mmat=new THREE.MeshStandardMaterial({color:0xff6b35,roughness:.5});
+  [-0.5,0.5].forEach(x=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),mmat);m.position.set(x,-0.2,0.6);mesh.add(m)});
+  const re=new THREE.Mesh(new THREE.TorusGeometry(.3,.04,8,32),new THREE.MeshStandardMaterial({color:0x00b4d8,roughness:.6}));
+  re.position.set(-0.4,0.1,0.4); re.rotation.x=.8; mesh.add(re);
+}
+function addSpots(){
+  const wrap=document.getElementById('canvas-wrap');
   currentModule.spots.forEach((s,i)=>{
-    const sp=document.createElement('div');sp.className='spot';sp.id='spot-'+i;sp.textContent=i+1;
-    const sl=document.createElement('div');sl.className='spot-label';sl.id='sl-'+i;
+    const sp=document.createElement('div'); sp.className='spot'; sp.id='spot-'+i; sp.textContent=i+1;
+    const sl=document.createElement('div'); sl.className='spot-label'; sl.id='sl-'+i;
     sl.innerHTML=`<h4>${s.name}</h4><p>${s.desc}</p>`;
     sp.onclick=()=>{
+      const showing=sl.classList.contains('show');
       document.querySelectorAll('.spot-label').forEach(x=>x.classList.remove('show'));
       document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
-      const already=sl.classList.contains('show');
-      if(!already){sl.classList.add('show');const si=document.getElementById('si-'+i);if(si)si.classList.add('active');}
+      if(!showing){sl.classList.add('show');const si=document.getElementById('si-'+i);if(si)si.classList.add('active');}
     };
-    wrap.appendChild(sp);wrap.appendChild(sl);
-    spotEls.push({el:sp,label:sl,pos3d:new THREE.Vector3(s.x,s.y,s.z)});
+    wrap.appendChild(sp); wrap.appendChild(sl);
+    spotEls.push({el:sp,label:sl,pos3d:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
   });
 }
 function animate(){
   animId=requestAnimationFrame(animate);
-  if(!isDragging){rotY+=.006}
-  mesh.rotation.x=rotX;mesh.rotation.y=rotY;
+  if(!isDragging) rotY+=.006;
+  mesh.rotation.x=rotX; mesh.rotation.y=rotY;
   renderer.render(scene,camera);
   const wrap=document.getElementById('canvas-wrap');
-  const W=wrap.clientWidth,H=wrap.clientHeight;
+  const W=wrap.clientWidth, H=wrap.clientHeight;
   spotEls.forEach(({el,label,pos3d})=>{
-    const worldPos=pos3d.clone();
-    mesh.localToWorld(worldPos);
-    const projected=worldPos.clone().project(camera);
-    const px=(projected.x*.5+.5)*W;
-    const py=(-.5*projected.y+.5)*H;
-    el.style.left=(px-14)+'px';el.style.top=(py-14)+'px';
-    label.style.left=(px+18)+'px';
-    label.style.top=(py-20)+'px';
-    const behind=projected.z>1;
-    el.style.opacity=behind?'0':'1';el.style.pointerEvents=behind?'none':'all';
+    const wp=pos3d.clone(); mesh.localToWorld(wp);
+    const p=wp.clone().project(camera);
+    const px=(p.x*.5+.5)*W, py=(-.5*p.y+.5)*H;
+    el.style.left=(px-14)+'px'; el.style.top=(py-14)+'px';
+    label.style.left=(px+18)+'px'; label.style.top=(py-20)+'px';
+    const behind=p.z>1;
+    el.style.opacity=behind?'0':'1'; el.style.pointerEvents=behind?'none':'all';
   });
 }
 
+// ======= ADMIN =======
+async function loadAdmin(){
+  try {
+    const mods = await sbFetch('modules?order=id');
+    document.getElementById('stat-modulos').textContent = mods.length;
+    renderAdminMods(mods);
+  } catch(e){ console.error(e); }
+  document.getElementById('stat-users').textContent = '—';
+  document.getElementById('users-list').innerHTML = '<p style="color:var(--bio-muted);font-size:.85rem">Integração de usuários via Supabase Auth — disponível na próxima etapa.</p>';
+}
 function adminTab(name,btn){
   document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.admin-panel').forEach(x=>x.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('ap-'+name).classList.add('active');
 }
-function renderAdminMods(){
-  const l=document.getElementById('admin-mod-list');l.innerHTML='';
-  modules.forEach(m=>{
-    l.innerHTML+=`<div class="module-list-item">
-      <div class="left"><div class="module-thumb-sm">${m.emoji}</div>
-      <div><div class="item-title">${m.name}</div><div class="item-sub">${m.spots.length} spots · ${m.video?'Com vídeo':'Sem vídeo'}</div></div></div>
+function renderAdminMods(mods){
+  const l=document.getElementById('admin-mod-list');
+  if(!mods.length){l.innerHTML='<p style="color:var(--bio-muted);font-size:.85rem">Nenhum módulo ainda. Crie o primeiro!</p>';return;}
+  l.innerHTML=mods.map(m=>`
+    <div class="module-list-item">
+      <div class="left">
+        <div class="module-thumb-sm">${m.emoji||'🧬'}</div>
+        <div><div class="item-title">${m.name}</div><div class="item-sub">${(m.spots||[]).length} spots · ${m.video?'Com vídeo':'Sem vídeo'}</div></div>
+      </div>
       <div class="item-actions">
-        <button class="btn btn-ghost btn-sm" onclick="editModule(${m.id})">✏️ Editar</button>
+        <button class="btn btn-ghost btn-sm" onclick='editModule(${JSON.stringify(m)})'>✏️ Editar</button>
         <button class="btn btn-danger btn-sm" onclick="deleteModule(${m.id})">🗑</button>
       </div>
-    </div>`;
-  });
-}
-function renderUsers(){
-  const tb=document.getElementById('users-tbody');tb.innerHTML='';
-  users.forEach(u=>{
-    tb.innerHTML+=`<tr><td>${u.name}</td><td style="color:var(--bio-muted)">${u.email}</td><td>${u.plan}</td><td><span class="badge ${u.status==='Ativo'?'badge-green':'badge-gray'}">${u.status}</span></td></tr>`;
-  });
+    </div>`).join('');
 }
 function openNewModule(){
-  editingId=null;selectedEmoji='🧬';
+  editingId=null; selectedEmoji='🧬';
   document.getElementById('modal-title').textContent='Novo módulo';
   document.getElementById('m-name').value='';
   document.getElementById('m-desc').value='';
@@ -573,61 +595,72 @@ function openNewModule(){
   buildSpotRows([]);
   document.getElementById('module-modal').classList.add('open');
 }
-function editModule(id){
-  const m=modules.find(x=>x.id===id);editingId=id;selectedEmoji=m.emoji;
+function editModule(m){
+  if(typeof m==='string') m=JSON.parse(m);
+  editingId=m.id; selectedEmoji=m.emoji||'🧬';
   document.getElementById('modal-title').textContent='Editar módulo';
-  document.getElementById('m-name').value=m.name;
-  document.getElementById('m-desc').value=m.desc;
+  document.getElementById('m-name').value=m.name||'';
+  document.getElementById('m-desc').value=m.desc||'';
   document.getElementById('m-video').value=m.video||'';
   document.getElementById('m-glb').value=m.glb||'';
   buildEmojiPicker();
-  buildSpotRows(m.spots);
+  buildSpotRows(m.spots||[]);
   document.getElementById('module-modal').classList.add('open');
 }
-function deleteModule(id){
-  if(!confirm('Excluir este módulo?'))return;
-  modules=modules.filter(m=>m.id!==id);
-  renderAdminMods();renderModules();
-  document.getElementById('stat-modulos').textContent=modules.length;
+async function deleteModule(id){
+  if(!confirm('Excluir este módulo?')) return;
+  try {
+    await sbFetch('modules?id=eq.'+id,'DELETE');
+    loadAdmin();
+  } catch(e){ alert('Erro ao excluir: '+e.message); }
 }
-function closeModal(){document.getElementById('module-modal').classList.remove('open')}
+function closeModal(){ document.getElementById('module-modal').classList.remove('open'); }
 function buildEmojiPicker(){
-  const p=document.getElementById('emoji-picker');p.innerHTML='';
+  const p=document.getElementById('emoji-picker'); p.innerHTML='';
   EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selectedEmoji?' sel':''}" onclick="pickEmoji('${e}',this)">${e}</span>`});
 }
-function pickEmoji(e,el){selectedEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel')}
-function buildSpotRows(spots){
-  const c=document.getElementById('spots-rows');c.innerHTML='';
-  spots.forEach(s=>addSpotRow(s));
-}
+function pickEmoji(e,el){ selectedEmoji=e; document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); }
+function buildSpotRows(spots){ const c=document.getElementById('spots-rows'); c.innerHTML=''; spots.forEach(s=>addSpotRow(s)); }
 function addSpotRow(s){
   const c=document.getElementById('spots-rows');
-  const row=document.createElement('div');row.className='spot-row';
-  row.innerHTML=`<input type="text" placeholder="Nome" value="${s?s.name:''}" class="spot-name">
+  const row=document.createElement('div'); row.className='spot-row';
+  row.innerHTML=`
+    <input type="text" placeholder="Nome" value="${s?s.name:''}" class="spot-name">
     <input type="text" placeholder="Legenda" value="${s?s.desc:''}" class="spot-desc">
-    <input type="text" placeholder="0,0,0" value="${s?`${s.x},${s.y},${s.z}`:''}" class="spot-pos">
+    <input type="text" placeholder="0,0,0" value="${s?s.x+','+s.y+','+s.z:''}" class="spot-pos">
     <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
   c.appendChild(row);
 }
-function saveModule(){
+async function saveModule(){
   const name=document.getElementById('m-name').value.trim();
-  if(!name){alert('Preencha o nome do módulo');return}
+  if(!name){alert('Preencha o nome');return}
   const spots=[];
   document.querySelectorAll('#spots-rows .spot-row').forEach(row=>{
     const n=row.querySelector('.spot-name').value.trim();
     const d=row.querySelector('.spot-desc').value.trim();
     const pos=row.querySelector('.spot-pos').value.split(',').map(Number);
-    if(n)spots.push({name:n,desc:d||n,x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
+    if(n) spots.push({name:n,desc:d||n,x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
   });
-  if(editingId){
-    const idx=modules.findIndex(m=>m.id===editingId);
-    modules[idx]={...modules[idx],name,emoji:selectedEmoji,desc:document.getElementById('m-desc').value,video:document.getElementById('m-video').value,glb:document.getElementById('m-glb').value,spots};
-  }else{
-    modules.push({id:Date.now(),name,emoji:selectedEmoji,desc:document.getElementById('m-desc').value,video:document.getElementById('m-video').value,glb:document.getElementById('m-glb').value,spots});
+  const data={name,emoji:selectedEmoji,desc:document.getElementById('m-desc').value,video:document.getElementById('m-video').value,glb:document.getElementById('m-glb').value,spots};
+  const btn=document.getElementById('save-btn');
+  btn.innerHTML='<span class="spinner"></span>Salvando...'; btn.disabled=true;
+  try {
+    if(editingId){
+      await sbFetch('modules?id=eq.'+editingId,'PATCH',data);
+    } else {
+      await sbFetch('modules','POST',data);
+    }
+    closeModal();
+    showAlert('mod-alert','✅ Módulo salvo com sucesso!');
+    loadAdmin();
+  } catch(e){
+    showAlert('mod-error','❌ Erro: '+e.message);
   }
-  closeModal();renderAdminMods();renderModules();
-  document.getElementById('stat-modulos').textContent=modules.length;
-  const al=document.getElementById('mod-alert');al.classList.add('show');setTimeout(()=>al.classList.remove('show'),3000);
+  btn.innerHTML='Salvar módulo'; btn.disabled=false;
+}
+function showAlert(id,msg){
+  const el=document.getElementById(id); el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),4000);
 }
 </script>
 </body>
