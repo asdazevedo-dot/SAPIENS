@@ -6,144 +6,176 @@
 <title>BioVerse — Biologia em 3D</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bio-dark:#0a1628;--bio-mid:#102040;--bio-accent:#00e5a0;--bio-accent2:#00b4d8;
-    --bio-text:#e8f4f0;--bio-muted:#7a9e90;--bio-card:#0f2035;--bio-border:#1a3a50;
-  }
-  body{font-family:'DM Sans',sans-serif;background:var(--bio-dark);color:var(--bio-text);min-height:100vh;overflow-x:hidden}
-  h1,h2,h3{font-family:'Syne',sans-serif}
-  .screen{display:none;min-height:100vh;animation:fadeIn .4s ease}
-  .screen.active{display:block}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  nav{display:flex;justify-content:space-between;align-items:center;padding:1.2rem 2rem;border-bottom:1px solid var(--bio-border);background:rgba(10,22,40,.95);position:sticky;top:0;z-index:100}
-  .logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--bio-accent);letter-spacing:.5px}
-  .nav-btns{display:flex;gap:.6rem;align-items:center}
-  .btn{padding:.55rem 1.2rem;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
-  .btn-ghost{background:transparent;color:var(--bio-text);border:1px solid var(--bio-border)}
-  .btn-ghost:hover{border-color:var(--bio-accent);color:var(--bio-accent)}
-  .btn-primary{background:var(--bio-accent);color:var(--bio-dark)}
-  .btn-primary:hover{background:#00ffb3;transform:translateY(-1px)}
-  .btn-danger{background:#c0392b;color:#fff}
-  .btn-danger:hover{background:#e74c3c}
-  .btn-sm{padding:.4rem .9rem;font-size:.8rem}
-  .hero{padding:5rem 2rem 4rem;max-width:860px;margin:0 auto;text-align:center}
-  .hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1.2rem}
-  .hero h1 span{color:var(--bio-accent)}
-  .hero p{font-size:1.05rem;color:var(--bio-muted);max-width:540px;margin:0 auto 2rem;line-height:1.7}
-  .hero-pills{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
-  .pill{background:var(--bio-card);border:1px solid var(--bio-border);padding:.35rem .9rem;border-radius:20px;font-size:.8rem;color:var(--bio-muted)}
-  .hero-cta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
-  .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;padding:2rem;max-width:860px;margin:0 auto}
-  .feat-card{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:12px;padding:1.2rem}
-  .feat-icon{font-size:1.6rem;margin-bottom:.6rem}
-  .feat-card h3{font-size:.95rem;margin-bottom:.3rem}
-  .feat-card p{font-size:.82rem;color:var(--bio-muted);line-height:1.5}
-  .auth-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px);padding:2rem}
-  .auth-card{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:16px;padding:2.5rem;width:100%;max-width:400px}
-  .auth-card h2{font-size:1.5rem;margin-bottom:.4rem}
-  .auth-card p.sub{font-size:.85rem;color:var(--bio-muted);margin-bottom:1.8rem}
-  .form-group{margin-bottom:1.1rem}
-  .form-group label{display:block;font-size:.82rem;color:var(--bio-muted);margin-bottom:.4rem}
-  .form-group input{width:100%;background:#0a1628;border:1px solid var(--bio-border);border-radius:8px;padding:.65rem .9rem;color:var(--bio-text);font-family:'DM Sans',sans-serif;font-size:.9rem;transition:border-color .2s}
-  .form-group input:focus{outline:none;border-color:var(--bio-accent)}
-  .form-full{width:100%;margin-top:.4rem}
-  .auth-switch{text-align:center;margin-top:1.2rem;font-size:.83rem;color:var(--bio-muted)}
-  .auth-switch a{color:var(--bio-accent);cursor:pointer;text-decoration:none}
-  .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:1.2rem}
-  .plan-opt{border:1px solid var(--bio-border);border-radius:10px;padding:.9rem;cursor:pointer;transition:all .2s}
-  .plan-opt:hover,.plan-opt.selected{border-color:var(--bio-accent);background:rgba(0,229,160,.07)}
-  .plan-opt h4{font-size:.9rem;margin-bottom:.2rem}
-  .plan-opt p{font-size:.78rem;color:var(--bio-muted)}
-  .plan-price{font-size:1.1rem;font-weight:700;color:var(--bio-accent);margin-top:.3rem}
-  .modules-wrap{padding:2rem;max-width:980px;margin:0 auto}
-  .modules-wrap h2{font-size:1.5rem;margin-bottom:.3rem}
-  .modules-wrap .sub{font-size:.88rem;color:var(--bio-muted);margin-bottom:2rem}
-  .modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.2rem}
-  .module-card{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s}
-  .module-card:hover{border-color:var(--bio-accent);transform:translateY(-3px)}
-  .module-thumb{height:140px;display:flex;align-items:center;justify-content:center;font-size:4rem}
-  .module-body{padding:1rem 1.1rem 1.2rem}
-  .module-body h3{font-size:1rem;margin-bottom:.3rem}
-  .module-body p{font-size:.8rem;color:var(--bio-muted);line-height:1.5}
-  .module-meta{display:flex;gap:.5rem;margin-top:.7rem;flex-wrap:wrap}
-  .tag{background:#0a1628;border:1px solid var(--bio-border);border-radius:20px;padding:.2rem .65rem;font-size:.72rem;color:var(--bio-muted)}
-  .loading{text-align:center;padding:3rem;color:var(--bio-muted);font-size:.9rem}
-  .viewer-wrap{padding:1.5rem 2rem;max-width:980px;margin:0 auto}
-  .viewer-layout{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start}
-  @media(max-width:680px){.viewer-layout{grid-template-columns:1fr}}
-  .canvas-wrap{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:14px;height:420px;position:relative;overflow:hidden}
-  #bio-canvas{width:100%;height:100%;display:block}
-  .spot{position:absolute;width:28px;height:28px;background:var(--bio-accent);border-radius:50%;border:3px solid var(--bio-dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--bio-dark);transition:transform .15s;z-index:10}
-  .spot:hover{transform:scale(1.2)}
-  .spot-label{position:absolute;background:var(--bio-dark);border:1px solid var(--bio-accent);border-radius:10px;padding:.5rem .9rem;font-size:.78rem;max-width:180px;z-index:20;line-height:1.4;pointer-events:none;opacity:0;transition:opacity .2s}
-  .spot-label.show{opacity:1}
-  .spot-label h4{font-size:.8rem;color:var(--bio-accent);margin-bottom:.2rem}
-  .controls-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.72rem;color:var(--bio-muted);background:rgba(10,22,40,.8);padding:.3rem .8rem;border-radius:20px;white-space:nowrap}
-  .viewer-side h2{font-size:1.2rem;margin-bottom:.3rem}
-  .viewer-side>p{font-size:.83rem;color:var(--bio-muted);line-height:1.6;margin-bottom:1.2rem}
-  .structures-list h3{font-size:.85rem;color:var(--bio-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.7rem}
-  .struct-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .7rem;border-radius:8px;cursor:pointer;transition:background .2s;font-size:.85rem}
-  .struct-item:hover{background:var(--bio-card)}
-  .struct-item.active{background:rgba(0,229,160,.1);color:var(--bio-accent)}
-  .struct-dot{width:10px;height:10px;border-radius:50%;background:var(--bio-accent);flex-shrink:0}
-  .video-btn{display:flex;align-items:center;gap:.6rem;width:100%;background:var(--bio-card);border:1px solid var(--bio-border);border-radius:10px;padding:.8rem 1rem;cursor:pointer;color:var(--bio-text);font-family:'DM Sans',sans-serif;font-size:.85rem;transition:border-color .2s;margin-top:1rem}
-  .video-btn:hover{border-color:var(--bio-accent2)}
-  .play-icon{width:32px;height:32px;border-radius:50%;background:var(--bio-accent2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.9rem}
-  .video-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:center;justify-content:center}
-  .video-modal.open{display:flex}
-  .video-modal-inner{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:16px;padding:1.5rem;width:90%;max-width:640px}
-  .video-modal-inner h3{margin-bottom:1rem}
-  .video-placeholder{background:#0a1628;border-radius:10px;height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;color:var(--bio-muted);font-size:.88rem}
-  .big-play{width:60px;height:60px;border-radius:50%;background:var(--bio-accent2);display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff}
-  .admin-wrap{padding:2rem;max-width:980px;margin:0 auto}
-  .admin-wrap>h2{font-size:1.5rem;margin-bottom:.3rem}
-  .admin-layout{display:grid;grid-template-columns:200px 1fr;gap:1.5rem;margin-top:1.5rem}
-  @media(max-width:640px){.admin-layout{grid-template-columns:1fr}}
-  .admin-nav{display:flex;flex-direction:column;gap:.3rem}
-  .admin-tab{background:transparent;border:none;border-radius:8px;padding:.65rem .9rem;text-align:left;font-family:'DM Sans',sans-serif;font-size:.88rem;cursor:pointer;color:var(--bio-muted);transition:all .2s}
-  .admin-tab:hover{background:var(--bio-card);color:var(--bio-text)}
-  .admin-tab.active{background:rgba(0,229,160,.1);color:var(--bio-accent)}
-  .admin-panel{display:none}
-  .admin-panel.active{display:block}
-  .admin-panel>h3{font-size:1.1rem;margin-bottom:1rem}
-  .module-list-item{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:10px;padding:.9rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
-  .module-list-item .left{display:flex;align-items:center;gap:.7rem}
-  .module-thumb-sm{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:#0a1628}
-  .item-title{font-size:.9rem;font-weight:500}
-  .item-sub{font-size:.78rem;color:var(--bio-muted)}
-  .item-actions{display:flex;gap:.4rem}
-  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:150;align-items:center;justify-content:center}
-  .modal-bg.open{display:flex}
-  .modal{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:16px;padding:2rem;width:90%;max-width:500px;max-height:90vh;overflow-y:auto}
-  .modal h3{font-size:1.2rem;margin-bottom:1.2rem}
-  .modal-footer{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.2rem}
-  .alert{border-radius:8px;padding:.65rem 1rem;font-size:.83rem;margin-bottom:1rem;display:none}
-  .alert.show{display:block}
-  .alert-success{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--bio-accent)}
-  .alert-error{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:#e74c3c}
-  .users-table{width:100%;border-collapse:collapse;font-size:.85rem}
-  .users-table th{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--bio-border);color:var(--bio-muted);font-weight:500;font-size:.78rem}
-  .users-table td{padding:.6rem .8rem;border-bottom:1px solid rgba(26,58,80,.5)}
-  .badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:500}
-  .badge-green{background:rgba(0,229,160,.15);color:var(--bio-accent)}
-  .badge-gray{background:rgba(122,158,144,.15);color:var(--bio-muted)}
-  .stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.5rem}
-  .stat-card{background:var(--bio-card);border:1px solid var(--bio-border);border-radius:10px;padding:1rem}
-  .stat-card .num{font-size:1.8rem;font-weight:700;font-family:'Syne',sans-serif;color:var(--bio-accent)}
-  .stat-card .lbl{font-size:.78rem;color:var(--bio-muted);margin-top:.2rem}
-  .spots-config{margin-top:1rem;border:1px solid var(--bio-border);border-radius:10px;padding:1rem}
-  .spots-config h4{font-size:.85rem;color:var(--bio-muted);margin-bottom:.7rem}
-  .spot-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;margin-bottom:.5rem;align-items:center}
-  .spot-row input{font-size:.8rem;padding:.4rem .6rem;background:#0a1628;border:1px solid var(--bio-border);border-radius:6px;color:var(--bio-text);font-family:'DM Sans',sans-serif}
-  .mini-btn{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#e74c3c;border-radius:6px;padding:.3rem .6rem;cursor:pointer;font-size:.75rem}
-  .add-spot-btn{background:transparent;border:1px dashed var(--bio-border);color:var(--bio-muted);border-radius:6px;padding:.4rem .8rem;cursor:pointer;font-size:.8rem;width:100%;margin-top:.3rem;transition:all .2s}
-  .add-spot-btn:hover{border-color:var(--bio-accent);color:var(--bio-accent)}
-  .emoji-picker{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.4rem}
-  .emoji-opt{font-size:1.4rem;cursor:pointer;padding:.3rem;border-radius:6px;border:1px solid transparent;transition:all .15s}
-  .emoji-opt:hover,.emoji-opt.sel{border-color:var(--bio-accent);background:rgba(0,229,160,.1)}
-  .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,229,160,.3);border-top-color:var(--bio-accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem}
-  @keyframes spin{to{transform:rotate(360deg)}}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dark:#0a1628;--card:#0f2035;--border:#1a3a50;
+  --accent:#00e5a0;--accent2:#00b4d8;
+  --text:#e8f4f0;--muted:#7a9e90;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
+.screen{display:none;min-height:100vh;animation:fadeIn .4s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* NAV */
+nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,22,40,.97);position:sticky;top:0;z-index:100}
+.logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent)}
+.nav-btns{display:flex;gap:.5rem;align-items:center}
+
+/* BUTTONS */
+.btn{padding:.5rem 1.1rem;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:var(--dark)}
+.btn-primary:hover{background:#00ffb3;transform:translateY(-1px)}
+.btn-danger{background:#c0392b;color:#fff}
+.btn-sm{padding:.35rem .8rem;font-size:.78rem}
+
+/* HERO */
+.hero{padding:5rem 2rem 3rem;max-width:860px;margin:0 auto;text-align:center}
+.hero h1{font-size:clamp(1.8rem,5vw,3rem);font-weight:700;line-height:1.15;margin-bottom:1.2rem}
+.hero h1 span{color:var(--accent)}
+.hero p{font-size:1rem;color:var(--muted);max-width:520px;margin:0 auto 2rem;line-height:1.7}
+.hero-pills{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.pill{background:var(--card);border:1px solid var(--border);padding:.3rem .8rem;border-radius:20px;font-size:.78rem;color:var(--muted)}
+.hero-cta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;padding:2rem;max-width:860px;margin:0 auto}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem}
+.feat-icon{font-size:1.5rem;margin-bottom:.5rem}
+.feat-card h3{font-size:.9rem;margin-bottom:.3rem}
+.feat-card p{font-size:.8rem;color:var(--muted);line-height:1.5}
+
+/* AUTH */
+.auth-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px);padding:2rem}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:400px}
+.auth-card h2{font-size:1.4rem;margin-bottom:.3rem}
+.auth-card .sub{font-size:.83rem;color:var(--muted);margin-bottom:1.6rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.35rem}
+.form-group input{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:.6rem .85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;transition:border-color .2s}
+.form-group input:focus{outline:none;border-color:var(--accent)}
+.form-full{width:100%;margin-top:.4rem}
+.auth-switch{text-align:center;margin-top:1rem;font-size:.82rem;color:var(--muted)}
+.auth-switch a{color:var(--accent);cursor:pointer}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.2rem}
+.plan-opt{border:1px solid var(--border);border-radius:10px;padding:.85rem;cursor:pointer;transition:all .2s}
+.plan-opt.selected{border-color:var(--accent);background:rgba(0,229,160,.07)}
+.plan-opt h4{font-size:.88rem;margin-bottom:.2rem}
+.plan-opt p{font-size:.75rem;color:var(--muted)}
+.plan-price{font-size:1rem;font-weight:700;color:var(--accent);margin-top:.3rem}
+
+/* MÓDULOS */
+.modules-wrap{padding:2rem;max-width:1100px;margin:0 auto}
+.modules-wrap h2{font-size:1.4rem;margin-bottom:.3rem}
+.modules-wrap .sub{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.module-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s}
+.module-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.module-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+.module-body{padding:.9rem 1rem 1rem}
+.module-body h3{font-size:.95rem;margin-bottom:.3rem}
+.module-body p{font-size:.78rem;color:var(--muted);line-height:1.5}
+.loading{text-align:center;padding:3rem;color:var(--muted);font-size:.88rem}
+
+/* VIEWER — layout principal */
+.viewer-screen{display:none;flex-direction:column;min-height:100vh}
+.viewer-screen.active{display:flex}
+.viewer-body{display:grid;grid-template-columns:1fr 320px;flex:1;gap:0;overflow:hidden}
+@media(max-width:900px){.viewer-body{grid-template-columns:1fr;grid-template-rows:auto auto}}
+
+/* CANVAS */
+.canvas-col{position:relative;background:#060f1e;min-height:500px}
+#bio-canvas{width:100%;height:100%;display:block}
+.canvas-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:.7rem;color:var(--muted);background:rgba(6,15,30,.85);padding:.3rem .8rem;border-radius:20px;white-space:nowrap;pointer-events:none}
+
+/* SPOTS */
+.spot-btn{position:absolute;width:26px;height:26px;background:var(--accent);border-radius:50%;border:2.5px solid var(--dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--dark);transition:transform .15s;z-index:10;pointer-events:all}
+.spot-btn:hover{transform:scale(1.25)}
+.spot-popup{position:absolute;background:rgba(6,15,30,.97);border:1px solid var(--accent);border-radius:10px;padding:.6rem .9rem;font-size:.78rem;max-width:190px;z-index:20;line-height:1.45;pointer-events:none;opacity:0;transition:opacity .2s;white-space:normal}
+.spot-popup.show{opacity:1}
+.spot-popup h4{font-size:.8rem;color:var(--accent);margin-bottom:.2rem}
+
+/* SIDE PANEL */
+.side-panel{background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.side-tabs{display:flex;border-bottom:1px solid var(--border)}
+.side-tab{flex:1;padding:.7rem;background:transparent;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent}
+.side-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.side-content{flex:1;overflow-y:auto;padding:1rem}
+.side-title{font-size:1.1rem;margin-bottom:.3rem}
+.side-desc{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem}
+
+/* SUBMODULOS */
+.submod-list h4{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem}
+.submod-item{display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;cursor:pointer;transition:background .2s;font-size:.83rem;border:1px solid transparent}
+.submod-item:hover{background:rgba(0,229,160,.07);border-color:var(--border)}
+.submod-item.active{background:rgba(0,229,160,.1);border-color:var(--accent);color:var(--accent)}
+.submod-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+
+/* ESTRUTURAS */
+.struct-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .6rem;border-radius:7px;cursor:pointer;transition:background .2s;font-size:.82rem}
+.struct-item:hover{background:rgba(255,255,255,.04)}
+.struct-item.active{background:rgba(0,229,160,.1);color:var(--accent)}
+.struct-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+
+/* VÍDEO NO SIDE */
+.video-area{padding:1rem;border-top:1px solid var(--border)}
+.video-frame{background:var(--dark);border-radius:10px;overflow:hidden;width:100%}
+.video-frame iframe{width:100%;height:170px;display:block;border:none}
+.video-placeholder-sm{height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:var(--muted);font-size:.78rem;cursor:pointer}
+.play-circle{width:44px;height:44px;border-radius:50%;background:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff}
+
+/* ADMIN */
+.admin-wrap{padding:2rem;max-width:1000px;margin:0 auto}
+.admin-wrap>h2{font-size:1.4rem;margin-bottom:1.5rem}
+.admin-layout{display:grid;grid-template-columns:190px 1fr;gap:1.5rem}
+@media(max-width:640px){.admin-layout{grid-template-columns:1fr}}
+.admin-nav{display:flex;flex-direction:column;gap:.3rem}
+.admin-tab{background:transparent;border:none;border-radius:8px;padding:.6rem .85rem;text-align:left;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;color:var(--muted);transition:all .2s}
+.admin-tab:hover{background:var(--card);color:var(--text)}
+.admin-tab.active{background:rgba(0,229,160,.1);color:var(--accent)}
+.admin-panel{display:none}
+.admin-panel.active{display:block}
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem;margin-bottom:1.5rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.stat-card .num{font-size:1.7rem;font-weight:700;font-family:'Syne',sans-serif;color:var(--accent)}
+.stat-card .lbl{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+.mod-list-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.mod-list-item .left{display:flex;align-items:center;gap:.7rem}
+.mod-thumb-sm{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--dark)}
+.item-title{font-size:.88rem;font-weight:500}
+.item-sub{font-size:.75rem;color:var(--muted)}
+.item-actions{display:flex;gap:.4rem}
+
+/* SUBMOD ADMIN */
+.submod-admin{margin-top:.5rem;margin-left:1rem;border-left:2px solid var(--border);padding-left:.8rem}
+.submod-admin-item{display:flex;align-items:center;justify-content:space-between;padding:.4rem .5rem;border-radius:6px;font-size:.8rem;margin-bottom:.3rem}
+.submod-admin-item:hover{background:rgba(255,255,255,.03)}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;width:100%;max-width:520px;margin:auto}
+.modal h3{font-size:1.1rem;margin-bottom:1.1rem}
+.modal-footer{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.1rem}
+.alert{border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:.8rem;display:none}
+.alert.show{display:block}
+.alert-ok{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--accent)}
+.alert-err{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:#e74c3c}
+.spots-config{margin-top:.8rem;border:1px solid var(--border);border-radius:10px;padding:.9rem}
+.spots-config h4{font-size:.82rem;color:var(--muted);margin-bottom:.6rem}
+.spot-row{display:grid;grid-template-columns:1fr 1.2fr .8fr auto;gap:.4rem;margin-bottom:.4rem;align-items:center}
+.spot-row input,.modal input,.modal textarea{background:var(--dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;padding:.45rem .65rem;font-size:.82rem;width:100%}
+.spot-row input:focus,.modal input:focus{outline:none;border-color:var(--accent)}
+.mini-btn{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#e74c3c;border-radius:6px;padding:.3rem .55rem;cursor:pointer;font-size:.72rem}
+.add-row-btn{background:transparent;border:1px dashed var(--border);color:var(--muted);border-radius:6px;padding:.38rem .7rem;cursor:pointer;font-size:.78rem;width:100%;margin-top:.3rem;transition:all .2s}
+.add-row-btn:hover{border-color:var(--accent);color:var(--accent)}
+.emoji-picker{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}
+.emoji-opt{font-size:1.3rem;cursor:pointer;padding:.28rem;border-radius:6px;border:1px solid transparent;transition:all .15s}
+.emoji-opt.sel{border-color:var(--accent);background:rgba(0,229,160,.1)}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,229,160,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.3rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.section-divider{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:.9rem 0 .5rem;border-top:1px solid var(--border);padding-top:.7rem}
 </style>
 </head>
 <body>
@@ -161,22 +193,19 @@
     <h1>Aprenda Biologia em <span>3D interativo</span></h1>
     <p>Explore estruturas celulares, moléculas e organismos em modelos tridimensionais com legendas explicativas e videoaulas.</p>
     <div class="hero-pills">
-      <span class="pill">🧬 Biologia Celular</span>
-      <span class="pill">⚗️ Bioquímica</span>
-      <span class="pill">🔬 Histologia</span>
-      <span class="pill">🧫 Genética</span>
-      <span class="pill">🌿 Botânica</span>
+      <span class="pill">🧬 Biologia Celular</span><span class="pill">⚗️ Bioquímica</span>
+      <span class="pill">🔬 Histologia</span><span class="pill">🧫 Genética</span><span class="pill">🌿 Botânica</span>
     </div>
     <div class="hero-cta">
-      <button class="btn btn-primary" style="padding:.7rem 1.8rem;font-size:.95rem" onclick="go('register')">Começar agora</button>
-      <button class="btn btn-ghost" style="padding:.7rem 1.8rem;font-size:.95rem" onclick="go('login')">Já tenho conta</button>
+      <button class="btn btn-primary" style="padding:.7rem 1.8rem;font-size:.92rem" onclick="go('register')">Começar agora</button>
+      <button class="btn btn-ghost" style="padding:.7rem 1.8rem;font-size:.92rem" onclick="go('login')">Já tenho conta</button>
     </div>
   </div>
   <div class="features">
-    <div class="feat-card"><div class="feat-icon">🔭</div><h3>Modelos 3D reais</h3><p>Objetos exportados do Cinema 4D com texturas profissionais, rotativos e com zoom.</p></div>
-    <div class="feat-card"><div class="feat-icon">📍</div><h3>Spots inteligentes</h3><p>Clique em pontos do modelo para ler a legenda de cada estrutura. Os spots seguem a rotação.</p></div>
-    <div class="feat-card"><div class="feat-icon">🎬</div><h3>Videoaulas curtas</h3><p>Cada módulo inclui um vídeo de ~5 min explicando o tema de forma clara e objetiva.</p></div>
-    <div class="feat-card"><div class="feat-icon">⚡</div><h3>Aprenda no seu ritmo</h3><p>Acesse de qualquer dispositivo, volte quantas vezes quiser.</p></div>
+    <div class="feat-card"><div class="feat-icon">🔭</div><h3>Modelos 3D reais</h3><p>Exportados do Cinema 4D com texturas profissionais, rotativos e com zoom.</p></div>
+    <div class="feat-card"><div class="feat-icon">📍</div><h3>Spots inteligentes</h3><p>Clique nos pontos do modelo para ver a legenda de cada estrutura.</p></div>
+    <div class="feat-card"><div class="feat-icon">🎬</div><h3>Videoaulas</h3><p>Cada módulo inclui vídeo explicativo integrado ao lado do modelo 3D.</p></div>
+    <div class="feat-card"><div class="feat-icon">📚</div><h3>Submódulos</h3><p>Cada tema é dividido em subtemas detalhados para aprendizado progressivo.</p></div>
   </div>
 </div>
 
@@ -185,13 +214,12 @@
   <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
   <div class="auth-wrap">
     <div class="auth-card">
-      <h2>Bem-vindo de volta</h2>
-      <p class="sub">Entre para acessar os módulos</p>
+      <h2>Bem-vindo de volta</h2><p class="sub">Entre para acessar os módulos</p>
       <div class="form-group"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com"></div>
       <div class="form-group"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
       <button class="btn btn-primary form-full" onclick="doLogin()">Entrar</button>
       <div class="auth-switch">Não tem conta? <a onclick="go('register')">Assinar agora</a></div>
-      <div class="auth-switch" style="margin-top:.5rem"><a onclick="goAdmin()">🔧 Área admin</a></div>
+      <div class="auth-switch" style="margin-top:.5rem"><a onclick="go('admin')">🔧 Área admin</a></div>
     </div>
   </div>
 </div>
@@ -201,17 +229,10 @@
   <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
   <div class="auth-wrap">
     <div class="auth-card">
-      <h2>Criar conta</h2>
-      <p class="sub">Escolha um plano e comece a aprender</p>
+      <h2>Criar conta</h2><p class="sub">Escolha seu plano</p>
       <div class="plan-grid">
-        <div class="plan-opt selected" id="plan-mensal" onclick="selectPlan('mensal')">
-          <h4>Mensal</h4><p>Cancele quando quiser</p>
-          <div class="plan-price">R$ 29/mês</div>
-        </div>
-        <div class="plan-opt" id="plan-anual" onclick="selectPlan('anual')">
-          <h4>Anual</h4><p>Economize 30%</p>
-          <div class="plan-price">R$ 19/mês</div>
-        </div>
+        <div class="plan-opt selected" id="plan-mensal" onclick="selectPlan('mensal')"><h4>Mensal</h4><p>Cancele quando quiser</p><div class="plan-price">R$ 29/mês</div></div>
+        <div class="plan-opt" id="plan-anual" onclick="selectPlan('anual')"><h4>Anual</h4><p>Economize 30%</p><div class="plan-price">R$ 19/mês</div></div>
       </div>
       <div class="form-group"><label>Nome</label><input type="text" id="reg-name" placeholder="Seu nome"></div>
       <div class="form-group"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
@@ -227,42 +248,60 @@
   <nav>
     <div class="logo">🔬 BioVerse</div>
     <div class="nav-btns">
-      <span id="user-name-nav" style="font-size:.85rem;color:var(--bio-muted);margin-right:.5rem"></span>
+      <span id="user-name-nav" style="font-size:.83rem;color:var(--muted);margin-right:.4rem"></span>
       <button class="btn btn-ghost btn-sm" onclick="go('home')">Sair</button>
     </div>
   </nav>
   <div class="modules-wrap">
     <h2>Módulos de Biologia</h2>
-    <p class="sub">Clique em um módulo para explorar as estruturas 3D</p>
-    <div class="modules-grid" id="modules-grid"><div class="loading"><span class="spinner"></span>Carregando módulos...</div></div>
+    <p class="sub">Escolha um módulo para explorar em 3D</p>
+    <div class="modules-grid" id="modules-grid"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
   </div>
 </div>
 
-<!-- VIEWER 3D -->
-<div id="screen-viewer" class="screen">
+<!-- VIEWER -->
+<div id="screen-viewer" class="viewer-screen">
   <nav>
     <div class="logo">🔬 BioVerse</div>
-    <div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('modules')">← Módulos</button></div>
+    <div class="nav-btns">
+      <span id="viewer-breadcrumb" style="font-size:.8rem;color:var(--muted)"></span>
+      <button class="btn btn-ghost btn-sm" onclick="go('modules')" style="margin-left:.5rem">← Módulos</button>
+    </div>
   </nav>
-  <div class="viewer-wrap">
-    <div class="viewer-layout">
-      <div>
-        <div class="canvas-wrap" id="canvas-wrap">
-          <canvas id="bio-canvas"></canvas>
-          <div class="controls-hint">Arraste para girar • Scroll para zoom</div>
+  <div class="viewer-body">
+    <!-- CANVAS -->
+    <div class="canvas-col" id="canvas-col">
+      <canvas id="bio-canvas"></canvas>
+      <div class="canvas-hint">Arraste para girar • Pinça para zoom</div>
+    </div>
+    <!-- SIDE PANEL -->
+    <div class="side-panel">
+      <div class="side-tabs">
+        <button class="side-tab active" onclick="sideTab('info',this)">📋 Info</button>
+        <button class="side-tab" onclick="sideTab('submods',this)">📚 Subtemas</button>
+        <button class="side-tab" onclick="sideTab('spots',this)">📍 Estruturas</button>
+      </div>
+      <div class="side-content" id="side-info">
+        <h3 class="side-title" id="viewer-title"></h3>
+        <p class="side-desc" id="viewer-desc"></p>
+        <div class="video-area" id="video-area" style="padding:0;margin-top:.5rem">
+          <div class="video-frame" id="video-frame">
+            <div class="video-placeholder-sm" onclick="loadVideo()">
+              <div class="play-circle">▶</div>
+              <span>Clique para assistir a videoaula</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="viewer-side">
-        <h2 id="viewer-title"></h2>
-        <p id="viewer-desc"></p>
-        <div class="structures-list">
-          <h3>Estruturas</h3>
-          <div id="struct-list"></div>
+      <div class="side-content" id="side-submods" style="display:none">
+        <div class="submod-list">
+          <h4>Subtemas deste módulo</h4>
+          <div id="submod-list-el"></div>
         </div>
-        <button class="video-btn" onclick="openVideo()">
-          <div class="play-icon">▶</div>
-          <div><div style="font-weight:500">Assistir videoaula</div><div style="font-size:.75rem;color:var(--bio-muted);margin-top:.1rem">~5 min — explicação completa</div></div>
-        </button>
+      </div>
+      <div class="side-content" id="side-spots" style="display:none">
+        <h4 style="font-size:.82rem;color:var(--muted);margin-bottom:.6rem">ESTRUTURAS</h4>
+        <div id="struct-list"></div>
       </div>
     </div>
   </div>
@@ -271,7 +310,7 @@
 <!-- ADMIN -->
 <div id="screen-admin" class="screen">
   <nav>
-    <div class="logo">🔬 BioVerse <span style="font-size:.7rem;color:var(--bio-muted);margin-left:.4rem">ADMIN</span></div>
+    <div class="logo">🔬 BioVerse <span style="font-size:.68rem;color:var(--muted);margin-left:.3rem">ADMIN</span></div>
     <div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('modules')">← Ver site</button></div>
   </nav>
   <div class="admin-wrap">
@@ -280,21 +319,19 @@
       <div class="admin-nav">
         <button class="admin-tab active" onclick="adminTab('dashboard',this)">📊 Dashboard</button>
         <button class="admin-tab" onclick="adminTab('modulos',this)">📦 Módulos</button>
-        <button class="admin-tab" onclick="adminTab('usuarios',this)">👥 Usuários</button>
       </div>
       <div>
         <div class="admin-panel active" id="ap-dashboard">
-          <h3>Visão geral</h3>
           <div class="stat-cards">
-            <div class="stat-card"><div class="num" id="stat-modulos">—</div><div class="lbl">Módulos</div></div>
-            <div class="stat-card"><div class="num" id="stat-users">—</div><div class="lbl">Usuários</div></div>
+            <div class="stat-card"><div class="num" id="stat-mods">—</div><div class="lbl">Módulos</div></div>
+            <div class="stat-card"><div class="num" id="stat-submods">—</div><div class="lbl">Submódulos</div></div>
           </div>
-          <div style="background:var(--bio-card);border:1px solid var(--bio-border);border-radius:10px;padding:1rem;font-size:.85rem;color:var(--bio-muted)">
-            <p style="margin-bottom:.6rem;font-weight:500;color:var(--bio-text)">Como usar</p>
-            <p style="margin-bottom:.3rem">1. Vá em <strong style="color:var(--bio-accent)">Módulos</strong> → <strong style="color:var(--bio-accent)">Novo módulo</strong></p>
-            <p style="margin-bottom:.3rem">2. Preencha nome, emoji, descrição, vídeo e spots</p>
-            <p style="margin-bottom:.3rem">3. Clique em <strong style="color:var(--bio-accent)">Salvar</strong> — salva no banco de dados!</p>
-            <p>4. O módulo aparece para todos os alunos na hora ✅</p>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;font-size:.83rem;color:var(--muted)">
+            <p style="font-weight:600;color:var(--text);margin-bottom:.5rem">Como usar</p>
+            <p style="margin-bottom:.3rem">1. Vá em <strong style="color:var(--accent)">Módulos</strong> → <strong style="color:var(--accent)">+ Novo módulo</strong></p>
+            <p style="margin-bottom:.3rem">2. Dentro do módulo, adicione <strong style="color:var(--accent)">submódulos</strong> (ex: Membrana Plasmática)</p>
+            <p style="margin-bottom:.3rem">3. Cada submódulo tem seu próprio vídeo e spots</p>
+            <p>4. Tudo salva no banco de dados automaticamente ✅</p>
           </div>
         </div>
         <div class="admin-panel" id="ap-modulos">
@@ -302,13 +339,9 @@
             <h3 style="margin:0">Módulos</h3>
             <button class="btn btn-primary btn-sm" onclick="openNewModule()">+ Novo módulo</button>
           </div>
-          <div class="alert alert-success" id="mod-alert"></div>
-          <div class="alert alert-error" id="mod-error"></div>
+          <div class="alert alert-ok" id="mod-ok"></div>
+          <div class="alert alert-err" id="mod-err"></div>
           <div id="admin-mod-list"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
-        </div>
-        <div class="admin-panel" id="ap-usuarios">
-          <h3>Usuários cadastrados</h3>
-          <div id="users-list"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
         </div>
       </div>
     </div>
@@ -316,352 +349,422 @@
 </div>
 
 <!-- MODAL MÓDULO -->
-<div class="modal-bg" id="module-modal">
+<div class="modal-bg" id="mod-modal">
   <div class="modal">
-    <h3 id="modal-title">Novo módulo</h3>
-    <div class="form-group"><label>Nome do módulo</label><input type="text" id="m-name" placeholder="Ex: Biologia Celular"></div>
+    <h3 id="mod-modal-title">Novo módulo</h3>
+    <div class="form-group"><label>Nome</label><input type="text" id="m-name" placeholder="Ex: Biologia Celular"></div>
     <div class="form-group"><label>Emoji</label><div class="emoji-picker" id="emoji-picker"></div></div>
-    <div class="form-group"><label>Descrição</label><input type="text" id="m-desc" placeholder="Ex: Explore as estruturas da célula animal"></div>
-    <div class="form-group"><label>Link do vídeo (YouTube ou Vimeo)</label><input type="text" id="m-video" placeholder="https://youtube.com/watch?v=..."></div>
-    <div class="form-group"><label>Arquivo 3D (.glb)</label><input type="text" id="m-glb" placeholder="celula.glb"></div>
-    <div class="spots-config">
-      <h4>Spots — pontos clicáveis no modelo</h4>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;margin-bottom:.4rem">
-        <span style="font-size:.73rem;color:var(--bio-muted)">Nome</span>
-        <span style="font-size:.73rem;color:var(--bio-muted)">Legenda</span>
-        <span style="font-size:.73rem;color:var(--bio-muted)">x,y,z</span>
-        <span></span>
-      </div>
-      <div id="spots-rows"></div>
-      <button class="add-spot-btn" onclick="addSpotRow()">+ Adicionar spot</button>
-    </div>
+    <div class="form-group"><label>Descrição</label><input type="text" id="m-desc" placeholder="Breve descrição do módulo"></div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-primary" id="save-btn" onclick="saveModule()">Salvar módulo</button>
+      <button class="btn btn-ghost" onclick="closeModModal()">Cancelar</button>
+      <button class="btn btn-primary" id="mod-save-btn" onclick="saveModule()">Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL VÍDEO -->
-<div class="video-modal" id="video-modal">
-  <div class="video-modal-inner">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
-      <h3 id="video-title">Videoaula</h3>
-      <button class="btn btn-ghost btn-sm" onclick="closeVideo()">✕ Fechar</button>
+<!-- MODAL SUBMÓDULO -->
+<div class="modal-bg" id="submod-modal">
+  <div class="modal">
+    <h3 id="submod-modal-title">Novo subtema</h3>
+    <div class="form-group"><label>Nome do subtema</label><input type="text" id="sm-name" placeholder="Ex: Membrana Plasmática"></div>
+    <div class="form-group"><label>Descrição</label><input type="text" id="sm-desc" placeholder="Breve descrição"></div>
+    <div class="form-group"><label>Link do vídeo (YouTube ou Vimeo)</label><input type="text" id="sm-video" placeholder="https://youtube.com/watch?v=..."></div>
+    <div class="form-group"><label>Arquivo 3D (.glb)</label><input type="text" id="sm-glb" placeholder="membrana.glb"></div>
+    <div class="spots-config">
+      <h4>Spots — pontos clicáveis no modelo 3D</h4>
+      <div style="display:grid;grid-template-columns:1fr 1.2fr .8fr auto;gap:.4rem;margin-bottom:.4rem">
+        <span style="font-size:.72rem;color:var(--muted)">Nome</span>
+        <span style="font-size:.72rem;color:var(--muted)">Legenda</span>
+        <span style="font-size:.72rem;color:var(--muted)">x,y,z</span>
+        <span></span>
+      </div>
+      <div id="spots-rows"></div>
+      <button class="add-row-btn" onclick="addSpotRow()">+ Adicionar spot</button>
     </div>
-    <div id="video-container" style="height:320px">
-      <div class="video-placeholder"><div class="big-play">▶</div><p id="video-url-hint">Configure o link no painel admin</p></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeSubmodModal()">Cancelar</button>
+      <button class="btn btn-primary" id="submod-save-btn" onclick="saveSubmod()">Salvar subtema</button>
     </div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ======= SUPABASE CONFIG =======
-const SB_URL = 'https://ayymsfzpeswdjpgebsvb.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5eW1zZnpwZXN3ZGpwZ2Vic3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODI1NjUsImV4cCI6MjA5Mzc1ODU2NX0.DvKcrvY61Y4qViEOj3rMUuIPWZpZhXboMom_NiNwSEo';
-
-async function sbFetch(path, method='GET', body=null){
-  const opts = {
-    method,
-    headers: {
-      'apikey': SB_KEY,
-      'Authorization': 'Bearer ' + SB_KEY,
-      'Content-Type': 'application/json',
-      'Prefer': method==='POST' ? 'return=representation' : ''
-    }
-  };
-  if(body) opts.body = JSON.stringify(body);
-  const res = await fetch(SB_URL + '/rest/v1/' + path, opts);
-  if(!res.ok){ const e = await res.text(); throw new Error(e); }
-  const txt = await res.text();
-  return txt ? JSON.parse(txt) : [];
+// ===== SUPABASE =====
+const SB_URL='https://ayymsfzpeswdjpgebsvb.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5eW1zZnpwZXN3ZGpwZ2Vic3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODI1NjUsImV4cCI6MjA5Mzc1ODU2NX0.DvKcrvY61Y4qViEOj3rMUuIPWZpZhXboMom_NiNwSEo';
+async function sb(path,method='GET',body=null){
+  const r=await fetch(SB_URL+'/rest/v1/'+path,{method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''},body:body?JSON.stringify(body):null});
+  if(!r.ok)throw new Error(await r.text());
+  const t=await r.text();return t?JSON.parse(t):[];
 }
 
-// ======= STATE =======
-const EMOJIS = ['🧬','⚗️','🔬','🧫','🌿','🦠','🧪','🫀','🫁','🧠','🦴','🌱','🐠','🐛','🌺','🍃'];
-let currentModule=null, editingId=null, selectedEmoji='🧬';
-let scene, camera, renderer, mesh, animId;
-let isDragging=false, prevMouse={x:0,y:0}, rotX=0, rotY=0, zoom=3, spotEls=[];
+// ===== STATE =====
+const EMOJIS=['🧬','⚗️','🔬','🧫','🌿','🦠','🧪','🫀','🫁','🧠','🦴','🌱','🐠','🐛','🌺','🍃'];
+let selEmoji='🧬',editModId=null,editSubId=null,parentModId=null;
+let currentMod=null,currentSub=null;
+let scene,camera,renderer,mesh,animId;
+let isDrag=false,prevM={x:0,y:0},rotX=0,rotY=0,zoom=3.5,spotEls=[];
+let pinchDist=null;
 
-// ======= NAVEGAÇÃO =======
+// ===== NAV =====
 function go(s){
-  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.screen,.viewer-screen').forEach(x=>x.classList.remove('active'));
   document.getElementById('screen-'+s).classList.add('active');
-  if(s==='modules') loadModules();
-  if(s==='admin') loadAdmin();
+  if(s==='modules')loadModules();
+  if(s==='admin')loadAdmin();
+  if(s==='viewer'){}
 }
 function doLogin(){
-  const e = document.getElementById('login-email').value;
+  const e=document.getElementById('login-email').value;
   if(!e){alert('Preencha o e-mail');return}
-  document.getElementById('user-name-nav').textContent = e.split('@')[0];
+  document.getElementById('user-name-nav').textContent=e.split('@')[0];
   go('modules');
 }
 function doRegister(){
-  const n = document.getElementById('reg-name').value;
+  const n=document.getElementById('reg-name').value;
   if(!n){alert('Preencha o nome');return}
-  document.getElementById('user-name-nav').textContent = n;
+  document.getElementById('user-name-nav').textContent=n;
   go('modules');
 }
-function goAdmin(){ go('admin'); }
-function selectPlan(p){
-  document.querySelectorAll('.plan-opt').forEach(x=>x.classList.remove('selected'));
-  document.getElementById('plan-'+p).classList.add('selected');
-}
+function selectPlan(p){document.querySelectorAll('.plan-opt').forEach(x=>x.classList.remove('selected'));document.getElementById('plan-'+p).classList.add('selected');}
 
-// ======= MÓDULOS =======
+// ===== MÓDULOS =====
 async function loadModules(){
-  const g = document.getElementById('modules-grid');
-  g.innerHTML = '<div class="loading"><span class="spinner"></span>Carregando módulos...</div>';
-  try {
-    const mods = await sbFetch('modules?order=id');
-    renderModules(mods);
-  } catch(e){
-    g.innerHTML = '<div class="loading" style="color:#e74c3c">Erro ao carregar. Verifique a tabela no Supabase.</div>';
-  }
+  const g=document.getElementById('modules-grid');
+  g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  try{const mods=await sb('modules?order=id');renderModules(mods);}
+  catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar. Verifique o Supabase.</div>';}
 }
-
 function renderModules(mods){
-  const g = document.getElementById('modules-grid');
-  if(!mods.length){ g.innerHTML='<div class="loading">Nenhum módulo ainda. Crie um no painel admin!</div>'; return; }
-  const bgs = ['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a'];
-  g.innerHTML = mods.map((m,i)=>`
-    <div class="module-card" onclick='openModule(${JSON.stringify(m)})'>
+  const g=document.getElementById('modules-grid');
+  if(!mods.length){g.innerHTML='<div class="loading">Nenhum módulo ainda. Crie no painel admin!</div>';return;}
+  const bgs=['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a'];
+  g.innerHTML=mods.map((m,i)=>`
+    <div class="module-card" onclick='openModule(${JSON.stringify(m).replace(/'/g,"&#39;")})'>
       <div class="module-thumb" style="background:${bgs[i%5]}">${m.emoji||'🧬'}</div>
-      <div class="module-body">
-        <h3>${m.name}</h3>
-        <p>${m.desc||''}</p>
-        <div class="module-meta">
-          <span class="tag">${(m.spots||[]).length} spots</span>
-          <span class="tag">${m.video?'Vídeo disponível':'Sem vídeo'}</span>
-        </div>
-      </div>
+      <div class="module-body"><h3>${m.name}</h3><p>${m.desc||''}</p></div>
     </div>`).join('');
 }
 
-function openModule(m){
-  if(typeof m === 'string') m = JSON.parse(m);
-  currentModule = m;
-  currentModule.spots = m.spots || [];
-  document.getElementById('viewer-title').textContent = m.name;
-  document.getElementById('viewer-desc').textContent = m.desc||'';
-  renderStructList();
-  go('viewer');
-  setTimeout(initThree, 100);
+// ===== VIEWER =====
+async function openModule(m){
+  if(typeof m==='string')m=JSON.parse(m);
+  currentMod=m;
+  document.getElementById('viewer-breadcrumb').textContent=m.name;
+  document.getElementById('viewer-title').textContent=m.name;
+  document.getElementById('viewer-desc').textContent=m.desc||'';
+  document.querySelectorAll('.screen,.viewer-screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen-viewer').classList.add('active');
+  // carregar submódulos
+  try{
+    const subs=await sb('submodules?module_id=eq.'+m.id+'&order=id');
+    renderSubmodList(subs);
+    if(subs.length>0)loadSubmod(subs[0]);
+    else{currentSub=null;renderStructList([]);clearVideo();}
+  }catch(e){renderSubmodList([]);}
+  setTimeout(initThree,120);
 }
-
-// ======= VIEWER 3D =======
-function renderStructList(){
-  const l = document.getElementById('struct-list'); l.innerHTML='';
-  currentModule.spots.forEach((s,i)=>{
-    l.innerHTML += `<div class="struct-item" id="si-${i}" onclick="focusSpot(${i})"><div class="struct-dot"></div>${s.name}</div>`;
+function renderSubmodList(subs){
+  const l=document.getElementById('submod-list-el');
+  if(!subs.length){l.innerHTML='<p style="font-size:.8rem;color:var(--muted)">Nenhum subtema ainda.</p>';return;}
+  l.innerHTML=subs.map(s=>`
+    <div class="submod-item" id="smi-${s.id}" onclick='loadSubmod(${JSON.stringify(s).replace(/'/g,"&#39;")})'>
+      <div class="submod-dot"></div>${s.name}
+    </div>`).join('');
+}
+function loadSubmod(s){
+  if(typeof s==='string')s=JSON.parse(s);
+  currentSub=s;
+  document.querySelectorAll('.submod-item').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById('smi-'+s.id);if(el)el.classList.add('active');
+  document.getElementById('viewer-title').textContent=s.name;
+  document.getElementById('viewer-desc').textContent=s.desc||'';
+  renderStructList(s.spots||[]);
+  setupVideo(s.video);
+  // reiniciar 3D com spots do submódulo
+  if(animId){cancelAnimationFrame(animId);animId=null;}
+  setTimeout(()=>{initThree(s.spots||[]);},80);
+}
+function renderStructList(spots){
+  const l=document.getElementById('struct-list');l.innerHTML='';
+  if(!spots.length){l.innerHTML='<p style="font-size:.8rem;color:var(--muted)">Nenhum spot neste subtema.</p>';return;}
+  spots.forEach((s,i)=>{
+    l.innerHTML+=`<div class="struct-item" id="sti-${i}" onclick="focusSpot(${i})"><div class="struct-dot"></div>${s.name}</div>`;
   });
 }
 function focusSpot(i){
   document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
-  const el=document.getElementById('si-'+i); if(el)el.classList.add('active');
-  document.querySelectorAll('.spot-label').forEach(x=>x.classList.remove('show'));
-  const sl=document.getElementById('sl-'+i); if(sl)sl.classList.add('show');
+  const el=document.getElementById('sti-'+i);if(el)el.classList.add('active');
+  document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
+  const sp=document.getElementById('sp-'+i);if(sp)sp.classList.add('show');
 }
-function openVideo(){
-  document.getElementById('video-title').textContent = (currentModule?currentModule.name:'')+' — Videoaula';
-  const vc = document.getElementById('video-container');
-  const url = currentModule&&currentModule.video;
-  if(url){
-    let embed='';
-    if(url.includes('youtube')||url.includes('youtu.be')){
-      const vid=url.includes('v=')?url.split('v=')[1].split('&')[0]:url.split('/').pop();
-      embed=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${vid}" frameborder="0" allowfullscreen style="border-radius:10px"></iframe>`;
-    } else if(url.includes('vimeo')){
-      const vid=url.split('/').pop();
-      embed=`<iframe width="100%" height="100%" src="https://player.vimeo.com/video/${vid}" frameborder="0" allowfullscreen style="border-radius:10px"></iframe>`;
-    }
-    if(embed){vc.innerHTML=embed;vc.style.background='#000';}
-  } else {
-    vc.innerHTML='<div class="video-placeholder"><div class="big-play">▶</div><p>Configure o link no painel admin</p></div>';
+function sideTab(name,btn){
+  document.querySelectorAll('.side-tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');
+  ['info','submods','spots'].forEach(n=>document.getElementById('side-'+n).style.display=n===name?'block':'none');
+}
+function setupVideo(url){
+  const vf=document.getElementById('video-frame');
+  vf.dataset.url=url||'';
+  vf.innerHTML=`<div class="video-placeholder-sm" onclick="loadVideo()"><div class="play-circle">▶</div><span>${url?'Clique para assistir a videoaula':'Sem vídeo neste subtema'}</span></div>`;
+}
+function clearVideo(){setupVideo('');}
+function loadVideo(){
+  const url=document.getElementById('video-frame').dataset.url;
+  if(!url)return;
+  const vf=document.getElementById('video-frame');
+  let embed='';
+  if(url.includes('youtube')||url.includes('youtu.be')){
+    let vid=url.includes('v=')?url.split('v=')[1].split('&')[0]:url.split('/').pop().split('?')[0];
+    embed=`<iframe src="https://www.youtube.com/embed/${vid}?autoplay=1" frameborder="0" allowfullscreen allow="autoplay"></iframe>`;
+  }else if(url.includes('vimeo')){
+    const vid=url.split('/').pop();
+    embed=`<iframe src="https://player.vimeo.com/video/${vid}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
+  }else{
+    embed=`<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
   }
-  document.getElementById('video-modal').classList.add('open');
+  vf.innerHTML=embed;
 }
-function closeVideo(){ document.getElementById('video-modal').classList.remove('open'); }
 
-function initThree(){
-  if(animId) cancelAnimationFrame(animId);
-  document.querySelectorAll('.spot,.spot-label').forEach(e=>e.remove());
+// ===== THREE.JS =====
+function initThree(spots){
+  if(!spots)spots=currentSub?currentSub.spots||[]:[];
+  if(animId){cancelAnimationFrame(animId);animId=null;}
+  document.querySelectorAll('.spot-btn,.spot-popup').forEach(e=>e.remove());
   spotEls=[];
-  const wrap=document.getElementById('canvas-wrap');
+  const col=document.getElementById('canvas-col');
   const canvas=document.getElementById('bio-canvas');
-  const W=wrap.clientWidth, H=wrap.clientHeight;
+  const W=col.clientWidth,H=col.clientHeight;
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  renderer.setSize(W,H); renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(W,H);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
   scene=new THREE.Scene();
   camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
   camera.position.z=zoom;
   scene.add(new THREE.AmbientLight(0xffffff,0.6));
-  const dl=new THREE.DirectionalLight(0x00e5a0,1); dl.position.set(2,3,4); scene.add(dl);
-  const dl2=new THREE.DirectionalLight(0x00b4d8,0.6); dl2.position.set(-3,1,-2); scene.add(dl2);
+  const dl=new THREE.DirectionalLight(0x00e5a0,1);dl.position.set(2,3,4);scene.add(dl);
+  const dl2=new THREE.DirectionalLight(0x00b4d8,0.6);dl2.position.set(-3,1,-2);scene.add(dl2);
   buildDemoModel();
-  addSpots();
-  rotX=0; rotY=0; zoom=3;
-  canvas.addEventListener('mousedown',e=>{isDragging=true;prevMouse={x:e.clientX,y:e.clientY}});
-  canvas.addEventListener('mousemove',e=>{if(!isDragging)return;rotY+=(e.clientX-prevMouse.x)*.01;rotX+=(e.clientY-prevMouse.y)*.01;prevMouse={x:e.clientX,y:e.clientY}});
-  canvas.addEventListener('mouseup',()=>isDragging=false);
-  canvas.addEventListener('mouseleave',()=>isDragging=false);
-  canvas.addEventListener('wheel',e=>{zoom=Math.max(1.5,Math.min(6,zoom+e.deltaY*.005));camera.position.z=zoom;e.preventDefault()},{passive:false});
+  addSpots(spots);
+  // Mouse
+  canvas.addEventListener('mousedown',e=>{isDrag=true;prevM={x:e.clientX,y:e.clientY};e.preventDefault();});
+  canvas.addEventListener('mousemove',e=>{if(!isDrag)return;rotY+=(e.clientX-prevM.x)*.012;rotX+=(e.clientY-prevM.y)*.012;prevM={x:e.clientX,y:e.clientY};});
+  canvas.addEventListener('mouseup',()=>isDrag=false);
+  canvas.addEventListener('mouseleave',()=>isDrag=false);
+  canvas.addEventListener('wheel',e=>{zoom=Math.max(1.5,Math.min(7,zoom+e.deltaY*.005));camera.position.z=zoom;e.preventDefault();},{passive:false});
+  // Touch
+  canvas.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){isDrag=true;prevM={x:e.touches[0].clientX,y:e.touches[0].clientY};}
+    if(e.touches.length===2){pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
+    e.preventDefault();
+  },{passive:false});
+  canvas.addEventListener('touchmove',e=>{
+    if(e.touches.length===1&&isDrag){
+      rotY+=(e.touches[0].clientX-prevM.x)*.012;
+      rotX+=(e.touches[0].clientY-prevM.y)*.012;
+      prevM={x:e.touches[0].clientX,y:e.touches[0].clientY};
+    }
+    if(e.touches.length===2&&pinchDist){
+      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      zoom=Math.max(1.5,Math.min(7,zoom-(d-pinchDist)*.01));
+      camera.position.z=zoom;pinchDist=d;
+    }
+    e.preventDefault();
+  },{passive:false});
+  canvas.addEventListener('touchend',()=>{isDrag=false;pinchDist=null;});
   animate();
 }
 function buildDemoModel(){
   mesh=new THREE.Mesh(new THREE.SphereGeometry(0.95,64,64),new THREE.MeshStandardMaterial({color:0x1a5c3a,roughness:.4,metalness:.2}));
   scene.add(mesh);
   const nuc=new THREE.Mesh(new THREE.SphereGeometry(.28,32,32),new THREE.MeshStandardMaterial({color:0x00e5a0,roughness:.3}));
-  nuc.position.set(0,0.3,0.5); mesh.add(nuc);
-  const mmat=new THREE.MeshStandardMaterial({color:0xff6b35,roughness:.5});
-  [-0.5,0.5].forEach(x=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),mmat);m.position.set(x,-0.2,0.6);mesh.add(m)});
+  nuc.position.set(0,0.3,0.5);mesh.add(nuc);
+  const mm=new THREE.MeshStandardMaterial({color:0xff6b35,roughness:.5});
+  [-0.5,0.5].forEach(x=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),mm);m.position.set(x,-0.2,0.6);mesh.add(m);});
   const re=new THREE.Mesh(new THREE.TorusGeometry(.3,.04,8,32),new THREE.MeshStandardMaterial({color:0x00b4d8,roughness:.6}));
-  re.position.set(-0.4,0.1,0.4); re.rotation.x=.8; mesh.add(re);
+  re.position.set(-0.4,0.1,0.4);re.rotation.x=.8;mesh.add(re);
 }
-function addSpots(){
-  const wrap=document.getElementById('canvas-wrap');
-  currentModule.spots.forEach((s,i)=>{
-    const sp=document.createElement('div'); sp.className='spot'; sp.id='spot-'+i; sp.textContent=i+1;
-    const sl=document.createElement('div'); sl.className='spot-label'; sl.id='sl-'+i;
-    sl.innerHTML=`<h4>${s.name}</h4><p>${s.desc}</p>`;
-    sp.onclick=()=>{
-      const showing=sl.classList.contains('show');
-      document.querySelectorAll('.spot-label').forEach(x=>x.classList.remove('show'));
+function addSpots(spots){
+  const col=document.getElementById('canvas-col');
+  spots.forEach((s,i)=>{
+    const btn=document.createElement('div');btn.className='spot-btn';btn.id='spot-'+i;
+    btn.innerHTML='<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#0a1628"/><circle cx="5" cy="5" r="2" fill="#0a1628"/></svg>';
+    btn.style.background='var(--accent)';
+    const pop=document.createElement('div');pop.className='spot-popup';pop.id='sp-'+i;
+    pop.innerHTML=`<h4>${s.name}</h4><p>${s.desc||''}</p>`;
+    btn.onclick=()=>{
+      const showing=pop.classList.contains('show');
+      document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
       document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
-      if(!showing){sl.classList.add('show');const si=document.getElementById('si-'+i);if(si)si.classList.add('active');}
+      if(!showing){pop.classList.add('show');const si=document.getElementById('sti-'+i);if(si)si.classList.add('active');}
     };
-    wrap.appendChild(sp); wrap.appendChild(sl);
-    spotEls.push({el:sp,label:sl,pos3d:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
+    col.appendChild(btn);col.appendChild(pop);
+    spotEls.push({btn,pop,pos3d:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
   });
 }
 function animate(){
   animId=requestAnimationFrame(animate);
-  if(!isDragging) rotY+=.006;
-  mesh.rotation.x=rotX; mesh.rotation.y=rotY;
+  if(!isDrag)rotY+=.005;
+  mesh.rotation.x=rotX;mesh.rotation.y=rotY;
   renderer.render(scene,camera);
-  const wrap=document.getElementById('canvas-wrap');
-  const W=wrap.clientWidth, H=wrap.clientHeight;
-  spotEls.forEach(({el,label,pos3d})=>{
-    const wp=pos3d.clone(); mesh.localToWorld(wp);
+  const col=document.getElementById('canvas-col');
+  const W=col.clientWidth,H=col.clientHeight;
+  spotEls.forEach(({btn,pop,pos3d})=>{
+    const wp=pos3d.clone();mesh.localToWorld(wp);
     const p=wp.clone().project(camera);
-    const px=(p.x*.5+.5)*W, py=(-.5*p.y+.5)*H;
-    el.style.left=(px-14)+'px'; el.style.top=(py-14)+'px';
-    label.style.left=(px+18)+'px'; label.style.top=(py-20)+'px';
+    const px=(p.x*.5+.5)*W,py=(-.5*p.y+.5)*H;
+    btn.style.left=(px-13)+'px';btn.style.top=(py-13)+'px';
+    pop.style.left=(px+18)+'px';pop.style.top=(py-20)+'px';
     const behind=p.z>1;
-    el.style.opacity=behind?'0':'1'; el.style.pointerEvents=behind?'none':'all';
+    btn.style.opacity=behind?'0':'1';btn.style.pointerEvents=behind?'none':'all';
   });
 }
 
-// ======= ADMIN =======
+// ===== ADMIN =====
 async function loadAdmin(){
-  try {
-    const mods = await sbFetch('modules?order=id');
-    document.getElementById('stat-modulos').textContent = mods.length;
-    renderAdminMods(mods);
-  } catch(e){ console.error(e); }
-  document.getElementById('stat-users').textContent = '—';
-  document.getElementById('users-list').innerHTML = '<p style="color:var(--bio-muted);font-size:.85rem">Integração de usuários via Supabase Auth — disponível na próxima etapa.</p>';
+  try{
+    const mods=await sb('modules?order=id');
+    document.getElementById('stat-mods').textContent=mods.length;
+    const subs=await sb('submodules?order=id');
+    document.getElementById('stat-submods').textContent=subs.length;
+    renderAdminMods(mods,subs);
+  }catch(e){console.error(e);}
 }
 function adminTab(name,btn){
   document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.admin-panel').forEach(x=>x.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('ap-'+name).classList.add('active');
+  btn.classList.add('active');document.getElementById('ap-'+name).classList.add('active');
 }
-function renderAdminMods(mods){
+function renderAdminMods(mods,subs){
   const l=document.getElementById('admin-mod-list');
-  if(!mods.length){l.innerHTML='<p style="color:var(--bio-muted);font-size:.85rem">Nenhum módulo ainda. Crie o primeiro!</p>';return;}
-  l.innerHTML=mods.map(m=>`
-    <div class="module-list-item">
-      <div class="left">
-        <div class="module-thumb-sm">${m.emoji||'🧬'}</div>
-        <div><div class="item-title">${m.name}</div><div class="item-sub">${(m.spots||[]).length} spots · ${m.video?'Com vídeo':'Sem vídeo'}</div></div>
+  if(!mods.length){l.innerHTML='<p style="color:var(--muted);font-size:.85rem">Nenhum módulo. Crie o primeiro!</p>';return;}
+  l.innerHTML=mods.map(m=>{
+    const msubs=subs.filter(s=>s.module_id===m.id);
+    return `<div style="margin-bottom:.8rem">
+      <div class="mod-list-item">
+        <div class="left"><div class="mod-thumb-sm">${m.emoji||'🧬'}</div>
+        <div><div class="item-title">${m.name}</div><div class="item-sub">${msubs.length} subtema(s)</div></div></div>
+        <div class="item-actions">
+          <button class="btn btn-primary btn-sm" onclick="openNewSubmod(${m.id},'${m.name.replace(/'/g,"\\'")}')">+ Subtema</button>
+          <button class="btn btn-ghost btn-sm" onclick='editModule(${JSON.stringify(m).replace(/'/g,"&#39;")})'>✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteMod(${m.id})">🗑</button>
+        </div>
       </div>
-      <div class="item-actions">
-        <button class="btn btn-ghost btn-sm" onclick='editModule(${JSON.stringify(m)})'>✏️ Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteModule(${m.id})">🗑</button>
-      </div>
-    </div>`).join('');
+      ${msubs.length?`<div class="submod-admin">${msubs.map(s=>`
+        <div class="submod-admin-item">
+          <span style="color:var(--muted)">↳</span> <span style="flex:1;margin-left:.4rem">${s.name}</span>
+          <div style="display:flex;gap:.3rem">
+            <button class="btn btn-ghost btn-sm" onclick='editSubmod(${JSON.stringify(s).replace(/'/g,"&#39;")})'>✏️</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteSubmod(${s.id})">🗑</button>
+          </div>
+        </div>`).join('')}</div>`:''}
+    </div>`;
+  }).join('');
 }
+
+// MÓDULO MODAL
 function openNewModule(){
-  editingId=null; selectedEmoji='🧬';
-  document.getElementById('modal-title').textContent='Novo módulo';
+  editModId=null;selEmoji='🧬';
+  document.getElementById('mod-modal-title').textContent='Novo módulo';
   document.getElementById('m-name').value='';
   document.getElementById('m-desc').value='';
-  document.getElementById('m-video').value='';
-  document.getElementById('m-glb').value='';
   buildEmojiPicker();
-  buildSpotRows([]);
-  document.getElementById('module-modal').classList.add('open');
+  document.getElementById('mod-modal').classList.add('open');
 }
 function editModule(m){
-  if(typeof m==='string') m=JSON.parse(m);
-  editingId=m.id; selectedEmoji=m.emoji||'🧬';
-  document.getElementById('modal-title').textContent='Editar módulo';
+  if(typeof m==='string')m=JSON.parse(m);
+  editModId=m.id;selEmoji=m.emoji||'🧬';
+  document.getElementById('mod-modal-title').textContent='Editar módulo';
   document.getElementById('m-name').value=m.name||'';
   document.getElementById('m-desc').value=m.desc||'';
-  document.getElementById('m-video').value=m.video||'';
-  document.getElementById('m-glb').value=m.glb||'';
   buildEmojiPicker();
-  buildSpotRows(m.spots||[]);
-  document.getElementById('module-modal').classList.add('open');
+  document.getElementById('mod-modal').classList.add('open');
 }
-async function deleteModule(id){
-  if(!confirm('Excluir este módulo?')) return;
-  try {
-    await sbFetch('modules?id=eq.'+id,'DELETE');
-    loadAdmin();
-  } catch(e){ alert('Erro ao excluir: '+e.message); }
+function closeModModal(){document.getElementById('mod-modal').classList.remove('open');}
+async function saveModule(){
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){alert('Preencha o nome');return;}
+  const data={name,emoji:selEmoji,desc:document.getElementById('m-desc').value};
+  const btn=document.getElementById('mod-save-btn');
+  btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
+  try{
+    if(editModId)await sb('modules?id=eq.'+editModId,'PATCH',data);
+    else await sb('modules','POST',data);
+    closeModModal();showAlert('mod-ok','✅ Módulo salvo!');loadAdmin();
+  }catch(e){showAlert('mod-err','❌ Erro: '+e.message);}
+  btn.innerHTML='Salvar';btn.disabled=false;
 }
-function closeModal(){ document.getElementById('module-modal').classList.remove('open'); }
+async function deleteMod(id){
+  if(!confirm('Excluir módulo e todos os seus subtemas?'))return;
+  try{await sb('submodules?module_id=eq.'+id,'DELETE');await sb('modules?id=eq.'+id,'DELETE');loadAdmin();}
+  catch(e){alert('Erro: '+e.message);}
+}
+
+// SUBMÓDULO MODAL
+function openNewSubmod(modId,modName){
+  editSubId=null;parentModId=modId;
+  document.getElementById('submod-modal-title').textContent='Novo subtema — '+modName;
+  document.getElementById('sm-name').value='';
+  document.getElementById('sm-desc').value='';
+  document.getElementById('sm-video').value='';
+  document.getElementById('sm-glb').value='';
+  buildSpotRows([]);
+  document.getElementById('submod-modal').classList.add('open');
+}
+function editSubmod(s){
+  if(typeof s==='string')s=JSON.parse(s);
+  editSubId=s.id;parentModId=s.module_id;
+  document.getElementById('submod-modal-title').textContent='Editar subtema';
+  document.getElementById('sm-name').value=s.name||'';
+  document.getElementById('sm-desc').value=s.desc||'';
+  document.getElementById('sm-video').value=s.video||'';
+  document.getElementById('sm-glb').value=s.glb||'';
+  buildSpotRows(s.spots||[]);
+  document.getElementById('submod-modal').classList.add('open');
+}
+function closeSubmodModal(){document.getElementById('submod-modal').classList.remove('open');}
+async function saveSubmod(){
+  const name=document.getElementById('sm-name').value.trim();
+  if(!name){alert('Preencha o nome');return;}
+  const spots=[];
+  document.querySelectorAll('#spots-rows .spot-row').forEach(row=>{
+    const n=row.querySelector('.sn').value.trim();
+    const d=row.querySelector('.sd').value.trim();
+    const pos=row.querySelector('.sp').value.split(',').map(Number);
+    if(n)spots.push({name:n,desc:d||n,x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
+  });
+  const data={name,desc:document.getElementById('sm-desc').value,video:document.getElementById('sm-video').value,glb:document.getElementById('sm-glb').value,spots,module_id:parentModId};
+  const btn=document.getElementById('submod-save-btn');
+  btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
+  try{
+    if(editSubId)await sb('submodules?id=eq.'+editSubId,'PATCH',data);
+    else await sb('submodules','POST',data);
+    closeSubmodModal();showAlert('mod-ok','✅ Subtema salvo!');loadAdmin();
+  }catch(e){showAlert('mod-err','❌ Erro: '+e.message);}
+  btn.innerHTML='Salvar subtema';btn.disabled=false;
+}
+async function deleteSubmod(id){
+  if(!confirm('Excluir este subtema?'))return;
+  try{await sb('submodules?id=eq.'+id,'DELETE');loadAdmin();}
+  catch(e){alert('Erro: '+e.message);}
+}
+
+// HELPERS
 function buildEmojiPicker(){
-  const p=document.getElementById('emoji-picker'); p.innerHTML='';
-  EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selectedEmoji?' sel':''}" onclick="pickEmoji('${e}',this)">${e}</span>`});
+  const p=document.getElementById('emoji-picker');p.innerHTML='';
+  EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selEmoji?' sel':''}" onclick="pickEmoji('${e}',this)">${e}</span>`;});
 }
-function pickEmoji(e,el){ selectedEmoji=e; document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel')); el.classList.add('sel'); }
-function buildSpotRows(spots){ const c=document.getElementById('spots-rows'); c.innerHTML=''; spots.forEach(s=>addSpotRow(s)); }
+function pickEmoji(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
+function buildSpotRows(spots){const c=document.getElementById('spots-rows');c.innerHTML='';spots.forEach(s=>addSpotRow(s));}
 function addSpotRow(s){
   const c=document.getElementById('spots-rows');
-  const row=document.createElement('div'); row.className='spot-row';
-  row.innerHTML=`
-    <input type="text" placeholder="Nome" value="${s?s.name:''}" class="spot-name">
-    <input type="text" placeholder="Legenda" value="${s?s.desc:''}" class="spot-desc">
-    <input type="text" placeholder="0,0,0" value="${s?s.x+','+s.y+','+s.z:''}" class="spot-pos">
+  const row=document.createElement('div');row.className='spot-row';
+  row.innerHTML=`<input type="text" placeholder="Nome" value="${s?s.name:''}" class="sn">
+    <input type="text" placeholder="Legenda" value="${s?s.desc:''}" class="sd">
+    <input type="text" placeholder="0,0,0" value="${s?s.x+','+s.y+','+s.z:''}" class="sp">
     <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
   c.appendChild(row);
 }
-async function saveModule(){
-  const name=document.getElementById('m-name').value.trim();
-  if(!name){alert('Preencha o nome');return}
-  const spots=[];
-  document.querySelectorAll('#spots-rows .spot-row').forEach(row=>{
-    const n=row.querySelector('.spot-name').value.trim();
-    const d=row.querySelector('.spot-desc').value.trim();
-    const pos=row.querySelector('.spot-pos').value.split(',').map(Number);
-    if(n) spots.push({name:n,desc:d||n,x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
-  });
-  const data={name,emoji:selectedEmoji,desc:document.getElementById('m-desc').value,video:document.getElementById('m-video').value,glb:document.getElementById('m-glb').value,spots};
-  const btn=document.getElementById('save-btn');
-  btn.innerHTML='<span class="spinner"></span>Salvando...'; btn.disabled=true;
-  try {
-    if(editingId){
-      await sbFetch('modules?id=eq.'+editingId,'PATCH',data);
-    } else {
-      await sbFetch('modules','POST',data);
-    }
-    closeModal();
-    showAlert('mod-alert','✅ Módulo salvo com sucesso!');
-    loadAdmin();
-  } catch(e){
-    showAlert('mod-error','❌ Erro: '+e.message);
-  }
-  btn.innerHTML='Salvar módulo'; btn.disabled=false;
-}
-function showAlert(id,msg){
-  const el=document.getElementById(id); el.textContent=msg; el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),4000);
-}
+function showAlert(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);}
 </script>
 </body>
 </html>
