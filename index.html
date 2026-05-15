@@ -7,31 +7,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --dark:#0a1628;--card:#0f2035;--border:#1a3a50;
-  --accent:#00e5a0;--accent2:#00b4d8;
-  --text:#e8f4f0;--muted:#7a9e90;
-}
+:root{--dark:#0a1628;--card:#0f2035;--border:#1a3a50;--accent:#00e5a0;--accent2:#00b4d8;--text:#e8f4f0;--muted:#7a9e90;}
 body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
 h1,h2,h3,h4{font-family:'Syne',sans-serif}
-.screen{display:none;min-height:100vh;animation:fadeIn .4s ease}
+.screen{display:none;min-height:100vh;animation:fadeIn .35s ease}
 .screen.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-/* NAV */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,22,40,.97);position:sticky;top:0;z-index:100}
 .logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent)}
 .nav-btns{display:flex;gap:.5rem;align-items:center}
-
-/* BUTTONS */
 .btn{padding:.5rem 1.1rem;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
 .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
 .btn-primary{background:var(--accent);color:var(--dark)}
-.btn-primary:hover{background:#00ffb3;transform:translateY(-1px)}
+.btn-primary:hover{background:#00ffb3}
 .btn-danger{background:#c0392b;color:#fff}
 .btn-sm{padding:.35rem .8rem;font-size:.78rem}
-
 /* HERO */
 .hero{padding:5rem 2rem 3rem;max-width:860px;margin:0 auto;text-align:center}
 .hero h1{font-size:clamp(1.8rem,5vw,3rem);font-weight:700;line-height:1.15;margin-bottom:1.2rem}
@@ -45,7 +36,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .feat-icon{font-size:1.5rem;margin-bottom:.5rem}
 .feat-card h3{font-size:.9rem;margin-bottom:.3rem}
 .feat-card p{font-size:.8rem;color:var(--muted);line-height:1.5}
-
 /* AUTH */
 .auth-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 60px);padding:2rem}
 .auth-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:400px}
@@ -53,8 +43,8 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .auth-card .sub{font-size:.83rem;color:var(--muted);margin-bottom:1.6rem}
 .form-group{margin-bottom:1rem}
 .form-group label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.35rem}
-.form-group input{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:.6rem .85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;transition:border-color .2s}
-.form-group input:focus{outline:none;border-color:var(--accent)}
+.form-group input,.form-group textarea{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:.6rem .85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem;transition:border-color .2s}
+.form-group input:focus,.form-group textarea:focus{outline:none;border-color:var(--accent)}
 .form-full{width:100%;margin-top:.4rem}
 .auth-switch{text-align:center;margin-top:1rem;font-size:.82rem;color:var(--muted)}
 .auth-switch a{color:var(--accent);cursor:pointer}
@@ -64,71 +54,54 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .plan-opt h4{font-size:.88rem;margin-bottom:.2rem}
 .plan-opt p{font-size:.75rem;color:var(--muted)}
 .plan-price{font-size:1rem;font-weight:700;color:var(--accent);margin-top:.3rem}
-
-/* MÓDULOS */
-.modules-wrap{padding:2rem;max-width:1100px;margin:0 auto}
-.modules-wrap h2{font-size:1.4rem;margin-bottom:.3rem}
-.modules-wrap .sub{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
-.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
-.module-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s}
-.module-card:hover{border-color:var(--accent);transform:translateY(-3px)}
-.module-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
-.module-body{padding:.9rem 1rem 1rem}
-.module-body h3{font-size:.95rem;margin-bottom:.3rem}
-.module-body p{font-size:.78rem;color:var(--muted);line-height:1.5}
+/* GRID PAGES */
+.grid-page{padding:2rem;max-width:1100px;margin:0 auto}
+.grid-page h2{font-size:1.4rem;margin-bottom:.3rem}
+.grid-page .sub{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.mod-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s}
+.mod-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.mod-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+.mod-body{padding:.9rem 1rem 1rem}
+.mod-body h3{font-size:.95rem;margin-bottom:.3rem}
+.mod-body p{font-size:.78rem;color:var(--muted);line-height:1.5}
 .loading{text-align:center;padding:3rem;color:var(--muted);font-size:.88rem}
-
-/* VIEWER — layout principal */
-.viewer-screen{display:none;flex-direction:column;min-height:100vh}
-.viewer-screen.active{display:flex}
-.viewer-body{display:grid;grid-template-columns:1fr 320px;flex:1;gap:0;overflow:hidden}
-@media(max-width:900px){.viewer-body{grid-template-columns:1fr;grid-template-rows:auto auto}}
-
+/* VIEWER */
+.viewer-wrap{display:flex;flex-direction:column;height:calc(100vh - 61px)}
+.viewer-body{display:grid;grid-template-columns:1fr 300px;flex:1;min-height:0}
+@media(max-width:800px){.viewer-body{grid-template-columns:1fr;grid-template-rows:60vh auto}}
 /* CANVAS */
-.canvas-col{position:relative;background:#060f1e;min-height:500px}
-#bio-canvas{width:100%;height:100%;display:block}
-.canvas-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:.7rem;color:var(--muted);background:rgba(6,15,30,.85);padding:.3rem .8rem;border-radius:20px;white-space:nowrap;pointer-events:none}
-
+.canvas-col{position:relative;background:#060f1e;cursor:grab;user-select:none;overflow:hidden}
+.canvas-col:active{cursor:grabbing}
+#bio-canvas{position:absolute;top:0;left:0;width:100%;height:100%;display:block;pointer-events:none}
+.canvas-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(255,255,255,.4);background:rgba(0,0,0,.5);padding:.25rem .7rem;border-radius:20px;white-space:nowrap;pointer-events:none;z-index:5}
 /* SPOTS */
-.spot-btn{position:absolute;width:26px;height:26px;background:var(--accent);border-radius:50%;border:2.5px solid var(--dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--dark);transition:transform .15s;z-index:10;pointer-events:all}
+.spot-btn{position:absolute;width:26px;height:26px;background:var(--accent);border-radius:50%;border:2.5px solid var(--dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;color:var(--dark);z-index:10;transition:transform .15s}
 .spot-btn:hover{transform:scale(1.25)}
-.spot-popup{position:absolute;background:rgba(6,15,30,.97);border:1px solid var(--accent);border-radius:10px;padding:.6rem .9rem;font-size:.78rem;max-width:190px;z-index:20;line-height:1.45;pointer-events:none;opacity:0;transition:opacity .2s;white-space:normal}
+.spot-popup{position:absolute;background:rgba(6,15,30,.97);border:1px solid var(--accent);border-radius:10px;padding:.6rem .9rem;font-size:.78rem;max-width:180px;z-index:20;line-height:1.45;pointer-events:none;opacity:0;transition:opacity .2s}
 .spot-popup.show{opacity:1}
 .spot-popup h4{font-size:.8rem;color:var(--accent);margin-bottom:.2rem}
-
-/* SIDE PANEL */
+/* SIDE */
 .side-panel{background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.side-tabs{display:flex;border-bottom:1px solid var(--border)}
-.side-tab{flex:1;padding:.7rem;background:transparent;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent}
-.side-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
-.side-content{flex:1;overflow-y:auto;padding:1rem}
+.side-inner{flex:1;overflow-y:auto;padding:1.2rem}
 .side-title{font-size:1.1rem;margin-bottom:.3rem}
 .side-desc{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem}
-
-/* SUBMODULOS */
-.submod-list h4{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.6rem}
-.submod-item{display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;border-radius:8px;cursor:pointer;transition:background .2s;font-size:.83rem;border:1px solid transparent}
-.submod-item:hover{background:rgba(0,229,160,.07);border-color:var(--border)}
-.submod-item.active{background:rgba(0,229,160,.1);border-color:var(--accent);color:var(--accent)}
-.submod-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
-
-/* ESTRUTURAS */
-.struct-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .6rem;border-radius:7px;cursor:pointer;transition:background .2s;font-size:.82rem}
+.structs-title{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem;margin-top:1rem}
+.struct-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .5rem;border-radius:7px;cursor:pointer;transition:background .2s;font-size:.82rem}
 .struct-item:hover{background:rgba(255,255,255,.04)}
 .struct-item.active{background:rgba(0,229,160,.1);color:var(--accent)}
 .struct-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
-
-/* VÍDEO NO SIDE */
-.video-area{padding:1rem;border-top:1px solid var(--border)}
-.video-frame{background:var(--dark);border-radius:10px;overflow:hidden;width:100%}
-.video-frame iframe{width:100%;height:170px;display:block;border:none}
-.video-placeholder-sm{height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:var(--muted);font-size:.78rem;cursor:pointer}
-.play-circle{width:44px;height:44px;border-radius:50%;background:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fff}
-
+/* VIDEO */
+.video-section{border-top:1px solid var(--border);padding:1rem}
+.video-box{background:var(--dark);border-radius:10px;overflow:hidden}
+.video-box iframe{width:100%;height:160px;display:block;border:none}
+.video-placeholder{height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:var(--muted);font-size:.78rem;cursor:pointer;border-radius:10px;border:1px dashed var(--border);transition:border-color .2s}
+.video-placeholder:hover{border-color:var(--accent2)}
+.play-circle{width:40px;height:40px;border-radius:50%;background:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:1rem;color:#fff}
 /* ADMIN */
 .admin-wrap{padding:2rem;max-width:1000px;margin:0 auto}
 .admin-wrap>h2{font-size:1.4rem;margin-bottom:1.5rem}
-.admin-layout{display:grid;grid-template-columns:190px 1fr;gap:1.5rem}
+.admin-layout{display:grid;grid-template-columns:180px 1fr;gap:1.5rem}
 @media(max-width:640px){.admin-layout{grid-template-columns:1fr}}
 .admin-nav{display:flex;flex-direction:column;gap:.3rem}
 .admin-tab{background:transparent;border:none;border-radius:8px;padding:.6rem .85rem;text-align:left;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;color:var(--muted);transition:all .2s}
@@ -140,20 +113,17 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
 .stat-card .num{font-size:1.7rem;font-weight:700;font-family:'Syne',sans-serif;color:var(--accent)}
 .stat-card .lbl{font-size:.75rem;color:var(--muted);margin-top:.2rem}
-.mod-list-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
-.mod-list-item .left{display:flex;align-items:center;gap:.7rem}
-.mod-thumb-sm{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--dark)}
+.list-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.list-item .left{display:flex;align-items:center;gap:.7rem}
+.thumb-sm{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--dark)}
 .item-title{font-size:.88rem;font-weight:500}
 .item-sub{font-size:.75rem;color:var(--muted)}
-.item-actions{display:flex;gap:.4rem}
-
-/* SUBMOD ADMIN */
-.submod-admin{margin-top:.5rem;margin-left:1rem;border-left:2px solid var(--border);padding-left:.8rem}
-.submod-admin-item{display:flex;align-items:center;justify-content:space-between;padding:.4rem .5rem;border-radius:6px;font-size:.8rem;margin-bottom:.3rem}
-.submod-admin-item:hover{background:rgba(255,255,255,.03)}
-
+.item-actions{display:flex;gap:.4rem;flex-shrink:0}
+.sublist{margin-left:1rem;border-left:2px solid var(--border);padding-left:.8rem;margin-bottom:.5rem}
+.sub-item{display:flex;align-items:center;justify-content:space-between;padding:.4rem .5rem;border-radius:6px;font-size:.8rem;margin-bottom:.25rem}
+.sub-item:hover{background:rgba(255,255,255,.03)}
 /* MODAL */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-start;justify-content:center;padding:1.5rem 1rem;overflow-y:auto}
 .modal-bg.open{display:flex}
 .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;width:100%;max-width:520px;margin:auto}
 .modal h3{font-size:1.1rem;margin-bottom:1.1rem}
@@ -162,20 +132,19 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .alert.show{display:block}
 .alert-ok{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--accent)}
 .alert-err{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:#e74c3c}
-.spots-config{margin-top:.8rem;border:1px solid var(--border);border-radius:10px;padding:.9rem}
-.spots-config h4{font-size:.82rem;color:var(--muted);margin-bottom:.6rem}
-.spot-row{display:grid;grid-template-columns:1fr 1.2fr .8fr auto;gap:.4rem;margin-bottom:.4rem;align-items:center}
-.spot-row input,.modal input,.modal textarea{background:var(--dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;padding:.45rem .65rem;font-size:.82rem;width:100%}
+.spots-box{margin-top:.8rem;border:1px solid var(--border);border-radius:10px;padding:.9rem}
+.spots-box h4{font-size:.82rem;color:var(--muted);margin-bottom:.6rem}
+.spot-row{display:grid;grid-template-columns:1fr 1.2fr .7fr auto;gap:.4rem;margin-bottom:.4rem;align-items:center}
+.spot-row input,.modal input{background:var(--dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;padding:.42rem .6rem;font-size:.82rem;width:100%}
 .spot-row input:focus,.modal input:focus{outline:none;border-color:var(--accent)}
-.mini-btn{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#e74c3c;border-radius:6px;padding:.3rem .55rem;cursor:pointer;font-size:.72rem}
-.add-row-btn{background:transparent;border:1px dashed var(--border);color:var(--muted);border-radius:6px;padding:.38rem .7rem;cursor:pointer;font-size:.78rem;width:100%;margin-top:.3rem;transition:all .2s}
+.mini-btn{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#e74c3c;border-radius:6px;padding:.28rem .5rem;cursor:pointer;font-size:.72rem}
+.add-row-btn{background:transparent;border:1px dashed var(--border);color:var(--muted);border-radius:6px;padding:.35rem .7rem;cursor:pointer;font-size:.78rem;width:100%;margin-top:.3rem;transition:all .2s}
 .add-row-btn:hover{border-color:var(--accent);color:var(--accent)}
 .emoji-picker{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}
 .emoji-opt{font-size:1.3rem;cursor:pointer;padding:.28rem;border-radius:6px;border:1px solid transparent;transition:all .15s}
 .emoji-opt.sel{border-color:var(--accent);background:rgba(0,229,160,.1)}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,229,160,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.3rem}
 @keyframes spin{to{transform:rotate(360deg)}}
-.section-divider{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:.9rem 0 .5rem;border-top:1px solid var(--border);padding-top:.7rem}
 </style>
 </head>
 <body>
@@ -197,15 +166,15 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
       <span class="pill">🔬 Histologia</span><span class="pill">🧫 Genética</span><span class="pill">🌿 Botânica</span>
     </div>
     <div class="hero-cta">
-      <button class="btn btn-primary" style="padding:.7rem 1.8rem;font-size:.92rem" onclick="go('register')">Começar agora</button>
-      <button class="btn btn-ghost" style="padding:.7rem 1.8rem;font-size:.92rem" onclick="go('login')">Já tenho conta</button>
+      <button class="btn btn-primary" style="padding:.7rem 1.8rem" onclick="go('register')">Começar agora</button>
+      <button class="btn btn-ghost" style="padding:.7rem 1.8rem" onclick="go('login')">Já tenho conta</button>
     </div>
   </div>
   <div class="features">
-    <div class="feat-card"><div class="feat-icon">🔭</div><h3>Modelos 3D reais</h3><p>Exportados do Cinema 4D com texturas profissionais, rotativos e com zoom.</p></div>
+    <div class="feat-card"><div class="feat-icon">🔭</div><h3>Modelos 3D reais</h3><p>Exportados do Cinema 4D com texturas profissionais, rotativos 360° e com zoom.</p></div>
     <div class="feat-card"><div class="feat-icon">📍</div><h3>Spots inteligentes</h3><p>Clique nos pontos do modelo para ver a legenda de cada estrutura.</p></div>
-    <div class="feat-card"><div class="feat-icon">🎬</div><h3>Videoaulas</h3><p>Cada módulo inclui vídeo explicativo integrado ao lado do modelo 3D.</p></div>
-    <div class="feat-card"><div class="feat-icon">📚</div><h3>Submódulos</h3><p>Cada tema é dividido em subtemas detalhados para aprendizado progressivo.</p></div>
+    <div class="feat-card"><div class="feat-icon">🎬</div><h3>Videoaulas</h3><p>Vídeo explicativo integrado ao lado do modelo 3D em cada subtema.</p></div>
+    <div class="feat-card"><div class="feat-icon">📚</div><h3>Submódulos</h3><p>Cada tema dividido em subtemas detalhados para aprendizado progressivo.</p></div>
   </div>
 </div>
 
@@ -231,8 +200,8 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="auth-card">
       <h2>Criar conta</h2><p class="sub">Escolha seu plano</p>
       <div class="plan-grid">
-        <div class="plan-opt selected" id="plan-mensal" onclick="selectPlan('mensal')"><h4>Mensal</h4><p>Cancele quando quiser</p><div class="plan-price">R$ 29/mês</div></div>
-        <div class="plan-opt" id="plan-anual" onclick="selectPlan('anual')"><h4>Anual</h4><p>Economize 30%</p><div class="plan-price">R$ 19/mês</div></div>
+        <div class="plan-opt selected" id="plan-mensal" onclick="selPlan('mensal')"><h4>Mensal</h4><p>Cancele quando quiser</p><div class="plan-price">R$ 29/mês</div></div>
+        <div class="plan-opt" id="plan-anual" onclick="selPlan('anual')"><h4>Anual</h4><p>Economize 30%</p><div class="plan-price">R$ 19/mês</div></div>
       </div>
       <div class="form-group"><label>Nome</label><input type="text" id="reg-name" placeholder="Seu nome"></div>
       <div class="form-group"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
@@ -248,60 +217,62 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
   <nav>
     <div class="logo">🔬 BioVerse</div>
     <div class="nav-btns">
-      <span id="user-name-nav" style="font-size:.83rem;color:var(--muted);margin-right:.4rem"></span>
+      <span id="user-name-nav" style="font-size:.82rem;color:var(--muted);margin-right:.4rem"></span>
       <button class="btn btn-ghost btn-sm" onclick="go('home')">Sair</button>
     </div>
   </nav>
-  <div class="modules-wrap">
+  <div class="grid-page">
     <h2>Módulos de Biologia</h2>
-    <p class="sub">Escolha um módulo para explorar em 3D</p>
-    <div class="modules-grid" id="modules-grid"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
+    <p class="sub">Escolha um módulo para explorar</p>
+    <div class="cards-grid" id="modules-grid"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
+  </div>
+</div>
+
+<!-- SUBMÓDULOS -->
+<div id="screen-submods" class="screen">
+  <nav>
+    <div class="logo">🔬 BioVerse</div>
+    <div class="nav-btns">
+      <button class="btn btn-ghost btn-sm" onclick="go('modules')">← Módulos</button>
+    </div>
+  </nav>
+  <div class="grid-page">
+    <h2 id="submod-page-title"></h2>
+    <p class="sub" id="submod-page-desc"></p>
+    <div class="cards-grid" id="submods-grid"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
   </div>
 </div>
 
 <!-- VIEWER -->
-<div id="screen-viewer" class="viewer-screen">
+<div id="screen-viewer" class="screen" style="min-height:100vh;display:none;flex-direction:column">
   <nav>
     <div class="logo">🔬 BioVerse</div>
     <div class="nav-btns">
-      <span id="viewer-breadcrumb" style="font-size:.8rem;color:var(--muted)"></span>
-      <button class="btn btn-ghost btn-sm" onclick="go('modules')" style="margin-left:.5rem">← Módulos</button>
+      <span id="viewer-breadcrumb" style="font-size:.78rem;color:var(--muted)"></span>
+      <button class="btn btn-ghost btn-sm" id="viewer-back-btn" style="margin-left:.5rem">← Voltar</button>
     </div>
   </nav>
-  <div class="viewer-body">
-    <!-- CANVAS -->
-    <div class="canvas-col" id="canvas-col">
-      <canvas id="bio-canvas"></canvas>
-      <div class="canvas-hint">Arraste para girar • Pinça para zoom</div>
-    </div>
-    <!-- SIDE PANEL -->
-    <div class="side-panel">
-      <div class="side-tabs">
-        <button class="side-tab active" onclick="sideTab('info',this)">📋 Info</button>
-        <button class="side-tab" onclick="sideTab('submods',this)">📚 Subtemas</button>
-        <button class="side-tab" onclick="sideTab('spots',this)">📍 Estruturas</button>
+  <div class="viewer-wrap">
+    <div class="viewer-body">
+      <div class="canvas-col" id="canvas-col">
+        <canvas id="bio-canvas"></canvas>
+        <div class="canvas-hint">🖱 Arraste para girar • Scroll para zoom</div>
       </div>
-      <div class="side-content" id="side-info">
-        <h3 class="side-title" id="viewer-title"></h3>
-        <p class="side-desc" id="viewer-desc"></p>
-        <div class="video-area" id="video-area" style="padding:0;margin-top:.5rem">
-          <div class="video-frame" id="video-frame">
-            <div class="video-placeholder-sm" onclick="loadVideo()">
+      <div class="side-panel">
+        <div class="side-inner">
+          <h3 class="side-title" id="viewer-title"></h3>
+          <p class="side-desc" id="viewer-desc"></p>
+          <div class="structs-title">ESTRUTURAS</div>
+          <div id="struct-list"><p style="font-size:.8rem;color:var(--muted)">Nenhum spot neste subtema.</p></div>
+        </div>
+        <div class="video-section">
+          <div class="video-box" id="video-box">
+            <div class="video-placeholder" onclick="loadVideo()">
               <div class="play-circle">▶</div>
-              <span>Clique para assistir a videoaula</span>
+              <span id="video-label">Clique para assistir a videoaula</span>
             </div>
           </div>
         </div>
-      </div>
-      <div class="side-content" id="side-submods" style="display:none">
-        <div class="submod-list">
-          <h4>Subtemas deste módulo</h4>
-          <div id="submod-list-el"></div>
-        </div>
-      </div>
-      <div class="side-content" id="side-spots" style="display:none">
-        <h4 style="font-size:.82rem;color:var(--muted);margin-bottom:.6rem">ESTRUTURAS</h4>
-        <div id="struct-list"></div>
       </div>
     </div>
   </div>
@@ -324,24 +295,24 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
         <div class="admin-panel active" id="ap-dashboard">
           <div class="stat-cards">
             <div class="stat-card"><div class="num" id="stat-mods">—</div><div class="lbl">Módulos</div></div>
-            <div class="stat-card"><div class="num" id="stat-submods">—</div><div class="lbl">Submódulos</div></div>
+            <div class="stat-card"><div class="num" id="stat-subs">—</div><div class="lbl">Subtemas</div></div>
           </div>
           <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;font-size:.83rem;color:var(--muted)">
-            <p style="font-weight:600;color:var(--text);margin-bottom:.5rem">Como usar</p>
-            <p style="margin-bottom:.3rem">1. Vá em <strong style="color:var(--accent)">Módulos</strong> → <strong style="color:var(--accent)">+ Novo módulo</strong></p>
-            <p style="margin-bottom:.3rem">2. Dentro do módulo, adicione <strong style="color:var(--accent)">submódulos</strong> (ex: Membrana Plasmática)</p>
-            <p style="margin-bottom:.3rem">3. Cada submódulo tem seu próprio vídeo e spots</p>
-            <p>4. Tudo salva no banco de dados automaticamente ✅</p>
+            <p style="font-weight:600;color:var(--text);margin-bottom:.5rem">Como funciona</p>
+            <p style="margin-bottom:.3rem">1. Crie um <strong style="color:var(--accent)">Módulo</strong> (ex: Biologia Celular)</p>
+            <p style="margin-bottom:.3rem">2. Dentro do módulo, adicione <strong style="color:var(--accent)">Subtemas</strong> (ex: Membrana Plasmática)</p>
+            <p style="margin-bottom:.3rem">3. Cada subtema tem vídeo, modelo 3D e spots</p>
+            <p>4. O aluno vê: Módulos → Subtemas → Viewer 3D ✅</p>
           </div>
         </div>
         <div class="admin-panel" id="ap-modulos">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
             <h3 style="margin:0">Módulos</h3>
-            <button class="btn btn-primary btn-sm" onclick="openNewModule()">+ Novo módulo</button>
+            <button class="btn btn-primary btn-sm" onclick="openNewMod()">+ Novo módulo</button>
           </div>
-          <div class="alert alert-ok" id="mod-ok"></div>
-          <div class="alert alert-err" id="mod-err"></div>
-          <div id="admin-mod-list"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
+          <div class="alert alert-ok" id="alert-ok"></div>
+          <div class="alert alert-err" id="alert-err"></div>
+          <div id="admin-list"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
         </div>
       </div>
     </div>
@@ -356,34 +327,34 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="form-group"><label>Emoji</label><div class="emoji-picker" id="emoji-picker"></div></div>
     <div class="form-group"><label>Descrição</label><input type="text" id="m-desc" placeholder="Breve descrição do módulo"></div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModModal()">Cancelar</button>
-      <button class="btn btn-primary" id="mod-save-btn" onclick="saveModule()">Salvar</button>
+      <button class="btn btn-ghost" onclick="closeMod()">Cancelar</button>
+      <button class="btn btn-primary" id="mod-btn" onclick="saveMod()">Salvar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL SUBMÓDULO -->
-<div class="modal-bg" id="submod-modal">
+<!-- MODAL SUBTEMA -->
+<div class="modal-bg" id="sub-modal">
   <div class="modal">
-    <h3 id="submod-modal-title">Novo subtema</h3>
-    <div class="form-group"><label>Nome do subtema</label><input type="text" id="sm-name" placeholder="Ex: Membrana Plasmática"></div>
-    <div class="form-group"><label>Descrição</label><input type="text" id="sm-desc" placeholder="Breve descrição"></div>
-    <div class="form-group"><label>Link do vídeo (YouTube ou Vimeo)</label><input type="text" id="sm-video" placeholder="https://youtube.com/watch?v=..."></div>
-    <div class="form-group"><label>Arquivo 3D (.glb)</label><input type="text" id="sm-glb" placeholder="membrana.glb"></div>
-    <div class="spots-config">
+    <h3 id="sub-modal-title">Novo subtema</h3>
+    <div class="form-group"><label>Nome do subtema</label><input type="text" id="s-name" placeholder="Ex: Membrana Plasmática"></div>
+    <div class="form-group"><label>Descrição</label><input type="text" id="s-desc" placeholder="Breve descrição"></div>
+    <div class="form-group"><label>Link do vídeo (YouTube ou Vimeo)</label><input type="text" id="s-video" placeholder="https://youtube.com/watch?v=..."></div>
+    <div class="form-group"><label>Arquivo 3D (.glb) — deixe em branco por enquanto</label><input type="text" id="s-glb" placeholder="membrana.glb"></div>
+    <div class="spots-box">
       <h4>Spots — pontos clicáveis no modelo 3D</h4>
-      <div style="display:grid;grid-template-columns:1fr 1.2fr .8fr auto;gap:.4rem;margin-bottom:.4rem">
+      <div style="display:grid;grid-template-columns:1fr 1.2fr .7fr auto;gap:.4rem;margin-bottom:.35rem">
         <span style="font-size:.72rem;color:var(--muted)">Nome</span>
         <span style="font-size:.72rem;color:var(--muted)">Legenda</span>
         <span style="font-size:.72rem;color:var(--muted)">x,y,z</span>
         <span></span>
       </div>
-      <div id="spots-rows"></div>
+      <div id="spot-rows"></div>
       <button class="add-row-btn" onclick="addSpotRow()">+ Adicionar spot</button>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeSubmodModal()">Cancelar</button>
-      <button class="btn btn-primary" id="submod-save-btn" onclick="saveSubmod()">Salvar subtema</button>
+      <button class="btn btn-ghost" onclick="closeSub()">Cancelar</button>
+      <button class="btn btn-primary" id="sub-btn" onclick="saveSub()">Salvar subtema</button>
     </div>
   </div>
 </div>
@@ -391,380 +362,404 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 // ===== SUPABASE =====
-const SB_URL='https://ayymsfzpeswdjpgebsvb.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5eW1zZnpwZXN3ZGpwZ2Vic3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODI1NjUsImV4cCI6MjA5Mzc1ODU2NX0.DvKcrvY61Y4qViEOj3rMUuIPWZpZhXboMom_NiNwSEo';
-async function sb(path,method='GET',body=null){
-  const r=await fetch(SB_URL+'/rest/v1/'+path,{method,headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''},body:body?JSON.stringify(body):null});
+const SB='https://ayymsfzpeswdjpgebsvb.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5eW1zZnpwZXN3ZGpwZ2Vic3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODI1NjUsImV4cCI6MjA5Mzc1ODU2NX0.DvKcrvY61Y4qViEOj3rMUuIPWZpZhXboMom_NiNwSEo';
+async function api(path,method='GET',body=null){
+  const r=await fetch(SB+'/rest/v1/'+path,{method,headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''},body:body?JSON.stringify(body):null});
   if(!r.ok)throw new Error(await r.text());
   const t=await r.text();return t?JSON.parse(t):[];
 }
 
-// ===== STATE =====
+// ===== GLOBALS =====
 const EMOJIS=['🧬','⚗️','🔬','🧫','🌿','🦠','🧪','🫀','🫁','🧠','🦴','🌱','🐠','🐛','🌺','🍃'];
-let selEmoji='🧬',editModId=null,editSubId=null,parentModId=null;
-let currentMod=null,currentSub=null;
+const BG=['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a','#1a0d2b'];
+let selEmoji='🧬',editModId=null,editSubId=null,curModId=null,curModName='';
+let curSub=null;
+// 3D
 let scene,camera,renderer,mesh,animId;
-let isDrag=false,prevM={x:0,y:0},rotX=0,rotY=0,zoom=3.5,spotEls=[];
-let pinchDist=null;
+let isDrag=false,prevM={x:0,y:0},rotX=0,rotY=0,zoom=3.5,spotEls=[],pinchDist=null;
 
 // ===== NAV =====
 function go(s){
-  document.querySelectorAll('.screen,.viewer-screen').forEach(x=>x.classList.remove('active'));
-  document.getElementById('screen-'+s).classList.add('active');
-  if(s==='modules')loadModules();
+  document.querySelectorAll('.screen').forEach(x=>{x.classList.remove('active');x.style.display='';});
+  const el=document.getElementById('screen-'+s);
+  el.classList.add('active');
+  if(s==='viewer'){el.style.display='flex';}
+  if(s==='modules')loadMods();
   if(s==='admin')loadAdmin();
-  if(s==='viewer'){}
 }
 function doLogin(){
   const e=document.getElementById('login-email').value;
-  if(!e){alert('Preencha o e-mail');return}
+  if(!e){alert('Preencha o e-mail');return;}
   document.getElementById('user-name-nav').textContent=e.split('@')[0];
   go('modules');
 }
 function doRegister(){
   const n=document.getElementById('reg-name').value;
-  if(!n){alert('Preencha o nome');return}
+  if(!n){alert('Preencha o nome');return;}
   document.getElementById('user-name-nav').textContent=n;
   go('modules');
 }
-function selectPlan(p){document.querySelectorAll('.plan-opt').forEach(x=>x.classList.remove('selected'));document.getElementById('plan-'+p).classList.add('selected');}
+function selPlan(p){document.querySelectorAll('.plan-opt').forEach(x=>x.classList.remove('selected'));document.getElementById('plan-'+p).classList.add('selected');}
 
 // ===== MÓDULOS =====
-async function loadModules(){
+async function loadMods(){
   const g=document.getElementById('modules-grid');
   g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
-  try{const mods=await sb('modules?order=id');renderModules(mods);}
-  catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar. Verifique o Supabase.</div>';}
+  try{const mods=await api('modules?order=id');renderMods(mods);}
+  catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
 }
-function renderModules(mods){
+function renderMods(mods){
   const g=document.getElementById('modules-grid');
-  if(!mods.length){g.innerHTML='<div class="loading">Nenhum módulo ainda. Crie no painel admin!</div>';return;}
-  const bgs=['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a'];
+  if(!mods.length){g.innerHTML='<div class="loading">Nenhum módulo ainda.</div>';return;}
   g.innerHTML=mods.map((m,i)=>`
-    <div class="module-card" onclick='openModule(${JSON.stringify(m).replace(/'/g,"&#39;")})'>
-      <div class="module-thumb" style="background:${bgs[i%5]}">${m.emoji||'🧬'}</div>
-      <div class="module-body"><h3>${m.name}</h3><p>${m.desc||''}</p></div>
+    <div class="mod-card" onclick="openMod('${m.id}','${esc(m.name)}','${esc(m.desc||'')}')">
+      <div class="mod-thumb" style="background:${BG[i%BG.length]}">${m.emoji||'🧬'}</div>
+      <div class="mod-body"><h3>${m.name}</h3><p>${m.desc||''}</p></div>
     </div>`).join('');
+}
+function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+
+// ===== SUBMÓDULOS PAGE =====
+async function openMod(id,name,desc){
+  curModId=id;curModName=name;
+  document.getElementById('submod-page-title').textContent=name;
+  document.getElementById('submod-page-desc').textContent=desc;
+  go('submods');
+  const g=document.getElementById('submods-grid');
+  g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  try{
+    const subs=await api('submodules?module_id=eq.'+id+'&order=id');
+    if(!subs.length){g.innerHTML='<div class="loading">Nenhum subtema neste módulo ainda.</div>';return;}
+    g.innerHTML=subs.map((s,i)=>`
+      <div class="mod-card" onclick='openViewer(${JSON.stringify(s)})'>
+        <div class="mod-thumb" style="background:${BG[(i+2)%BG.length]};font-size:2.5rem">🔬</div>
+        <div class="mod-body"><h3>${s.name}</h3><p>${s.desc||''}</p></div>
+      </div>`).join('');
+  }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
 }
 
 // ===== VIEWER =====
-async function openModule(m){
-  if(typeof m==='string')m=JSON.parse(m);
-  currentMod=m;
-  document.getElementById('viewer-breadcrumb').textContent=m.name;
-  document.getElementById('viewer-title').textContent=m.name;
-  document.getElementById('viewer-desc').textContent=m.desc||'';
-  document.querySelectorAll('.screen,.viewer-screen').forEach(x=>x.classList.remove('active'));
-  document.getElementById('screen-viewer').classList.add('active');
-  // carregar submódulos
-  try{
-    const subs=await sb('submodules?module_id=eq.'+m.id+'&order=id');
-    renderSubmodList(subs);
-    if(subs.length>0)loadSubmod(subs[0]);
-    else{currentSub=null;renderStructList([]);clearVideo();}
-  }catch(e){renderSubmodList([]);}
-  setTimeout(initThree,120);
-}
-function renderSubmodList(subs){
-  const l=document.getElementById('submod-list-el');
-  if(!subs.length){l.innerHTML='<p style="font-size:.8rem;color:var(--muted)">Nenhum subtema ainda.</p>';return;}
-  l.innerHTML=subs.map(s=>`
-    <div class="submod-item" id="smi-${s.id}" onclick='loadSubmod(${JSON.stringify(s).replace(/'/g,"&#39;")})'>
-      <div class="submod-dot"></div>${s.name}
-    </div>`).join('');
-}
-function loadSubmod(s){
+function openViewer(s){
   if(typeof s==='string')s=JSON.parse(s);
-  currentSub=s;
-  document.querySelectorAll('.submod-item').forEach(x=>x.classList.remove('active'));
-  const el=document.getElementById('smi-'+s.id);if(el)el.classList.add('active');
+  curSub=s;
+  document.getElementById('viewer-breadcrumb').textContent=curModName+' › '+s.name;
+  document.getElementById('viewer-back-btn').onclick=()=>openMod(curModId,curModName,'');
   document.getElementById('viewer-title').textContent=s.name;
   document.getElementById('viewer-desc').textContent=s.desc||'';
-  renderStructList(s.spots||[]);
   setupVideo(s.video);
-  // reiniciar 3D com spots do submódulo
-  if(animId){cancelAnimationFrame(animId);animId=null;}
-  setTimeout(()=>{initThree(s.spots||[]);},80);
+  renderStructs(s.spots||[]);
+  go('viewer');
+  // esperar o DOM estar visível antes de iniciar Three.js
+  requestAnimationFrame(()=>requestAnimationFrame(()=>initThree(s.spots||[])));
 }
-function renderStructList(spots){
-  const l=document.getElementById('struct-list');l.innerHTML='';
-  if(!spots.length){l.innerHTML='<p style="font-size:.8rem;color:var(--muted)">Nenhum spot neste subtema.</p>';return;}
-  spots.forEach((s,i)=>{
-    l.innerHTML+=`<div class="struct-item" id="sti-${i}" onclick="focusSpot(${i})"><div class="struct-dot"></div>${s.name}</div>`;
-  });
+
+function renderStructs(spots){
+  const l=document.getElementById('struct-list');
+  if(!spots.length){l.innerHTML='<p style="font-size:.8rem;color:var(--muted)">Nenhum spot cadastrado.</p>';return;}
+  l.innerHTML=spots.map((s,i)=>`
+    <div class="struct-item" id="sti-${i}" onclick="focusSpot(${i})">
+      <div class="struct-dot"></div>${s.name}
+    </div>`).join('');
 }
 function focusSpot(i){
   document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
   const el=document.getElementById('sti-'+i);if(el)el.classList.add('active');
   document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
-  const sp=document.getElementById('sp-'+i);if(sp)sp.classList.add('show');
-}
-function sideTab(name,btn){
-  document.querySelectorAll('.side-tab').forEach(x=>x.classList.remove('active'));btn.classList.add('active');
-  ['info','submods','spots'].forEach(n=>document.getElementById('side-'+n).style.display=n===name?'block':'none');
+  const sp=document.getElementById('spp-'+i);if(sp)sp.classList.add('show');
 }
 function setupVideo(url){
-  const vf=document.getElementById('video-frame');
-  vf.dataset.url=url||'';
-  vf.innerHTML=`<div class="video-placeholder-sm" onclick="loadVideo()"><div class="play-circle">▶</div><span>${url?'Clique para assistir a videoaula':'Sem vídeo neste subtema'}</span></div>`;
+  const box=document.getElementById('video-box');
+  box.dataset.url=url||'';
+  const label=url?'Clique para assistir a videoaula':'Sem vídeo neste subtema';
+  box.innerHTML=`<div class="video-placeholder" onclick="loadVideo()"><div class="play-circle">▶</div><span>${label}</span></div>`;
 }
-function clearVideo(){setupVideo('');}
 function loadVideo(){
-  const url=document.getElementById('video-frame').dataset.url;
+  const url=document.getElementById('video-box').dataset.url;
   if(!url)return;
-  const vf=document.getElementById('video-frame');
-  let embed='';
-  if(url.includes('youtube')||url.includes('youtu.be')){
-    let vid=url.includes('v=')?url.split('v=')[1].split('&')[0]:url.split('/').pop().split('?')[0];
-    embed=`<iframe src="https://www.youtube.com/embed/${vid}?autoplay=1" frameborder="0" allowfullscreen allow="autoplay"></iframe>`;
+  const box=document.getElementById('video-box');
+  let src='';
+  if(url.includes('youtu')){
+    let id=url.includes('v=')?url.split('v=')[1].split('&')[0]:url.split('/').pop().split('?')[0];
+    if(url.includes('shorts'))id=url.split('shorts/')[1].split('?')[0];
+    src=`https://www.youtube.com/embed/${id}?autoplay=1`;
   }else if(url.includes('vimeo')){
-    const vid=url.split('/').pop();
-    embed=`<iframe src="https://player.vimeo.com/video/${vid}?autoplay=1" frameborder="0" allowfullscreen></iframe>`;
-  }else{
-    embed=`<iframe src="${url}" frameborder="0" allowfullscreen></iframe>`;
-  }
-  vf.innerHTML=embed;
+    src=`https://player.vimeo.com/video/${url.split('/').pop()}?autoplay=1`;
+  }else{src=url;}
+  box.innerHTML=`<iframe src="${src}" frameborder="0" allowfullscreen allow="autoplay" style="width:100%;height:160px;display:block"></iframe>`;
 }
 
 // ===== THREE.JS =====
 function initThree(spots){
-  if(!spots)spots=currentSub?currentSub.spots||[]:[];
+  // limpar estado anterior
   if(animId){cancelAnimationFrame(animId);animId=null;}
   document.querySelectorAll('.spot-btn,.spot-popup').forEach(e=>e.remove());
-  spotEls=[];
+  spotEls=[];rotX=0;rotY=0;zoom=3.5;isDrag=false;
+
   const col=document.getElementById('canvas-col');
   const canvas=document.getElementById('bio-canvas');
-  const W=col.clientWidth,H=col.clientHeight;
+  const W=col.offsetWidth||col.clientWidth;
+  const H=col.offsetHeight||col.clientHeight;
+
+  // renderer
+  if(renderer){renderer.dispose();}
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
-  renderer.setSize(W,H);renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(W,H,false);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+
+  // scene
   scene=new THREE.Scene();
   camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
-  camera.position.z=zoom;
-  scene.add(new THREE.AmbientLight(0xffffff,0.6));
-  const dl=new THREE.DirectionalLight(0x00e5a0,1);dl.position.set(2,3,4);scene.add(dl);
-  const dl2=new THREE.DirectionalLight(0x00b4d8,0.6);dl2.position.set(-3,1,-2);scene.add(dl2);
-  buildDemoModel();
+  camera.position.set(0,0,zoom);
+
+  // lights
+  scene.add(new THREE.AmbientLight(0xffffff,0.7));
+  const dl=new THREE.DirectionalLight(0x00e5a0,1.2);dl.position.set(2,3,4);scene.add(dl);
+  const dl2=new THREE.DirectionalLight(0x00b4d8,0.7);dl2.position.set(-3,1,-2);scene.add(dl2);
+
+  // model
+  buildModel();
   addSpots(spots);
-  // Mouse
-  canvas.addEventListener('mousedown',e=>{isDrag=true;prevM={x:e.clientX,y:e.clientY};e.preventDefault();});
-  canvas.addEventListener('mousemove',e=>{if(!isDrag)return;rotY+=(e.clientX-prevM.x)*.012;rotX+=(e.clientY-prevM.y)*.012;prevM={x:e.clientX,y:e.clientY};});
-  canvas.addEventListener('mouseup',()=>isDrag=false);
-  canvas.addEventListener('mouseleave',()=>isDrag=false);
-  canvas.addEventListener('wheel',e=>{zoom=Math.max(1.5,Math.min(7,zoom+e.deltaY*.005));camera.position.z=zoom;e.preventDefault();},{passive:false});
-  // Touch
-  canvas.addEventListener('touchstart',e=>{
-    if(e.touches.length===1){isDrag=true;prevM={x:e.touches[0].clientX,y:e.touches[0].clientY};}
-    if(e.touches.length===2){pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);}
+
+  // ===== EVENTOS DE ROTAÇÃO =====
+  // Tudo no col, não no canvas
+  function onDown(x,y){isDrag=true;prevM={x,y};col.style.cursor='grabbing';}
+  function onMove(x,y){if(!isDrag)return;const dx=x-prevM.x,dy=y-prevM.y;rotY+=dx*.013;rotX+=dy*.013;prevM={x,y};}
+  function onUp(){isDrag=false;col.style.cursor='grab';}
+
+  col.addEventListener('mousedown',e=>{if(e.target.classList.contains('spot-btn'))return;onDown(e.clientX,e.clientY);e.preventDefault();});
+  window.addEventListener('mousemove',e=>{onMove(e.clientX,e.clientY);});
+  window.addEventListener('mouseup',onUp);
+  col.addEventListener('wheel',e=>{zoom=Math.max(1.5,Math.min(8,zoom+e.deltaY*.006));camera.position.z=zoom;e.preventDefault();},{passive:false});
+
+  col.addEventListener('touchstart',e=>{
+    if(e.target.classList.contains('spot-btn'))return;
+    if(e.touches.length===1)onDown(e.touches[0].clientX,e.touches[0].clientY);
+    if(e.touches.length===2)pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
     e.preventDefault();
   },{passive:false});
-  canvas.addEventListener('touchmove',e=>{
-    if(e.touches.length===1&&isDrag){
-      rotY+=(e.touches[0].clientX-prevM.x)*.012;
-      rotX+=(e.touches[0].clientY-prevM.y)*.012;
-      prevM={x:e.touches[0].clientX,y:e.touches[0].clientY};
-    }
+  col.addEventListener('touchmove',e=>{
+    if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY);
     if(e.touches.length===2&&pinchDist){
       const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-      zoom=Math.max(1.5,Math.min(7,zoom-(d-pinchDist)*.01));
-      camera.position.z=zoom;pinchDist=d;
+      zoom=Math.max(1.5,Math.min(8,zoom-(d-pinchDist)*.012));camera.position.z=zoom;pinchDist=d;
     }
     e.preventDefault();
   },{passive:false});
-  canvas.addEventListener('touchend',()=>{isDrag=false;pinchDist=null;});
+  col.addEventListener('touchend',()=>{onUp();pinchDist=null;});
+
   animate();
 }
-function buildDemoModel(){
-  mesh=new THREE.Mesh(new THREE.SphereGeometry(0.95,64,64),new THREE.MeshStandardMaterial({color:0x1a5c3a,roughness:.4,metalness:.2}));
+
+function buildModel(){
+  mesh=new THREE.Mesh(
+    new THREE.SphereGeometry(0.95,64,64),
+    new THREE.MeshStandardMaterial({color:0x1a5c3a,roughness:.4,metalness:.2})
+  );
   scene.add(mesh);
+  // núcleo
   const nuc=new THREE.Mesh(new THREE.SphereGeometry(.28,32,32),new THREE.MeshStandardMaterial({color:0x00e5a0,roughness:.3}));
-  nuc.position.set(0,0.3,0.5);mesh.add(nuc);
+  nuc.position.set(0,.3,.5);mesh.add(nuc);
+  // mitocôndrias
   const mm=new THREE.MeshStandardMaterial({color:0xff6b35,roughness:.5});
-  [-0.5,0.5].forEach(x=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),mm);m.position.set(x,-0.2,0.6);mesh.add(m);});
+  [-0.5,0.5].forEach(x=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.1,16,16),mm);m.position.set(x,-.2,.6);mesh.add(m);});
+  // retículo
   const re=new THREE.Mesh(new THREE.TorusGeometry(.3,.04,8,32),new THREE.MeshStandardMaterial({color:0x00b4d8,roughness:.6}));
-  re.position.set(-0.4,0.1,0.4);re.rotation.x=.8;mesh.add(re);
+  re.position.set(-.4,.1,.4);re.rotation.x=.8;mesh.add(re);
 }
+
 function addSpots(spots){
   const col=document.getElementById('canvas-col');
   spots.forEach((s,i)=>{
-    const btn=document.createElement('div');btn.className='spot-btn';btn.id='spot-'+i;
-    btn.innerHTML='<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#0a1628"/><circle cx="5" cy="5" r="2" fill="#0a1628"/></svg>';
-    btn.style.background='var(--accent)';
-    const pop=document.createElement('div');pop.className='spot-popup';pop.id='sp-'+i;
+    const btn=document.createElement('div');
+    btn.className='spot-btn';btn.id='spb-'+i;
+    btn.textContent=i+1;
+    const pop=document.createElement('div');
+    pop.className='spot-popup';pop.id='spp-'+i;
     pop.innerHTML=`<h4>${s.name}</h4><p>${s.desc||''}</p>`;
-    btn.onclick=()=>{
-      const showing=pop.classList.contains('show');
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const vis=pop.classList.contains('show');
       document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
       document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
-      if(!showing){pop.classList.add('show');const si=document.getElementById('sti-'+i);if(si)si.classList.add('active');}
-    };
+      if(!vis){pop.classList.add('show');const si=document.getElementById('sti-'+i);if(si)si.classList.add('active');}
+    });
     col.appendChild(btn);col.appendChild(pop);
-    spotEls.push({btn,pop,pos3d:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
+    spotEls.push({btn,pop,v:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
   });
 }
+
 function animate(){
   animId=requestAnimationFrame(animate);
   if(!isDrag)rotY+=.005;
-  mesh.rotation.x=rotX;mesh.rotation.y=rotY;
+  mesh.rotation.x=rotX;
+  mesh.rotation.y=rotY;
   renderer.render(scene,camera);
+  // atualizar posição dos spots
   const col=document.getElementById('canvas-col');
-  const W=col.clientWidth,H=col.clientHeight;
-  spotEls.forEach(({btn,pop,pos3d})=>{
-    const wp=pos3d.clone();mesh.localToWorld(wp);
+  const W=col.offsetWidth,H=col.offsetHeight;
+  spotEls.forEach(({btn,pop,v})=>{
+    const wp=v.clone();mesh.localToWorld(wp);
     const p=wp.clone().project(camera);
-    const px=(p.x*.5+.5)*W,py=(-.5*p.y+.5)*H;
-    btn.style.left=(px-13)+'px';btn.style.top=(py-13)+'px';
-    pop.style.left=(px+18)+'px';pop.style.top=(py-20)+'px';
-    const behind=p.z>1;
-    btn.style.opacity=behind?'0':'1';btn.style.pointerEvents=behind?'none':'all';
+    const x=(p.x*.5+.5)*W,y=(-.5*p.y+.5)*H;
+    btn.style.left=(x-13)+'px';btn.style.top=(y-13)+'px';
+    pop.style.left=(x+18)+'px';pop.style.top=(y-20)+'px';
+    const hidden=p.z>1;
+    btn.style.opacity=hidden?'0':'1';
+    btn.style.pointerEvents=hidden?'none':'all';
   });
 }
 
 // ===== ADMIN =====
 async function loadAdmin(){
   try{
-    const mods=await sb('modules?order=id');
+    const [mods,subs]=await Promise.all([api('modules?order=id'),api('submodules?order=id')]);
     document.getElementById('stat-mods').textContent=mods.length;
-    const subs=await sb('submodules?order=id');
-    document.getElementById('stat-submods').textContent=subs.length;
-    renderAdminMods(mods,subs);
+    document.getElementById('stat-subs').textContent=subs.length;
+    renderAdminList(mods,subs);
   }catch(e){console.error(e);}
 }
-function adminTab(name,btn){
+function adminTab(n,btn){
   document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.admin-panel').forEach(x=>x.classList.remove('active'));
-  btn.classList.add('active');document.getElementById('ap-'+name).classList.add('active');
+  btn.classList.add('active');document.getElementById('ap-'+n).classList.add('active');
 }
-function renderAdminMods(mods,subs){
-  const l=document.getElementById('admin-mod-list');
+function renderAdminList(mods,subs){
+  const l=document.getElementById('admin-list');
   if(!mods.length){l.innerHTML='<p style="color:var(--muted);font-size:.85rem">Nenhum módulo. Crie o primeiro!</p>';return;}
   l.innerHTML=mods.map(m=>{
-    const msubs=subs.filter(s=>s.module_id===m.id);
+    const ms=subs.filter(s=>String(s.module_id)===String(m.id));
     return `<div style="margin-bottom:.8rem">
-      <div class="mod-list-item">
-        <div class="left"><div class="mod-thumb-sm">${m.emoji||'🧬'}</div>
-        <div><div class="item-title">${m.name}</div><div class="item-sub">${msubs.length} subtema(s)</div></div></div>
+      <div class="list-item">
+        <div class="left"><div class="thumb-sm">${m.emoji||'🧬'}</div>
+        <div><div class="item-title">${m.name}</div><div class="item-sub">${ms.length} subtema(s)</div></div></div>
         <div class="item-actions">
-          <button class="btn btn-primary btn-sm" onclick="openNewSubmod(${m.id},'${m.name.replace(/'/g,"\\'")}')">+ Subtema</button>
-          <button class="btn btn-ghost btn-sm" onclick='editModule(${JSON.stringify(m).replace(/'/g,"&#39;")})'>✏️</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteMod(${m.id})">🗑</button>
+          <button class="btn btn-primary btn-sm" onclick="openNewSub('${m.id}','${esc(m.name)}')">+ Subtema</button>
+          <button class="btn btn-ghost btn-sm" onclick='editMod(${JSON.stringify(m)})'>✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delMod('${m.id}')">🗑</button>
         </div>
       </div>
-      ${msubs.length?`<div class="submod-admin">${msubs.map(s=>`
-        <div class="submod-admin-item">
-          <span style="color:var(--muted)">↳</span> <span style="flex:1;margin-left:.4rem">${s.name}</span>
+      ${ms.length?`<div class="sublist">${ms.map(s=>`
+        <div class="sub-item">
+          <span style="color:var(--muted);margin-right:.4rem">↳</span>
+          <span style="flex:1">${s.name}</span>
           <div style="display:flex;gap:.3rem">
-            <button class="btn btn-ghost btn-sm" onclick='editSubmod(${JSON.stringify(s).replace(/'/g,"&#39;")})'>✏️</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteSubmod(${s.id})">🗑</button>
+            <button class="btn btn-ghost btn-sm" onclick='editSub(${JSON.stringify(s)})'>✏️</button>
+            <button class="btn btn-danger btn-sm" onclick="delSub('${s.id}')">🗑</button>
           </div>
         </div>`).join('')}</div>`:''}
     </div>`;
   }).join('');
 }
 
-// MÓDULO MODAL
-function openNewModule(){
+// MÓDULO
+function openNewMod(){
   editModId=null;selEmoji='🧬';
   document.getElementById('mod-modal-title').textContent='Novo módulo';
   document.getElementById('m-name').value='';
   document.getElementById('m-desc').value='';
-  buildEmojiPicker();
+  buildEmoji();
   document.getElementById('mod-modal').classList.add('open');
 }
-function editModule(m){
+function editMod(m){
   if(typeof m==='string')m=JSON.parse(m);
   editModId=m.id;selEmoji=m.emoji||'🧬';
   document.getElementById('mod-modal-title').textContent='Editar módulo';
   document.getElementById('m-name').value=m.name||'';
   document.getElementById('m-desc').value=m.desc||'';
-  buildEmojiPicker();
+  buildEmoji();
   document.getElementById('mod-modal').classList.add('open');
 }
-function closeModModal(){document.getElementById('mod-modal').classList.remove('open');}
-async function saveModule(){
+function closeMod(){document.getElementById('mod-modal').classList.remove('open');}
+async function saveMod(){
   const name=document.getElementById('m-name').value.trim();
   if(!name){alert('Preencha o nome');return;}
   const data={name,emoji:selEmoji,desc:document.getElementById('m-desc').value};
-  const btn=document.getElementById('mod-save-btn');
+  const btn=document.getElementById('mod-btn');
   btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
   try{
-    if(editModId)await sb('modules?id=eq.'+editModId,'PATCH',data);
-    else await sb('modules','POST',data);
-    closeModModal();showAlert('mod-ok','✅ Módulo salvo!');loadAdmin();
-  }catch(e){showAlert('mod-err','❌ Erro: '+e.message);}
+    if(editModId)await api('modules?id=eq.'+editModId,'PATCH',data);
+    else await api('modules','POST',data);
+    closeMod();showOk('✅ Módulo salvo!');loadAdmin();
+  }catch(e){showErr('❌ '+e.message);}
   btn.innerHTML='Salvar';btn.disabled=false;
 }
-async function deleteMod(id){
-  if(!confirm('Excluir módulo e todos os seus subtemas?'))return;
-  try{await sb('submodules?module_id=eq.'+id,'DELETE');await sb('modules?id=eq.'+id,'DELETE');loadAdmin();}
+async function delMod(id){
+  if(!confirm('Excluir módulo e todos os subtemas?'))return;
+  try{await api('submodules?module_id=eq.'+id,'DELETE');await api('modules?id=eq.'+id,'DELETE');loadAdmin();}
   catch(e){alert('Erro: '+e.message);}
 }
 
-// SUBMÓDULO MODAL
-function openNewSubmod(modId,modName){
-  editSubId=null;parentModId=modId;
-  document.getElementById('submod-modal-title').textContent='Novo subtema — '+modName;
-  document.getElementById('sm-name').value='';
-  document.getElementById('sm-desc').value='';
-  document.getElementById('sm-video').value='';
-  document.getElementById('sm-glb').value='';
+// SUBTEMA
+function openNewSub(modId,modName){
+  editSubId=null;
+  document.getElementById('sub-modal-title').textContent='Novo subtema — '+modName;
+  document.getElementById('s-name').value='';
+  document.getElementById('s-desc').value='';
+  document.getElementById('s-video').value='';
+  document.getElementById('s-glb').value='';
+  document.getElementById('sub-modal').dataset.modId=modId;
   buildSpotRows([]);
-  document.getElementById('submod-modal').classList.add('open');
+  document.getElementById('sub-modal').classList.add('open');
 }
-function editSubmod(s){
+function editSub(s){
   if(typeof s==='string')s=JSON.parse(s);
-  editSubId=s.id;parentModId=s.module_id;
-  document.getElementById('submod-modal-title').textContent='Editar subtema';
-  document.getElementById('sm-name').value=s.name||'';
-  document.getElementById('sm-desc').value=s.desc||'';
-  document.getElementById('sm-video').value=s.video||'';
-  document.getElementById('sm-glb').value=s.glb||'';
+  editSubId=s.id;
+  document.getElementById('sub-modal-title').textContent='Editar subtema';
+  document.getElementById('s-name').value=s.name||'';
+  document.getElementById('s-desc').value=s.desc||'';
+  document.getElementById('s-video').value=s.video||'';
+  document.getElementById('s-glb').value=s.glb||'';
+  document.getElementById('sub-modal').dataset.modId=s.module_id;
   buildSpotRows(s.spots||[]);
-  document.getElementById('submod-modal').classList.add('open');
+  document.getElementById('sub-modal').classList.add('open');
 }
-function closeSubmodModal(){document.getElementById('submod-modal').classList.remove('open');}
-async function saveSubmod(){
-  const name=document.getElementById('sm-name').value.trim();
+function closeSub(){document.getElementById('sub-modal').classList.remove('open');}
+async function saveSub(){
+  const name=document.getElementById('s-name').value.trim();
   if(!name){alert('Preencha o nome');return;}
   const spots=[];
-  document.querySelectorAll('#spots-rows .spot-row').forEach(row=>{
+  document.querySelectorAll('#spot-rows .spot-row').forEach(row=>{
     const n=row.querySelector('.sn').value.trim();
     const d=row.querySelector('.sd').value.trim();
     const pos=row.querySelector('.sp').value.split(',').map(Number);
-    if(n)spots.push({name:n,desc:d||n,x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
+    if(n)spots.push({name:n,desc:d||'',x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
   });
-  const data={name,desc:document.getElementById('sm-desc').value,video:document.getElementById('sm-video').value,glb:document.getElementById('sm-glb').value,spots,module_id:parentModId};
-  const btn=document.getElementById('submod-save-btn');
+  const modId=document.getElementById('sub-modal').dataset.modId;
+  const data={name,desc:document.getElementById('s-desc').value,video:document.getElementById('s-video').value,glb:document.getElementById('s-glb').value,spots,module_id:modId};
+  const btn=document.getElementById('sub-btn');
   btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
   try{
-    if(editSubId)await sb('submodules?id=eq.'+editSubId,'PATCH',data);
-    else await sb('submodules','POST',data);
-    closeSubmodModal();showAlert('mod-ok','✅ Subtema salvo!');loadAdmin();
-  }catch(e){showAlert('mod-err','❌ Erro: '+e.message);}
+    if(editSubId)await api('submodules?id=eq.'+editSubId,'PATCH',data);
+    else await api('submodules','POST',data);
+    closeSub();showOk('✅ Subtema salvo!');loadAdmin();
+  }catch(e){showErr('❌ '+e.message);}
   btn.innerHTML='Salvar subtema';btn.disabled=false;
 }
-async function deleteSubmod(id){
+async function delSub(id){
   if(!confirm('Excluir este subtema?'))return;
-  try{await sb('submodules?id=eq.'+id,'DELETE');loadAdmin();}
+  try{await api('submodules?id=eq.'+id,'DELETE');loadAdmin();}
   catch(e){alert('Erro: '+e.message);}
 }
 
 // HELPERS
-function buildEmojiPicker(){
+function buildEmoji(){
   const p=document.getElementById('emoji-picker');p.innerHTML='';
-  EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selEmoji?' sel':''}" onclick="pickEmoji('${e}',this)">${e}</span>`;});
+  EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selEmoji?' sel':''}" onclick="pickE('${e}',this)">${e}</span>`;});
 }
-function pickEmoji(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
-function buildSpotRows(spots){const c=document.getElementById('spots-rows');c.innerHTML='';spots.forEach(s=>addSpotRow(s));}
+function pickE(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
+function buildSpotRows(s){const c=document.getElementById('spot-rows');c.innerHTML='';s.forEach(x=>addSpotRow(x));}
 function addSpotRow(s){
-  const c=document.getElementById('spots-rows');
-  const row=document.createElement('div');row.className='spot-row';
-  row.innerHTML=`<input type="text" placeholder="Nome" value="${s?s.name:''}" class="sn">
-    <input type="text" placeholder="Legenda" value="${s?s.desc:''}" class="sd">
-    <input type="text" placeholder="0,0,0" value="${s?s.x+','+s.y+','+s.z:''}" class="sp">
+  const c=document.getElementById('spot-rows');
+  const r=document.createElement('div');r.className='spot-row';
+  r.innerHTML=`<input type="text" class="sn" placeholder="Nome" value="${s?s.name:''}">
+    <input type="text" class="sd" placeholder="Legenda" value="${s?s.desc:''}">
+    <input type="text" class="sp" placeholder="0,0,0" value="${s?s.x+','+s.y+','+s.z:''}">
     <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
-  c.appendChild(row);
+  c.appendChild(r);
 }
-function showAlert(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),4000);}
+function showOk(m){const e=document.getElementById('alert-ok');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),4000);}
+function showErr(m){const e=document.getElementById('alert-err');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),5000);}
 </script>
 </body>
 </html>
