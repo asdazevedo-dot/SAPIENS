@@ -510,13 +510,26 @@ function startThree(){
     const loader=new THREE.GLTFLoader();
     loader.load(glbFile,gltf=>{
       const model=gltf.scene;
-      // corrigir encoding das texturas para evitar cores pretas
       model.traverse(child=>{
-        if(child.isMesh&&child.material){
-          const mat=child.material;
-          if(mat.map){mat.map.encoding=THREE.sRGBEncoding;mat.map.needsUpdate=true;}
-          if(mat.emissiveMap){mat.emissiveMap.encoding=THREE.sRGBEncoding;}
-          mat.needsUpdate=true;
+        if(child.isMesh){
+          const oldMat=child.material;
+          // pegar cor original se existir, senão usar branco
+          let color=0xcccccc;
+          if(oldMat.color)color=oldMat.color.getHex();
+          // substituir por MeshStandardMaterial simples que funciona no browser
+          child.material=new THREE.MeshStandardMaterial({
+            color:color,
+            roughness:oldMat.roughness!=null?oldMat.roughness:0.5,
+            metalness:oldMat.metalness!=null?oldMat.metalness:0.1,
+            // preservar textura se existir
+            map:oldMat.map||null,
+            normalMap:oldMat.normalMap||null,
+            side:THREE.DoubleSide,
+          });
+          if(oldMat.map){
+            child.material.map.encoding=THREE.sRGBEncoding;
+            child.material.map.needsUpdate=true;
+          }
         }
       });
       // centralizar e escalar
@@ -608,18 +621,41 @@ function startThree(){
   };
   col.ontouchend=()=>{isDrag=false;pinchDist=null;};
 
+  // raycaster para oclusão dos spots
+  const spotRay=new THREE.Raycaster();
+
   function loop(){
     animId=requestAnimationFrame(loop);
     renderer.render(scene,camera);
     const W2=col.clientWidth,H2=col.clientHeight;
     spotEls.forEach(({btn,pop,v})=>{
-      const wp=v.clone();meshGroup.localToWorld(wp);
+      const wp=v.clone();
+      meshGroup.localToWorld(wp);
       const p=wp.clone().project(camera);
       const sx=(p.x*.5+.5)*W2,sy=(-.5*p.y+.5)*H2;
       btn.style.left=(sx-13)+'px';btn.style.top=(sy-13)+'px';
       pop.style.left=(sx+18)+'px';pop.style.top=(sy-20)+'px';
-      const hidden=p.z>1;
-      btn.style.opacity=hidden?'0':'1';btn.style.pointerEvents=hidden?'none':'all';
+
+      // 1) atrás da câmera
+      const behindCam=p.z>1;
+
+      // 2) ocluído pela geometria do modelo
+      let occluded=false;
+      if(!behindCam){
+        const dir=new THREE.Vector3().subVectors(wp,camera.position).normalize();
+        spotRay.set(camera.position,dir);
+        const hits=spotRay.intersectObject(meshGroup,true);
+        const distToSpot=camera.position.distanceTo(wp);
+        // se o primeiro hit estiver ANTES do spot (com margem de 5cm), está oculto
+        if(hits.length>0&&hits[0].distance<distToSpot-0.05){
+          occluded=true;
+        }
+      }
+
+      const hidden=behindCam||occluded;
+      btn.style.opacity=hidden?'0':'1';
+      btn.style.pointerEvents=hidden?'none':'all';
+      if(hidden)pop.classList.remove('show');
     });
   }
   loop();
