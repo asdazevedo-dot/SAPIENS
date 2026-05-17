@@ -77,12 +77,13 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 
 /* ===================== VIEWER ===================== */
 #screen-viewer{display:none}
-#screen-viewer.active{display:block}
+#screen-viewer.active{display:block;height:100vh}
 
 .viewer-container{
   display:grid;
   grid-template-columns:1fr 400px;
   height:calc(100vh - 61px);
+  max-height:calc(100vh - 61px);
   overflow:hidden;
 }
 
@@ -441,7 +442,7 @@ let selEmoji='🧬',editModId=null,editSubId=null,curModId=null,curModName='',cu
 
 // 3D globals
 let renderer=null,scene,camera,meshGroup,animId=null;
-let isDrag=false,prevX=0,prevY=0,rotX=0,rotY=0,camZ=3.5;
+let isDrag=false,prevX=0,prevY=0;
 let spotEls=[];
 
 // ===== NAV =====
@@ -567,34 +568,47 @@ function loadVideo(){
 }
 
 // ===== THREE.JS =====
-function startThree(){
+async function startThree(){
   // parar animação anterior
   if(animId){cancelAnimationFrame(animId);animId=null;}
   document.querySelectorAll('.spot-btn,.spot-popup').forEach(e=>e.remove());
-  spotEls=[];rotX=0;rotY=0;camZ=3.5;isDrag=false;
+  spotEls=[];isDrag=false;
 
   const col=document.getElementById('canvas-col');
   const canvas=document.getElementById('bio-canvas');
 
   // definir tamanho do canvas igual ao container
   // forçar tamanho via getBoundingClientRect
-  const rect=col.getBoundingClientRect();
-  const W=Math.max(rect.width,300);
-  const H=Math.max(rect.height,window.innerHeight-61);
-  col.style.height=H+'px';
+  // forçar visibilidade e tamanho antes de tudo
+  col.style.display='block';
+  col.style.width='100%';
+  const navH=document.querySelector('nav').offsetHeight||61;
+  const totalH=window.innerHeight-navH;
+  col.style.height=totalH+'px';
+
+  // aguardar layout e pegar tamanho real
+  await new Promise(r=>setTimeout(r,50));
+  const W=col.offsetWidth||window.innerWidth-400;
+  const H=col.offsetHeight||totalH;
+
+  canvas.width=W;
+  canvas.height=H;
   canvas.style.width=W+'px';
   canvas.style.height=H+'px';
+  canvas.style.display='block';
 
   // renderer
-  if(renderer)renderer.dispose();
+  if(renderer){renderer.dispose();renderer=null;}
   renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
   renderer.setSize(W,H,false);
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.physicallyCorrectLights=true;
 
   // cena
   scene=new THREE.Scene();
   camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
-  camera.position.set(0,0,camZ);
+  camera.position.set(0,0,4);
 
   // luzes — brancas neutras para não distorcer cores do modelo
   scene.add(new THREE.AmbientLight(0xffffff,1.0));
