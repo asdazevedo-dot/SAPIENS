@@ -10,17 +10,10 @@
 :root{--dark:#0a1628;--card:#0f2035;--border:#1a3a50;--accent:#00e5a0;--accent2:#00b4d8;--text:#e8f4f0;--muted:#7a9e90}
 body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
 h1,h2,h3,h4{font-family:'Syne',sans-serif}
-
-/* TELAS */
-.screen{display:none}
-.screen.active{display:block}
-
-/* NAV */
+.screen{display:none}.screen.active{display:block}
 nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,22,40,.97);position:sticky;top:0;z-index:100;height:61px}
 .logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent)}
 .nav-btns{display:flex;gap:.5rem;align-items:center}
-
-/* BOTÕES */
 .btn{padding:.5rem 1.1rem;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
 .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
 .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
@@ -28,8 +21,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .btn-primary:hover{background:#00ffb3}
 .btn-danger{background:#c0392b;color:#fff}
 .btn-sm{padding:.35rem .8rem;font-size:.78rem}
-
-/* HERO */
 .hero{padding:5rem 2rem 3rem;max-width:860px;margin:0 auto;text-align:center}
 .hero h1{font-size:clamp(1.8rem,5vw,3rem);font-weight:700;line-height:1.15;margin-bottom:1.2rem}
 .hero h1 span{color:var(--accent)}
@@ -42,8 +33,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .feat-icon{font-size:1.5rem;margin-bottom:.5rem}
 .feat-card h3{font-size:.9rem;margin-bottom:.3rem}
 .feat-card p{font-size:.8rem;color:var(--muted);line-height:1.5}
-
-/* AUTH */
 .auth-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 61px);padding:2rem}
 .auth-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:400px}
 .auth-card h2{font-size:1.4rem;margin-bottom:.3rem}
@@ -61,8 +50,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .plan-opt h4{font-size:.88rem;margin-bottom:.2rem}
 .plan-opt p{font-size:.75rem;color:var(--muted)}
 .plan-price{font-size:1rem;font-weight:700;color:var(--accent);margin-top:.3rem}
-
-/* GRIDS DE CARDS */
 .grid-page{padding:2rem;max-width:1100px;margin:0 auto}
 .grid-page h2{font-size:1.4rem;margin-bottom:.3rem}
 .grid-sub{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
@@ -74,49 +61,20 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .mod-body h3{font-size:.95rem;margin-bottom:.3rem}
 .mod-body p{font-size:.78rem;color:var(--muted);line-height:1.5}
 .loading{text-align:center;padding:3rem;color:var(--muted);font-size:.88rem}
-
-/* ===================== VIEWER ===================== */
-#screen-viewer{display:none}
+/* VIEWER */
 #screen-viewer.active{display:block;height:100vh}
-
-.viewer-container{
-  display:grid;
-  grid-template-columns:1fr 400px;
-  height:calc(100vh - 61px);
-  max-height:calc(100vh - 61px);
-  overflow:hidden;
-}
-
-/* coluna esquerda — canvas */
-#canvas-col{
-  position:relative;
-  background:#060f1e;
-  cursor:grab;
-  overflow:hidden;
-  width:100%;
-  height:100%;
-  min-height:400px;
-}
+.viewer-container{display:grid;grid-template-columns:1fr 400px;height:calc(100vh - 61px);overflow:hidden}
+#canvas-col{position:relative;background:#060f1e;cursor:grab;overflow:hidden;width:100%;height:100%;min-height:400px}
 #canvas-col:active{cursor:grabbing}
-#bio-canvas{
-  display:block;
-  position:absolute;
-  top:0;left:0;
-  width:100%;
-  height:100%;
-}
-
-/* coluna direita — painel */
-.side-panel{
-  background:var(--card);
-  border-left:1px solid var(--border);
-  display:flex;
-  flex-direction:column;
-  overflow-y:auto;
-}
-.side-inner{
-  padding:1.5rem 1.5rem .5rem;
-}
+#bio-canvas{display:block;position:absolute;top:0;left:0;width:100%;height:100%}
+.canvas-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(255,255,255,.4);background:rgba(0,0,0,.5);padding:.25rem .7rem;border-radius:20px;white-space:nowrap;pointer-events:none;z-index:5}
+.spot-btn{position:absolute;width:26px;height:26px;background:var(--accent);border-radius:50%;border:2.5px solid var(--dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--dark);z-index:10;transition:transform .15s}
+.spot-btn:hover{transform:scale(1.25)}
+.spot-popup{position:absolute;background:rgba(6,15,30,.97);border:1px solid var(--accent);border-radius:10px;padding:.6rem .9rem;font-size:.78rem;max-width:180px;z-index:20;line-height:1.45;pointer-events:none;opacity:0;transition:opacity .2s}
+.spot-popup.show{opacity:1}
+.spot-popup h4{font-size:.8rem;color:var(--accent);margin-bottom:.2rem}
+.side-panel{background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.side-inner{padding:1.5rem 1.5rem .5rem}
 .side-title{font-size:1.1rem;margin-bottom:.4rem}
 .side-desc{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1.2rem}
 .structs-label{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem}
@@ -133,19 +91,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .video-label-text{display:flex;flex-direction:column;gap:.2rem}
 .video-label-text strong{font-size:.9rem;color:var(--accent2)}
 .video-label-text span{font-size:.75rem;color:var(--muted)}
-
-/* spots */
-.spot-btn{position:absolute;width:26px;height:26px;background:var(--accent);border-radius:50%;border:2.5px solid var(--dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--dark);z-index:10;transition:transform .15s}
-.spot-btn:hover{transform:scale(1.25)}
-.spot-popup{position:absolute;background:rgba(6,15,30,.97);border:1px solid var(--accent);border-radius:10px;padding:.6rem .9rem;font-size:.78rem;max-width:180px;z-index:20;line-height:1.45;pointer-events:none;opacity:0;transition:opacity .2s}
-.spot-popup.show{opacity:1}
-.spot-popup h4{font-size:.8rem;color:var(--accent);margin-bottom:.2rem}
-.canvas-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(255,255,255,.4);background:rgba(0,0,0,.5);padding:.25rem .7rem;border-radius:20px;white-space:nowrap;pointer-events:none;z-index:5}
-
-@media(max-width:800px){
-  .viewer-container{grid-template-columns:1fr;grid-template-rows:50vh auto;height:auto}
-}
-
+@media(max-width:800px){.viewer-container{grid-template-columns:1fr;grid-template-rows:50vh auto;height:auto}}
 /* ADMIN */
 .admin-wrap{padding:2rem;max-width:1000px;margin:0 auto}
 .admin-wrap>h2{font-size:1.4rem;margin-bottom:1.5rem}
@@ -154,8 +100,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .admin-tab{background:transparent;border:none;border-radius:8px;padding:.6rem .85rem;text-align:left;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;color:var(--muted);transition:all .2s}
 .admin-tab:hover{background:var(--card);color:var(--text)}
 .admin-tab.active{background:rgba(0,229,160,.1);color:var(--accent)}
-.admin-panel{display:none}
-.admin-panel.active{display:block}
+.admin-panel{display:none}.admin-panel.active{display:block}
 .stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem;margin-bottom:1.5rem}
 .stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
 .stat-card .num{font-size:1.7rem;font-weight:700;font-family:'Syne',sans-serif;color:var(--accent)}
@@ -169,8 +114,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .sublist{margin-left:1rem;border-left:2px solid var(--border);padding-left:.8rem;margin-bottom:.5rem}
 .sub-item{display:flex;align-items:center;justify-content:space-between;padding:.4rem .5rem;border-radius:6px;font-size:.8rem;margin-bottom:.25rem}
 .sub-item:hover{background:rgba(255,255,255,.03)}
-
-/* MODAL */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-start;justify-content:center;padding:1.5rem 1rem;overflow-y:auto}
 .modal-bg.open{display:flex}
 .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;width:100%;max-width:520px;margin:auto}
@@ -195,16 +138,15 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .fgroup{margin-bottom:.9rem}
 .fgroup label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.2rem}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,229,160,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.3rem}
-/* modo posicionamento spots */
-.spot-mode-bar{display:none;position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,229,160,.9);border-radius:20px;padding:.45rem 1.3rem;font-size:.8rem;color:#0a1628;font-weight:600;z-index:30;white-space:nowrap;pointer-events:none;box-shadow:0 2px 12px rgba(0,229,160,.4)}
-.spot-mode-bar.on{display:block}
-#canvas-col.spot-mode{cursor:crosshair!important}
-.spot-cursor{position:absolute;width:20px;height:20px;background:rgba(0,229,160,.6);border:2px solid var(--accent);border-radius:50%;pointer-events:none;z-index:25;transform:translate(-50%,-50%);display:none;box-shadow:0 0 10px rgba(0,229,160,.5)}
-.spot-cursor.on{display:block}
+@keyframes spin{to{transform:rotate(360deg)}}
 .pick-spot-btn{background:rgba(0,229,160,.1);border:1px solid var(--accent);color:var(--accent);border-radius:7px;padding:.4rem .8rem;cursor:pointer;font-size:.78rem;font-family:'DM Sans',sans-serif;transition:all .2s;margin-left:.4rem}
 .pick-spot-btn:hover{background:rgba(0,229,160,.2)}
 .pick-spot-btn.active{background:var(--accent);color:var(--dark)}
-@keyframes spin{to{transform:rotate(360deg)}}
+.spot-mode-bar{display:none;position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,229,160,.9);border-radius:20px;padding:.45rem 1.3rem;font-size:.8rem;color:#0a1628;font-weight:600;z-index:30;white-space:nowrap;pointer-events:none}
+.spot-mode-bar.on{display:block}
+#canvas-col.spot-mode{cursor:crosshair!important}
+.spot-cursor{position:absolute;width:20px;height:20px;background:rgba(0,229,160,.6);border:2px solid var(--accent);border-radius:50%;pointer-events:none;z-index:25;transform:translate(-50%,-50%);display:none}
+.spot-cursor.on{display:block}
 </style>
 </head>
 <body>
@@ -231,7 +173,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     </div>
   </div>
   <div class="features">
-    <div class="feat-card"><div class="feat-icon">🔭</div><h3>Modelos 3D</h3><p>Exportados do Cinema 4D, rotativos 360° com zoom.</p></div>
+    <div class="feat-card"><div class="feat-icon">🔭</div><h3>Modelos 3D</h3><p>Exportados do Cinema 4D, rotativos com zoom.</p></div>
     <div class="feat-card"><div class="feat-icon">📍</div><h3>Spots</h3><p>Clique nos pontos do modelo para ver legendas.</p></div>
     <div class="feat-card"><div class="feat-icon">🎬</div><h3>Videoaulas</h3><p>Vídeo explicativo ao lado do modelo em cada subtema.</p></div>
     <div class="feat-card"><div class="feat-icon">📚</div><h3>Submódulos</h3><p>Cada tema dividido em subtemas detalhados.</p></div>
@@ -311,14 +253,12 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     </div>
   </nav>
   <div class="viewer-container">
-    <!-- CANVAS 3D -->
     <div id="canvas-col">
       <canvas id="bio-canvas"></canvas>
-      <div class="canvas-hint" id="canvas-hint">🖱 Arraste para girar • Scroll para zoom</div>
+      <div class="canvas-hint">🖱 Arraste para girar • Scroll para zoom</div>
       <div class="spot-mode-bar" id="spot-mode-bar">📍 Clique no modelo para posicionar o spot</div>
       <div class="spot-cursor" id="spot-cursor"></div>
     </div>
-    <!-- PAINEL LATERAL -->
     <div class="side-panel">
       <div class="side-inner">
         <h3 class="side-title" id="viewer-title"></h3>
@@ -403,14 +343,14 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="fgroup"><label>Nome</label><input type="text" id="s-name" placeholder="Ex: Membrana Plasmática"></div>
     <div class="fgroup"><label>Descrição</label><input type="text" id="s-desc" placeholder="Breve descrição"></div>
     <div class="fgroup"><label>Link do vídeo (YouTube ou Vimeo)</label><input type="text" id="s-video" placeholder="https://youtube.com/watch?v=..."></div>
-    <div class="fgroup"><label>Arquivo 3D (.glb) — deixe em branco por enquanto</label><input type="text" id="s-glb" placeholder="membrana.glb"></div>
+    <div class="fgroup"><label>Arquivo 3D (.glb)</label><input type="text" id="s-glb" placeholder="alveolos.glb"></div>
     <div class="spots-box">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
         <h4 style="margin:0">Spots — pontos clicáveis</h4>
         <button class="pick-spot-btn" id="pick-mode-btn" onclick="togglePickMode()">🎯 Clicar no modelo</button>
       </div>
-      <div style="background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:.6rem .9rem;margin-bottom:.8rem;font-size:.78rem;color:var(--muted);line-height:1.6" id="spot-tip">
-        💡 Use <strong style="color:var(--accent)">🎯 Clicar no modelo</strong> para posicionar spots visualmente — feche este modal, clique no ponto desejado do modelo e o spot é adicionado automaticamente!<br>
+      <div style="background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:.6rem .9rem;margin-bottom:.8rem;font-size:.78rem;color:var(--muted);line-height:1.6">
+        💡 Use <strong style="color:var(--accent)">🎯 Clicar no modelo</strong> para posicionar spots visualmente.<br>
         Ou adicione manualmente: frente <strong>0,0,0.9</strong> · topo <strong>0,0.9,0</strong> · lado <strong>0.9,0,0</strong>
       </div>
       <div id="spot-rows"></div>
@@ -426,7 +366,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
-// ===== SUPABASE =====
 const SB='https://ayymsfzpeswdjpgebsvb.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5eW1zZnpwZXN3ZGpwZ2Vic3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODI1NjUsImV4cCI6MjA5Mzc1ODU2NX0.DvKcrvY61Y4qViEOj3rMUuIPWZpZhXboMom_NiNwSEo';
 async function api(path,method='GET',body=null){
@@ -435,56 +374,36 @@ async function api(path,method='GET',body=null){
   const t=await r.text();return t?JSON.parse(t):[];
 }
 
-// ===== GLOBALS =====
 const EMOJIS=['🧬','⚗️','🔬','🧫','🌿','🦠','🧪','🫀','🫁','🧠','🦴','🌱','🐠','🐛','🌺','🍃'];
 const BG=['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a','#1a0d2b'];
 let selEmoji='🧬',editModId=null,editSubId=null,curModId=null,curModName='',curSub=null;
-
-// 3D globals
 let renderer=null,scene,camera,meshGroup,animId=null;
-let isDrag=false,prevX=0,prevY=0;
+let isDrag=false,prevX=0,prevY=0,pinchDist=null;
 let spotEls=[];
+let pickMode=false;
 
-// ===== NAV =====
 function go(s){
   document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
   document.getElementById('screen-'+s).classList.add('active');
   if(s==='modules')loadMods();
   if(s==='admin')loadAdmin();
 }
-function doLogin(){
-  const e=document.getElementById('login-email').value;
-  if(!e){alert('Preencha o e-mail');return;}
-  document.getElementById('user-name-nav').textContent=e.split('@')[0];
-  go('modules');
-}
-function doRegister(){
-  const n=document.getElementById('reg-name').value;
-  if(!n){alert('Preencha o nome');return;}
-  document.getElementById('user-name-nav').textContent=n;
-  go('modules');
-}
-function selPlan(p){
-  document.querySelectorAll('.plan-opt').forEach(x=>x.classList.remove('selected'));
-  document.getElementById('plan-'+p).classList.add('selected');
-}
+function doLogin(){const e=document.getElementById('login-email').value;if(!e){alert('Preencha o e-mail');return;}document.getElementById('user-name-nav').textContent=e.split('@')[0];go('modules');}
+function doRegister(){const n=document.getElementById('reg-name').value;if(!n){alert('Preencha o nome');return;}document.getElementById('user-name-nav').textContent=n;go('modules');}
+function selPlan(p){document.querySelectorAll('.plan-opt').forEach(x=>x.classList.remove('selected'));document.getElementById('plan-'+p).classList.add('selected');}
 
-// ===== MÓDULOS =====
 async function loadMods(){
   const g=document.getElementById('modules-grid');
   g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
   try{
     const mods=await api('modules?order=id');
     if(!mods.length){g.innerHTML='<div class="loading">Nenhum módulo ainda.</div>';return;}
-    g.innerHTML=mods.map((m,i)=>`
-      <div class="mod-card" onclick="openMod('${m.id}','${esc(m.name)}','${esc(m.desc||'')}')">
-        <div class="mod-thumb" style="background:${BG[i%BG.length]}">${m.emoji||'🧬'}</div>
-        <div class="mod-body"><h3>${m.name}</h3><p>${m.desc||''}</p></div>
-      </div>`).join('');
+    g.innerHTML=mods.map((m,i)=>`<div class="mod-card" onclick="openMod('${m.id}','${esc(m.name)}','${esc(m.desc||'')}')">
+      <div class="mod-thumb" style="background:${BG[i%BG.length]}">${m.emoji||'🧬'}</div>
+      <div class="mod-body"><h3>${m.name}</h3><p>${m.desc||''}</p></div></div>`).join('');
   }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
 }
 
-// ===== SUBMÓDULOS =====
 async function openMod(id,name,desc){
   curModId=id;curModName=name;
   document.getElementById('submod-title').textContent=name;
@@ -495,15 +414,12 @@ async function openMod(id,name,desc){
   try{
     const subs=await api('submodules?module_id=eq.'+id+'&order=id');
     if(!subs.length){g.innerHTML='<div class="loading">Nenhum subtema neste módulo ainda.</div>';return;}
-    g.innerHTML=subs.map((s,i)=>`
-      <div class="mod-card" onclick='openViewer(${JSON.stringify(s)})'>
-        <div class="mod-thumb" style="background:${BG[(i+2)%BG.length]};font-size:2.5rem">🔬</div>
-        <div class="mod-body"><h3>${s.name}</h3><p>${s.desc||''}</p></div>
-      </div>`).join('');
+    g.innerHTML=subs.map((s,i)=>`<div class="mod-card" onclick='openViewer(${JSON.stringify(s)})'>
+      <div class="mod-thumb" style="background:${BG[(i+2)%BG.length]};font-size:2.5rem">🔬</div>
+      <div class="mod-body"><h3>${s.name}</h3><p>${s.desc||''}</p></div></div>`).join('');
   }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
 }
 
-// ===== VIEWER =====
 function openViewer(s){
   if(typeof s==='string')s=JSON.parse(s);
   curSub=s;
@@ -514,45 +430,31 @@ function openViewer(s){
   setupVideo(s.video);
   renderStructs(s.spots||[]);
   go('viewer');
-  // iniciar 3D após a tela estar visível
-  setTimeout(startThree,50);
+  setTimeout(startThree,100);
 }
 
 function renderStructs(spots){
   const l=document.getElementById('struct-list');
   if(!spots||!spots.length){l.innerHTML='<p style="font-size:.8rem;color:var(--muted)">Nenhum spot cadastrado.</p>';return;}
-  l.innerHTML=spots.map((s,i)=>`
-    <div class="struct-item" id="sti-${i}" onclick="focusSpot(${i})">
-      <div class="struct-dot"></div>${s.name}
-    </div>`).join('');
+  l.innerHTML=spots.map((s,i)=>`<div class="struct-item" id="sti-${i}" onclick="focusSpot(${i})"><div class="struct-dot"></div>${s.name}</div>`).join('');
 }
-
 function focusSpot(i){
   document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
   const el=document.getElementById('sti-'+i);if(el)el.classList.add('active');
   document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
   const sp=document.getElementById('spp-'+i);if(sp)sp.classList.add('show');
 }
-
 function setupVideo(url){
   const box=document.getElementById('video-box');
   box.dataset.url=url||'';
   if(url){
-    box.innerHTML=`<div class="video-placeholder" onclick="loadVideo()">
-      <div class="play-circle">▶</div>
-      <div class="video-label-text">
-        <strong>▶ Clique aqui e assista a videoaula</strong>
-        <span>Explicação completa sobre este tema</span>
-      </div>
-    </div>`;
-  } else {
+    box.innerHTML=`<div class="video-placeholder" onclick="loadVideo()"><div class="play-circle">▶</div><div class="video-label-text"><strong>▶ Clique aqui e assista a videoaula</strong><span>Explicação completa sobre este tema</span></div></div>`;
+  }else{
     box.innerHTML=`<div style="padding:.8rem 1rem;font-size:.8rem;color:var(--muted);border:1px dashed var(--border);border-radius:10px;text-align:center">Sem vídeo neste subtema</div>`;
   }
 }
-
 function loadVideo(){
-  const url=document.getElementById('video-box').dataset.url;
-  if(!url)return;
+  const url=document.getElementById('video-box').dataset.url;if(!url)return;
   const box=document.getElementById('video-box');
   let src='';
   if(url.includes('youtu')){
@@ -561,15 +463,13 @@ function loadVideo(){
     else if(url.includes('v='))id=url.split('v=')[1].split('&')[0];
     else id=url.split('/').pop().split('?')[0];
     src='https://www.youtube.com/embed/'+id+'?autoplay=1';
-  }else if(url.includes('vimeo')){
-    src='https://player.vimeo.com/video/'+url.split('/').pop()+'?autoplay=1';
-  }else{src=url;}
+  }else if(url.includes('vimeo')){src='https://player.vimeo.com/video/'+url.split('/').pop()+'?autoplay=1';}
+  else{src=url;}
   box.innerHTML=`<iframe src="${src}" frameborder="0" allowfullscreen allow="autoplay"></iframe>`;
 }
 
 // ===== THREE.JS =====
-async function startThree(){
-  // parar animação anterior
+function startThree(){
   if(animId){cancelAnimationFrame(animId);animId=null;}
   document.querySelectorAll('.spot-btn,.spot-popup').forEach(e=>e.remove());
   spotEls=[];isDrag=false;
@@ -577,86 +477,57 @@ async function startThree(){
   const col=document.getElementById('canvas-col');
   const canvas=document.getElementById('bio-canvas');
 
-  // definir tamanho do canvas igual ao container
-  // forçar tamanho via getBoundingClientRect
-  // forçar visibilidade e tamanho antes de tudo
-  col.style.display='block';
-  col.style.width='100%';
-  const navH=document.querySelector('nav').offsetHeight||61;
-  const totalH=window.innerHeight-navH;
-  col.style.height=totalH+'px';
-
-  // aguardar layout e pegar tamanho real
-  await new Promise(r=>setTimeout(r,50));
+  // tamanho fixo baseado na janela
+  const navH=61;
   const W=col.offsetWidth||window.innerWidth-400;
-  const H=col.offsetHeight||totalH;
+  const H=window.innerHeight-navH;
+  col.style.height=H+'px';
+  canvas.width=W;canvas.height=H;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
 
-  canvas.width=W;
-  canvas.height=H;
-  canvas.style.width=W+'px';
-  canvas.style.height=H+'px';
-  canvas.style.display='block';
-
-  // renderer
+  // renderer com encoding correto para cores reais
   if(renderer){renderer.dispose();renderer=null;}
-  renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,alpha:true});
+  renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
   renderer.setSize(W,H,false);
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));
   renderer.outputEncoding=THREE.sRGBEncoding;
   renderer.physicallyCorrectLights=true;
 
-  // cena
   scene=new THREE.Scene();
   camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
   camera.position.set(0,0,4);
 
-  // luzes — brancas neutras para não distorcer cores do modelo
+  // luzes brancas neutras
   scene.add(new THREE.AmbientLight(0xffffff,1.0));
   const l1=new THREE.DirectionalLight(0xffffff,1.5);l1.position.set(5,5,5);scene.add(l1);
   const l2=new THREE.DirectionalLight(0xffffff,0.8);l2.position.set(-5,3,-5);scene.add(l2);
   const l3=new THREE.DirectionalLight(0xffffff,0.5);l3.position.set(0,-5,0);scene.add(l3);
-  // encoding correto para cores reais do modelo
-  renderer.outputEncoding=THREE.sRGBEncoding;
-  renderer.physicallyCorrectLights=true;
 
-  meshGroup=new THREE.Group();
-  scene.add(meshGroup);
+  meshGroup=new THREE.Group();scene.add(meshGroup);
 
   const glbFile=curSub?curSub.glb||'':'';
   if(glbFile){
-    // carregar modelo real .glb
     const loader=new THREE.GLTFLoader();
-    loader.load(
-      glbFile,
-      gltf=>{
-        const model=gltf.scene;
-        // preservar materiais originais e corrigir encoding das texturas
-        model.traverse(child=>{
-          if(child.isMesh){
-            child.castShadow=true;
-            child.receiveShadow=true;
-            if(child.material){
-              // corrigir texturas escuras
-              if(child.material.map)child.material.map.encoding=THREE.sRGBEncoding;
-              if(child.material.emissiveMap)child.material.emissiveMap.encoding=THREE.sRGBEncoding;
-              child.material.needsUpdate=true;
-            }
-          }
-        });
-        // centralizar e escalar automaticamente
-        const box=new THREE.Box3().setFromObject(model);
-        const center=box.getCenter(new THREE.Vector3());
-        const size=box.getSize(new THREE.Vector3());
-        const maxDim=Math.max(size.x,size.y,size.z);
-        model.position.sub(center);
-        model.scale.setScalar(2.5/maxDim);
-        meshGroup.add(model);
-      },
-      xhr=>{console.log('Carregando: '+(xhr.loaded/xhr.total*100).toFixed(0)+'%');},
-      err=>{console.warn('Erro ao carregar .glb, usando placeholder:',err);buildPlaceholder();}
-    );
-  } else {
-    // sem .glb — mostrar placeholder informativo
+    loader.load(glbFile,gltf=>{
+      const model=gltf.scene;
+      // corrigir encoding das texturas para evitar cores pretas
+      model.traverse(child=>{
+        if(child.isMesh&&child.material){
+          const mat=child.material;
+          if(mat.map){mat.map.encoding=THREE.sRGBEncoding;mat.map.needsUpdate=true;}
+          if(mat.emissiveMap){mat.emissiveMap.encoding=THREE.sRGBEncoding;}
+          mat.needsUpdate=true;
+        }
+      });
+      // centralizar e escalar
+      const box=new THREE.Box3().setFromObject(model);
+      const center=box.getCenter(new THREE.Vector3());
+      const size=box.getSize(new THREE.Vector3());
+      model.position.sub(center);
+      model.scale.setScalar(2.5/Math.max(size.x,size.y,size.z));
+      meshGroup.add(model);
+    },null,err=>{console.warn('Erro .glb:',err);buildPlaceholder();});
+  }else{
     buildPlaceholder();
   }
 
@@ -679,33 +550,31 @@ async function startThree(){
     spotEls.push({btn,pop,v:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
   });
 
-  // ===== CONTROLES — órbita esférica + zoom na direção do mouse =====
-  let theta=0, phi=Math.PI/2, radius=4;
-  let orbitTarget=new THREE.Vector3(0,0,0);
-  let isDrag=false,prevX=0,prevY=0,pinchDist=null;
+  // ===== CONTROLES — órbita esférica com zoom na direção do mouse =====
+  let theta=0,phi=Math.PI/2,radius=4;
+  const orbitTarget=new THREE.Vector3(0,0,0);
 
   function updateCam(){
     camera.position.set(
-      orbitTarget.x + radius*Math.sin(phi)*Math.sin(theta),
-      orbitTarget.y + radius*Math.cos(phi),
-      orbitTarget.z + radius*Math.sin(phi)*Math.cos(theta)
+      orbitTarget.x+radius*Math.sin(phi)*Math.sin(theta),
+      orbitTarget.y+radius*Math.cos(phi),
+      orbitTarget.z+radius*Math.sin(phi)*Math.cos(theta)
     );
     camera.lookAt(orbitTarget);
   }
   updateCam();
 
-  // zoom na direção do mouse
   col.onwheel=e=>{
     e.preventDefault();
-    const fator=e.deltaY>0?1.1:0.9;
-    radius=Math.max(0.5,Math.min(15,radius*fator));
-    // deslocar target levemente para o ponto sob o mouse
+    // zoom na direção do mouse
     const rect=col.getBoundingClientRect();
     const nx=((e.clientX-rect.left)/rect.width)*2-1;
     const ny=-((e.clientY-rect.top)/rect.height)*2+1;
-    const v=new THREE.Vector3(nx,ny,0.5).unproject(camera).sub(camera.position).normalize();
-    const shift=e.deltaY>0?-0.05:0.05;
-    orbitTarget.addScaledVector(v,shift);
+    const mouseDir=new THREE.Vector3(nx,ny,0.5).unproject(camera).sub(camera.position).normalize();
+    const zoomAmt=e.deltaY*0.003;
+    radius=Math.max(0.5,Math.min(15,radius+zoomAmt));
+    // deslocar levemente o target para o ponto do mouse
+    orbitTarget.addScaledVector(mouseDir,-zoomAmt*0.5);
     updateCam();
   };
 
@@ -719,10 +588,9 @@ async function startThree(){
   }
   function onUp(){isDrag=false;col.style.cursor='grab';}
 
-  col.onmousedown=e=>{if(!e.target.classList.contains('spot-btn')){onDown(e.clientX,e.clientY);e.preventDefault();}};
+  col.onmousedown=e=>{if(!e.target.classList.contains('spot-btn')&&!pickMode){onDown(e.clientX,e.clientY);e.preventDefault();}};
   document.onmousemove=e=>onMove(e.clientX,e.clientY);
   document.onmouseup=onUp;
-
   col.ontouchstart=e=>{
     if(e.target.classList.contains('spot-btn'))return;
     if(e.touches.length===1)onDown(e.touches[0].clientX,e.touches[0].clientY);
@@ -740,56 +608,75 @@ async function startThree(){
   };
   col.ontouchend=()=>{isDrag=false;pinchDist=null;};
 
-  // raycaster para oclusão dos spots
-  const raycaster=new THREE.Raycaster();
-
-  // loop de renderização
   function loop(){
     animId=requestAnimationFrame(loop);
     renderer.render(scene,camera);
     const W2=col.clientWidth,H2=col.clientHeight;
     spotEls.forEach(({btn,pop,v})=>{
-      const wp=v.clone();
-      meshGroup.localToWorld(wp);
+      const wp=v.clone();meshGroup.localToWorld(wp);
       const p=wp.clone().project(camera);
       const sx=(p.x*.5+.5)*W2,sy=(-.5*p.y+.5)*H2;
       btn.style.left=(sx-13)+'px';btn.style.top=(sy-13)+'px';
       pop.style.left=(sx+18)+'px';pop.style.top=(sy-20)+'px';
-      // oclusão — verificar se geometria bloqueia o spot
-      const dir=wp.clone().sub(camera.position).normalize();
-      raycaster.set(camera.position,dir);
-      const hits=raycaster.intersectObject(meshGroup,true);
-      const dist=camera.position.distanceTo(wp);
-      const behindCam=p.z>1;
-      const occluded=hits.length>0&&hits[0].distance<dist-0.05;
-      const hidden=behindCam||occluded;
-      btn.style.opacity=hidden?'0':'1';
-      btn.style.pointerEvents=hidden?'none':'all';
-      if(hidden)pop.classList.remove('show');
+      const hidden=p.z>1;
+      btn.style.opacity=hidden?'0':'1';btn.style.pointerEvents=hidden?'none':'all';
     });
   }
   loop();
 }
 
-// ===== PLACEHOLDER 3D =====
 function buildPlaceholder(){
-  // esfera estilizada quando não tem .glb
-  const geo=new THREE.SphereGeometry(1,64,64);
-  const mat=new THREE.MeshStandardMaterial({
-    color:0x1a3a5c,roughness:.3,metalness:.4,
-    wireframe:false
-  });
-  const sphere=new THREE.Mesh(geo,mat);
-  meshGroup.add(sphere);
-  // grade de linhas por cima
-  const wgeo=new THREE.SphereGeometry(1.01,16,16);
+  const geo=new THREE.SphereGeometry(1,32,32);
+  const mat=new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3,metalness:.4});
+  meshGroup.add(new THREE.Mesh(geo,mat));
   const wmat=new THREE.MeshBasicMaterial({color:0x00e5a0,wireframe:true,opacity:.15,transparent:true});
-  meshGroup.add(new THREE.Mesh(wgeo,wmat));
-  // texto no canvas indicando que não tem modelo
-  const hint=document.createElement('div');
-  hint.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(0,229,160,.5);font-size:.8rem;text-align:center;pointer-events:none;z-index:6;line-height:1.6';
-  hint.innerHTML='Modelo 3D não configurado<br><span style="font-size:.72rem;color:rgba(255,255,255,.3)">Adicione o arquivo .glb no painel admin</span>';
-  document.getElementById('canvas-col').appendChild(hint);
+  meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1.01,16,16),wmat));
+}
+
+// ===== PICK MODE =====
+function togglePickMode(){
+  pickMode=!pickMode;
+  const btn=document.getElementById('pick-mode-btn');
+  const bar=document.getElementById('spot-mode-bar');
+  const col=document.getElementById('canvas-col');
+  const cur=document.getElementById('spot-cursor');
+  if(pickMode){
+    document.getElementById('sub-modal').classList.remove('open');
+    col.classList.add('spot-mode');bar.classList.add('on');btn.classList.add('active');
+    btn.textContent='✅ Modo ativo — clique no modelo';
+    col._pick=e=>{
+      const rect=col.getBoundingClientRect();
+      const nx=((e.clientX-rect.left)/rect.width)*2-1;
+      const ny=-((e.clientY-rect.top)/rect.height)*2+1;
+      const ray=new THREE.Raycaster();
+      ray.setFromCamera(new THREE.Vector2(nx,ny),camera);
+      const hits=ray.intersectObject(meshGroup,true);
+      if(hits.length>0){
+        const local=meshGroup.worldToLocal(hits[0].point.clone());
+        const x=+local.x.toFixed(2),y=+local.y.toFixed(2),z=+local.z.toFixed(2);
+        const nome=prompt('Nome deste spot:');
+        if(nome){
+          const leg=prompt('Legenda explicativa:','');
+          document.getElementById('sub-modal').classList.add('open');
+          addSpotRow({name:nome,desc:leg||'',x,y,z});
+          exitPickMode();
+        }
+      }
+    };
+    col._move=e=>{const r=col.getBoundingClientRect();cur.classList.add('on');cur.style.left=(e.clientX-r.left)+'px';cur.style.top=(e.clientY-r.top)+'px';};
+    col.addEventListener('click',col._pick);col.addEventListener('mousemove',col._move);
+  }else{exitPickMode();}
+}
+function exitPickMode(){
+  pickMode=false;
+  const col=document.getElementById('canvas-col');
+  col.classList.remove('spot-mode');
+  document.getElementById('spot-mode-bar').classList.remove('on');
+  document.getElementById('spot-cursor').classList.remove('on');
+  const btn=document.getElementById('pick-mode-btn');
+  if(btn){btn.classList.remove('active');btn.textContent='🎯 Clicar no modelo';}
+  if(col._pick){col.removeEventListener('click',col._pick);col._pick=null;}
+  if(col._move){col.removeEventListener('mousemove',col._move);col._move=null;}
 }
 
 // ===== ADMIN =====
@@ -822,19 +709,15 @@ function renderAdminList(mods,subs){
         </div>
       </div>
       ${ms.length?`<div class="sublist">${ms.map(s=>`
-        <div class="sub-item">
-          <span style="color:var(--muted);margin-right:.4rem">↳</span>
-          <span style="flex:1">${s.name}</span>
-          <div style="display:flex;gap:.3rem">
-            <button class="btn btn-ghost btn-sm" onclick='editSub(${JSON.stringify(s)})'>✏️</button>
-            <button class="btn btn-danger btn-sm" onclick="delSub('${s.id}')">🗑</button>
-          </div>
-        </div>`).join('')}</div>`:''}
+        <div class="sub-item"><span style="color:var(--muted);margin-right:.4rem">↳</span>
+        <span style="flex:1">${s.name}</span>
+        <div style="display:flex;gap:.3rem">
+          <button class="btn btn-ghost btn-sm" onclick='editSub(${JSON.stringify(s)})'>✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delSub('${s.id}')">🗑</button>
+        </div></div>`).join('')}</div>`:''}
     </div>`;
   }).join('');
 }
-
-// MÓDULO CRUD
 function openNewMod(){editModId=null;selEmoji='🧬';document.getElementById('mod-modal-title').textContent='Novo módulo';document.getElementById('m-name').value='';document.getElementById('m-desc').value='';buildEmoji();document.getElementById('mod-modal').classList.add('open');}
 function editMod(m){if(typeof m==='string')m=JSON.parse(m);editModId=m.id;selEmoji=m.emoji||'🧬';document.getElementById('mod-modal-title').textContent='Editar módulo';document.getElementById('m-name').value=m.name||'';document.getElementById('m-desc').value=m.desc||'';buildEmoji();document.getElementById('mod-modal').classList.add('open');}
 function closeMod(){document.getElementById('mod-modal').classList.remove('open');}
@@ -847,8 +730,6 @@ async function saveMod(){
   btn.innerHTML='Salvar';btn.disabled=false;
 }
 async function delMod(id){if(!confirm('Excluir módulo e subtemas?'))return;try{await api('submodules?module_id=eq.'+id,'DELETE');await api('modules?id=eq.'+id,'DELETE');loadAdmin();}catch(e){alert('Erro: '+e.message);}}
-
-// SUBTEMA CRUD
 function openNewSub(modId,modName){editSubId=null;document.getElementById('sub-modal-title').textContent='Novo subtema — '+modName;document.getElementById('s-name').value='';document.getElementById('s-desc').value='';document.getElementById('s-video').value='';document.getElementById('s-glb').value='';document.getElementById('sub-modal').dataset.modId=modId;buildSpotRows([]);document.getElementById('sub-modal').classList.add('open');}
 function editSub(s){if(typeof s==='string')s=JSON.parse(s);editSubId=s.id;document.getElementById('sub-modal-title').textContent='Editar subtema';document.getElementById('s-name').value=s.name||'';document.getElementById('s-desc').value=s.desc||'';document.getElementById('s-video').value=s.video||'';document.getElementById('s-glb').value=s.glb||'';document.getElementById('sub-modal').dataset.modId=s.module_id;buildSpotRows(s.spots||[]);document.getElementById('sub-modal').classList.add('open');}
 function closeSub(){document.getElementById('sub-modal').classList.remove('open');}
@@ -867,84 +748,6 @@ async function saveSub(){
   btn.innerHTML='Salvar subtema';btn.disabled=false;
 }
 async function delSub(id){if(!confirm('Excluir este subtema?'))return;try{await api('submodules?id=eq.'+id,'DELETE');loadAdmin();}catch(e){alert('Erro: '+e.message);}}
-
-// ===== PICK MODE (clicar no modelo para posicionar spot) =====
-let pickMode=false;
-
-function togglePickMode(){
-  pickMode=!pickMode;
-  const btn=document.getElementById('pick-mode-btn');
-  const bar=document.getElementById('spot-mode-bar');
-  const col=document.getElementById('canvas-col');
-  const hint=document.getElementById('canvas-hint');
-  if(pickMode){
-    // fechar modal e ativar modo
-    document.getElementById('sub-modal').classList.remove('open');
-    col.classList.add('spot-mode');
-    bar.classList.add('on');
-    if(hint)hint.style.display='none';
-    btn.classList.add('active');
-    btn.textContent='✅ Modo ativo — clique no modelo';
-    // listener de clique para pegar coordenada
-    col._pickListener=function(e){
-      if(!pickMode)return;
-      const rect=col.getBoundingClientRect();
-      const mx=((e.clientX-rect.left)/rect.width)*2-1;
-      const my=-((e.clientY-rect.top)/rect.height)*2+1;
-      // raycasting
-      const raycaster=new THREE.Raycaster();
-      raycaster.setFromCamera(new THREE.Vector2(mx,my),camera);
-      const hits=raycaster.intersectObject(meshGroup,true);
-      if(hits.length>0){
-        const pt=hits[0].point;
-        // converter para coordenadas locais do meshGroup
-        const local=meshGroup.worldToLocal(pt.clone());
-        const x=parseFloat(local.x.toFixed(2));
-        const y=parseFloat(local.y.toFixed(2));
-        const z=parseFloat(local.z.toFixed(2));
-        // pedir nome do spot
-        const nome=prompt('Nome deste spot (ex: Núcleo, Membrana...):');
-        if(nome){
-          const legenda=prompt('Legenda explicativa deste spot:','');
-          // adicionar linha na tabela de spots
-          document.getElementById('sub-modal').classList.add('open');
-          addSpotRow({name:nome,desc:legenda||nome,x,y,z});
-          exitPickMode();
-        }
-      }
-    };
-    col.addEventListener('click',col._pickListener);
-    // cursor seguindo o mouse
-    col._moveListener=function(e){
-      const cur=document.getElementById('spot-cursor');
-      const rect=col.getBoundingClientRect();
-      cur.classList.add('on');
-      cur.style.left=(e.clientX-rect.left)+'px';
-      cur.style.top=(e.clientY-rect.top)+'px';
-    };
-    col.addEventListener('mousemove',col._moveListener);
-  } else {
-    exitPickMode();
-  }
-}
-
-function exitPickMode(){
-  pickMode=false;
-  const col=document.getElementById('canvas-col');
-  const bar=document.getElementById('spot-mode-bar');
-  const hint=document.getElementById('canvas-hint');
-  const cur=document.getElementById('spot-cursor');
-  const btn=document.getElementById('pick-mode-btn');
-  col.classList.remove('spot-mode');
-  bar.classList.remove('on');
-  cur.classList.remove('on');
-  if(hint)hint.style.display='';
-  if(btn){btn.classList.remove('active');btn.textContent='🎯 Clicar no modelo';}
-  if(col._pickListener){col.removeEventListener('click',col._pickListener);col._pickListener=null;}
-  if(col._moveListener){col.removeEventListener('mousemove',col._moveListener);col._moveListener=null;}
-}
-
-// HELPERS
 function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 function buildEmoji(){const p=document.getElementById('emoji-picker');p.innerHTML='';EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selEmoji?' sel':''}" onclick="pickE('${e}',this)">${e}</span>`;});}
 function pickE(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
