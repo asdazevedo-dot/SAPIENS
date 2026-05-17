@@ -665,44 +665,43 @@ function startThree(){
     spotEls.push({btn,pop,v:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
   });
 
-  // ===== CONTROLES DE ÓRBITA — rotação + zoom na direção do mouse =====
-  let spherical={theta:0,phi:Math.PI/2,radius:camZ};
-  let target=new THREE.Vector3(0,0,0); // ponto central que a câmera orbita
+  // ===== CONTROLES — órbita esférica + zoom na direção do mouse =====
+  let theta=0, phi=Math.PI/2, radius=4;
+  let orbitTarget=new THREE.Vector3(0,0,0);
   let isDrag=false,prevX=0,prevY=0,pinchDist=null;
 
-  function updateCamera(){
+  function updateCam(){
     camera.position.set(
-      target.x+spherical.radius*Math.sin(spherical.phi)*Math.sin(spherical.theta),
-      target.y+spherical.radius*Math.cos(spherical.phi),
-      target.z+spherical.radius*Math.sin(spherical.phi)*Math.cos(spherical.theta)
+      orbitTarget.x + radius*Math.sin(phi)*Math.sin(theta),
+      orbitTarget.y + radius*Math.cos(phi),
+      orbitTarget.z + radius*Math.sin(phi)*Math.cos(theta)
     );
-    camera.lookAt(target);
+    camera.lookAt(orbitTarget);
   }
-  updateCamera();
+  updateCam();
 
-  // zoom na direção do mouse (dolly)
+  // zoom na direção do mouse
   col.onwheel=e=>{
     e.preventDefault();
+    const fator=e.deltaY>0?1.1:0.9;
+    radius=Math.max(0.5,Math.min(15,radius*fator));
+    // deslocar target levemente para o ponto sob o mouse
     const rect=col.getBoundingClientRect();
-    const mx=((e.clientX-rect.left)/rect.width)*2-1;
-    const my=-((e.clientY-rect.top)/rect.height)*2+1;
-    // mover target levemente na direção do mouse ao dar zoom
-    const dir=new THREE.Vector3(mx,my,-1).unproject(camera).sub(camera.position).normalize();
-    const delta=e.deltaY>0?0.1:-0.1;
-    spherical.radius=Math.max(1,Math.min(12,spherical.radius+e.deltaY*.008));
-    target.addScaledVector(dir,delta*0.3);
-    updateCamera();
+    const nx=((e.clientX-rect.left)/rect.width)*2-1;
+    const ny=-((e.clientY-rect.top)/rect.height)*2+1;
+    const v=new THREE.Vector3(nx,ny,0.5).unproject(camera).sub(camera.position).normalize();
+    const shift=e.deltaY>0?-0.05:0.05;
+    orbitTarget.addScaledVector(v,shift);
+    updateCam();
   };
 
-  // arrastar para orbitar
   function onDown(x,y){isDrag=true;prevX=x;prevY=y;col.style.cursor='grabbing';}
   function onMove(x,y){
     if(!isDrag)return;
-    const dx=x-prevX,dy=y-prevY;
-    spherical.theta-=dx*.008;
-    spherical.phi=Math.max(.1,Math.min(Math.PI-.1,spherical.phi+dy*.008));
+    theta-=(x-prevX)*.008;
+    phi=Math.max(0.05,Math.min(Math.PI-0.05,phi+(y-prevY)*.008));
     prevX=x;prevY=y;
-    updateCamera();
+    updateCam();
   }
   function onUp(){isDrag=false;col.style.cursor='grab';}
 
@@ -720,21 +719,20 @@ function startThree(){
     if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY);
     if(e.touches.length===2&&pinchDist){
       const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-      spherical.radius=Math.max(1,Math.min(12,spherical.radius-(d-pinchDist)*.02));
-      pinchDist=d;updateCamera();
+      radius=Math.max(0.5,Math.min(15,radius*(pinchDist/d)));
+      pinchDist=d;updateCam();
     }
     e.preventDefault();
   };
   col.ontouchend=()=>{isDrag=false;pinchDist=null;};
 
-  // raycaster para visibilidade dos spots
+  // raycaster para oclusão dos spots
   const raycaster=new THREE.Raycaster();
 
-  // loop
+  // loop de renderização
   function loop(){
     animId=requestAnimationFrame(loop);
     renderer.render(scene,camera);
-    // posicionar spots com verificação de oclusão
     const W2=col.clientWidth,H2=col.clientHeight;
     spotEls.forEach(({btn,pop,v})=>{
       const wp=v.clone();
@@ -743,15 +741,13 @@ function startThree(){
       const sx=(p.x*.5+.5)*W2,sy=(-.5*p.y+.5)*H2;
       btn.style.left=(sx-13)+'px';btn.style.top=(sy-13)+'px';
       pop.style.left=(sx+18)+'px';pop.style.top=(sy-20)+'px';
-
-      // verificar se o ponto está atrás do modelo (oclusão)
+      // oclusão — verificar se geometria bloqueia o spot
       const dir=wp.clone().sub(camera.position).normalize();
       raycaster.set(camera.position,dir);
       const hits=raycaster.intersectObject(meshGroup,true);
-      const distToSpot=camera.position.distanceTo(wp);
-      // oculto se: está atrás da câmera OU tem geometria na frente
+      const dist=camera.position.distanceTo(wp);
       const behindCam=p.z>1;
-      const occluded=hits.length>0&&hits[0].distance<distToSpot-0.05;
+      const occluded=hits.length>0&&hits[0].distance<dist-0.05;
       const hidden=behindCam||occluded;
       btn.style.opacity=hidden?'0':'1';
       btn.style.pointerEvents=hidden?'none':'all';
