@@ -596,10 +596,14 @@ function startThree(){
   camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
   camera.position.set(0,0,camZ);
 
-  // luzes
-  scene.add(new THREE.AmbientLight(0xffffff,0.8));
-  const l1=new THREE.DirectionalLight(0x00e5a0,1.2);l1.position.set(2,3,4);scene.add(l1);
-  const l2=new THREE.DirectionalLight(0x00b4d8,0.7);l2.position.set(-3,1,-2);scene.add(l2);
+  // luzes — brancas neutras para não distorcer cores do modelo
+  scene.add(new THREE.AmbientLight(0xffffff,1.0));
+  const l1=new THREE.DirectionalLight(0xffffff,1.5);l1.position.set(5,5,5);scene.add(l1);
+  const l2=new THREE.DirectionalLight(0xffffff,0.8);l2.position.set(-5,3,-5);scene.add(l2);
+  const l3=new THREE.DirectionalLight(0xffffff,0.5);l3.position.set(0,-5,0);scene.add(l3);
+  // encoding correto para cores reais do modelo
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.physicallyCorrectLights=true;
 
   meshGroup=new THREE.Group();
   scene.add(meshGroup);
@@ -612,14 +616,26 @@ function startThree(){
       glbFile,
       gltf=>{
         const model=gltf.scene;
-        // centralizar e escalar o modelo automaticamente
+        // preservar materiais originais e corrigir encoding das texturas
+        model.traverse(child=>{
+          if(child.isMesh){
+            child.castShadow=true;
+            child.receiveShadow=true;
+            if(child.material){
+              // corrigir texturas escuras
+              if(child.material.map)child.material.map.encoding=THREE.sRGBEncoding;
+              if(child.material.emissiveMap)child.material.emissiveMap.encoding=THREE.sRGBEncoding;
+              child.material.needsUpdate=true;
+            }
+          }
+        });
+        // centralizar e escalar automaticamente
         const box=new THREE.Box3().setFromObject(model);
         const center=box.getCenter(new THREE.Vector3());
         const size=box.getSize(new THREE.Vector3());
         const maxDim=Math.max(size.x,size.y,size.z);
         model.position.sub(center);
-        const scale=2.5/maxDim;
-        model.scale.setScalar(scale);
+        model.scale.setScalar(2.5/maxDim);
         meshGroup.add(model);
       },
       xhr=>{console.log('Carregando: '+(xhr.loaded/xhr.total*100).toFixed(0)+'%');},
@@ -649,49 +665,97 @@ function startThree(){
     spotEls.push({btn,pop,v:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
   });
 
-  // ===== EVENTOS — tudo no document para não perder o drag =====
+  // ===== CONTROLES DE ÓRBITA — rotação + zoom na direção do mouse =====
+  let spherical={theta:0,phi:Math.PI/2,radius:camZ};
+  let target=new THREE.Vector3(0,0,0); // ponto central que a câmera orbita
+  let isDrag=false,prevX=0,prevY=0,pinchDist=null;
+
+  function updateCamera(){
+    camera.position.set(
+      target.x+spherical.radius*Math.sin(spherical.phi)*Math.sin(spherical.theta),
+      target.y+spherical.radius*Math.cos(spherical.phi),
+      target.z+spherical.radius*Math.sin(spherical.phi)*Math.cos(spherical.theta)
+    );
+    camera.lookAt(target);
+  }
+  updateCamera();
+
+  // zoom na direção do mouse (dolly)
+  col.onwheel=e=>{
+    e.preventDefault();
+    const rect=col.getBoundingClientRect();
+    const mx=((e.clientX-rect.left)/rect.width)*2-1;
+    const my=-((e.clientY-rect.top)/rect.height)*2+1;
+    // mover target levemente na direção do mouse ao dar zoom
+    const dir=new THREE.Vector3(mx,my,-1).unproject(camera).sub(camera.position).normalize();
+    const delta=e.deltaY>0?0.1:-0.1;
+    spherical.radius=Math.max(1,Math.min(12,spherical.radius+e.deltaY*.008));
+    target.addScaledVector(dir,delta*0.3);
+    updateCamera();
+  };
+
+  // arrastar para orbitar
   function onDown(x,y){isDrag=true;prevX=x;prevY=y;col.style.cursor='grabbing';}
   function onMove(x,y){
     if(!isDrag)return;
-    rotY+=(x-prevX)*.014;
-    rotX+=(y-prevY)*.014;
+    const dx=x-prevX,dy=y-prevY;
+    spherical.theta-=dx*.008;
+    spherical.phi=Math.max(.1,Math.min(Math.PI-.1,spherical.phi+dy*.008));
     prevX=x;prevY=y;
+    updateCamera();
   }
   function onUp(){isDrag=false;col.style.cursor='grab';}
 
   col.onmousedown=e=>{if(!e.target.classList.contains('spot-btn')){onDown(e.clientX,e.clientY);e.preventDefault();}};
   document.onmousemove=e=>onMove(e.clientX,e.clientY);
   document.onmouseup=onUp;
-  col.onwheel=e=>{camZ=Math.max(1.5,Math.min(9,camZ+e.deltaY*.007));camera.position.z=camZ;e.preventDefault();};
 
   col.ontouchstart=e=>{
     if(e.target.classList.contains('spot-btn'))return;
     if(e.touches.length===1)onDown(e.touches[0].clientX,e.touches[0].clientY);
+    if(e.touches.length===2)pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
     e.preventDefault();
   };
   col.ontouchmove=e=>{
     if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY);
+    if(e.touches.length===2&&pinchDist){
+      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      spherical.radius=Math.max(1,Math.min(12,spherical.radius-(d-pinchDist)*.02));
+      pinchDist=d;updateCamera();
+    }
     e.preventDefault();
   };
-  col.ontouchend=onUp;
+  col.ontouchend=()=>{isDrag=false;pinchDist=null;};
+
+  // raycaster para visibilidade dos spots
+  const raycaster=new THREE.Raycaster();
 
   // loop
   function loop(){
     animId=requestAnimationFrame(loop);
-    // rotação automática removida — só o usuário gira
-    meshGroup.rotation.x=rotX;
-    meshGroup.rotation.y=rotY;
     renderer.render(scene,camera);
-    // posicionar spots
+    // posicionar spots com verificação de oclusão
     const W2=col.clientWidth,H2=col.clientHeight;
     spotEls.forEach(({btn,pop,v})=>{
-      const wp=v.clone();meshGroup.localToWorld(wp);
+      const wp=v.clone();
+      meshGroup.localToWorld(wp);
       const p=wp.clone().project(camera);
       const sx=(p.x*.5+.5)*W2,sy=(-.5*p.y+.5)*H2;
       btn.style.left=(sx-13)+'px';btn.style.top=(sy-13)+'px';
       pop.style.left=(sx+18)+'px';pop.style.top=(sy-20)+'px';
-      const hidden=p.z>1;
-      btn.style.opacity=hidden?'0':'1';btn.style.pointerEvents=hidden?'none':'all';
+
+      // verificar se o ponto está atrás do modelo (oclusão)
+      const dir=wp.clone().sub(camera.position).normalize();
+      raycaster.set(camera.position,dir);
+      const hits=raycaster.intersectObject(meshGroup,true);
+      const distToSpot=camera.position.distanceTo(wp);
+      // oculto se: está atrás da câmera OU tem geometria na frente
+      const behindCam=p.z>1;
+      const occluded=hits.length>0&&hits[0].distance<distToSpot-0.05;
+      const hidden=behindCam||occluded;
+      btn.style.opacity=hidden?'0':'1';
+      btn.style.pointerEvents=hidden?'none':'all';
+      if(hidden)pop.classList.remove('show');
     });
   }
   loop();
