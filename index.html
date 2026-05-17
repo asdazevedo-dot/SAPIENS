@@ -645,7 +645,7 @@ function startThree(){
   // loop
   function loop(){
     animId=requestAnimationFrame(loop);
-    if(!isDrag)rotY+=.006;
+    // rotação automática removida — só o usuário gira
     meshGroup.rotation.x=rotX;
     meshGroup.rotation.y=rotY;
     renderer.render(scene,camera);
