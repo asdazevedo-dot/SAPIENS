@@ -195,10 +195,14 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .fgroup label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.2rem}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,229,160,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.3rem}
 /* modo posicionamento spots */
-.spot-mode-bar{display:none;position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,229,160,.15);border:1px solid var(--accent);border-radius:20px;padding:.4rem 1.2rem;font-size:.8rem;color:var(--accent);z-index:30;white-space:nowrap;pointer-events:none}
+.spot-mode-bar{display:none;position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,229,160,.9);border-radius:20px;padding:.45rem 1.3rem;font-size:.8rem;color:#0a1628;font-weight:600;z-index:30;white-space:nowrap;pointer-events:none;box-shadow:0 2px 12px rgba(0,229,160,.4)}
 .spot-mode-bar.on{display:block}
 #canvas-col.spot-mode{cursor:crosshair!important}
-.spot-preview{position:absolute;width:22px;height:22px;background:rgba(0,229,160,.5);border:2px solid var(--accent);border-radius:50%;pointer-events:none;z-index:25;transform:translate(-50%,-50%);display:none}
+.spot-cursor{position:absolute;width:20px;height:20px;background:rgba(0,229,160,.6);border:2px solid var(--accent);border-radius:50%;pointer-events:none;z-index:25;transform:translate(-50%,-50%);display:none;box-shadow:0 0 10px rgba(0,229,160,.5)}
+.spot-cursor.on{display:block}
+.pick-spot-btn{background:rgba(0,229,160,.1);border:1px solid var(--accent);color:var(--accent);border-radius:7px;padding:.4rem .8rem;cursor:pointer;font-size:.78rem;font-family:'DM Sans',sans-serif;transition:all .2s;margin-left:.4rem}
+.pick-spot-btn:hover{background:rgba(0,229,160,.2)}
+.pick-spot-btn.active{background:var(--accent);color:var(--dark)}
 @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
@@ -309,7 +313,9 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <!-- CANVAS 3D -->
     <div id="canvas-col">
       <canvas id="bio-canvas"></canvas>
-      <div class="canvas-hint">🖱 Arraste para girar • Scroll para zoom</div>
+      <div class="canvas-hint" id="canvas-hint">🖱 Arraste para girar • Scroll para zoom</div>
+      <div class="spot-mode-bar" id="spot-mode-bar">📍 Clique no modelo para posicionar o spot</div>
+      <div class="spot-cursor" id="spot-cursor"></div>
     </div>
     <!-- PAINEL LATERAL -->
     <div class="side-panel">
@@ -398,15 +404,16 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="fgroup"><label>Link do vídeo (YouTube ou Vimeo)</label><input type="text" id="s-video" placeholder="https://youtube.com/watch?v=..."></div>
     <div class="fgroup"><label>Arquivo 3D (.glb) — deixe em branco por enquanto</label><input type="text" id="s-glb" placeholder="membrana.glb"></div>
     <div class="spots-box">
-      <h4>Spots — pontos clicáveis no modelo 3D</h4>
-      <div style="background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:.7rem .9rem;margin-bottom:.8rem;font-size:.8rem;color:var(--muted);line-height:1.6">
-        💡 <strong style="color:var(--accent)">Como adicionar spots:</strong><br>
-        Clique em <strong>+ Adicionar spot</strong>, preencha o nome e a legenda.<br>
-        Para a posição (x,y,z), use <strong>0,0,0</strong> como ponto central do modelo.<br>
-        Valores sugeridos: frente <strong>0,0,0.9</strong> · topo <strong>0,0.9,0</strong> · lado <strong>0.9,0,0</strong>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
+        <h4 style="margin:0">Spots — pontos clicáveis</h4>
+        <button class="pick-spot-btn" id="pick-mode-btn" onclick="togglePickMode()">🎯 Clicar no modelo</button>
+      </div>
+      <div style="background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:.6rem .9rem;margin-bottom:.8rem;font-size:.78rem;color:var(--muted);line-height:1.6" id="spot-tip">
+        💡 Use <strong style="color:var(--accent)">🎯 Clicar no modelo</strong> para posicionar spots visualmente — feche este modal, clique no ponto desejado do modelo e o spot é adicionado automaticamente!<br>
+        Ou adicione manualmente: frente <strong>0,0,0.9</strong> · topo <strong>0,0.9,0</strong> · lado <strong>0.9,0,0</strong>
       </div>
       <div id="spot-rows"></div>
-      <button class="add-row-btn" onclick="addSpotRow()">+ Adicionar spot</button>
+      <button class="add-row-btn" onclick="addSpotRow()">+ Adicionar spot manualmente</button>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeSub()">Cancelar</button>
@@ -416,6 +423,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 // ===== SUPABASE =====
 const SB='https://ayymsfzpeswdjpgebsvb.supabase.co';
@@ -593,25 +601,34 @@ function startThree(){
   const l1=new THREE.DirectionalLight(0x00e5a0,1.2);l1.position.set(2,3,4);scene.add(l1);
   const l2=new THREE.DirectionalLight(0x00b4d8,0.7);l2.position.set(-3,1,-2);scene.add(l2);
 
-  // CUBO COLORIDO — fácil de ver girando
   meshGroup=new THREE.Group();
   scene.add(meshGroup);
-  const mats=[
-    new THREE.MeshStandardMaterial({color:0x00e5a0}), // frente — verde
-    new THREE.MeshStandardMaterial({color:0xe74c3c}), // trás — vermelho
-    new THREE.MeshStandardMaterial({color:0x00b4d8}), // cima — azul
-    new THREE.MeshStandardMaterial({color:0xf39c12}), // baixo — amarelo
-    new THREE.MeshStandardMaterial({color:0x9b59b6}), // direita — roxo
-    new THREE.MeshStandardMaterial({color:0xff6b35}), // esquerda — laranja
-  ];
-  const cubo=new THREE.Mesh(new THREE.BoxGeometry(1.6,1.6,1.6),mats);
-  meshGroup.add(cubo);
-  // arestas
-  const edges=new THREE.LineSegments(
-    new THREE.EdgesGeometry(new THREE.BoxGeometry(1.61,1.61,1.61)),
-    new THREE.LineBasicMaterial({color:0xffffff,opacity:.3,transparent:true})
-  );
-  meshGroup.add(edges);
+
+  const glbFile=curSub?curSub.glb||'':'';
+  if(glbFile){
+    // carregar modelo real .glb
+    const loader=new THREE.GLTFLoader();
+    loader.load(
+      glbFile,
+      gltf=>{
+        const model=gltf.scene;
+        // centralizar e escalar o modelo automaticamente
+        const box=new THREE.Box3().setFromObject(model);
+        const center=box.getCenter(new THREE.Vector3());
+        const size=box.getSize(new THREE.Vector3());
+        const maxDim=Math.max(size.x,size.y,size.z);
+        model.position.sub(center);
+        const scale=2.5/maxDim;
+        model.scale.setScalar(scale);
+        meshGroup.add(model);
+      },
+      xhr=>{console.log('Carregando: '+(xhr.loaded/xhr.total*100).toFixed(0)+'%');},
+      err=>{console.warn('Erro ao carregar .glb, usando placeholder:',err);buildPlaceholder();}
+    );
+  } else {
+    // sem .glb — mostrar placeholder informativo
+    buildPlaceholder();
+  }
 
   // spots
   const spots=curSub?curSub.spots||[]:[];
@@ -678,6 +695,27 @@ function startThree(){
     });
   }
   loop();
+}
+
+// ===== PLACEHOLDER 3D =====
+function buildPlaceholder(){
+  // esfera estilizada quando não tem .glb
+  const geo=new THREE.SphereGeometry(1,64,64);
+  const mat=new THREE.MeshStandardMaterial({
+    color:0x1a3a5c,roughness:.3,metalness:.4,
+    wireframe:false
+  });
+  const sphere=new THREE.Mesh(geo,mat);
+  meshGroup.add(sphere);
+  // grade de linhas por cima
+  const wgeo=new THREE.SphereGeometry(1.01,16,16);
+  const wmat=new THREE.MeshBasicMaterial({color:0x00e5a0,wireframe:true,opacity:.15,transparent:true});
+  meshGroup.add(new THREE.Mesh(wgeo,wmat));
+  // texto no canvas indicando que não tem modelo
+  const hint=document.createElement('div');
+  hint.style.cssText='position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(0,229,160,.5);font-size:.8rem;text-align:center;pointer-events:none;z-index:6;line-height:1.6';
+  hint.innerHTML='Modelo 3D não configurado<br><span style="font-size:.72rem;color:rgba(255,255,255,.3)">Adicione o arquivo .glb no painel admin</span>';
+  document.getElementById('canvas-col').appendChild(hint);
 }
 
 // ===== ADMIN =====
@@ -755,6 +793,82 @@ async function saveSub(){
   btn.innerHTML='Salvar subtema';btn.disabled=false;
 }
 async function delSub(id){if(!confirm('Excluir este subtema?'))return;try{await api('submodules?id=eq.'+id,'DELETE');loadAdmin();}catch(e){alert('Erro: '+e.message);}}
+
+// ===== PICK MODE (clicar no modelo para posicionar spot) =====
+let pickMode=false;
+
+function togglePickMode(){
+  pickMode=!pickMode;
+  const btn=document.getElementById('pick-mode-btn');
+  const bar=document.getElementById('spot-mode-bar');
+  const col=document.getElementById('canvas-col');
+  const hint=document.getElementById('canvas-hint');
+  if(pickMode){
+    // fechar modal e ativar modo
+    document.getElementById('sub-modal').classList.remove('open');
+    col.classList.add('spot-mode');
+    bar.classList.add('on');
+    if(hint)hint.style.display='none';
+    btn.classList.add('active');
+    btn.textContent='✅ Modo ativo — clique no modelo';
+    // listener de clique para pegar coordenada
+    col._pickListener=function(e){
+      if(!pickMode)return;
+      const rect=col.getBoundingClientRect();
+      const mx=((e.clientX-rect.left)/rect.width)*2-1;
+      const my=-((e.clientY-rect.top)/rect.height)*2+1;
+      // raycasting
+      const raycaster=new THREE.Raycaster();
+      raycaster.setFromCamera(new THREE.Vector2(mx,my),camera);
+      const hits=raycaster.intersectObject(meshGroup,true);
+      if(hits.length>0){
+        const pt=hits[0].point;
+        // converter para coordenadas locais do meshGroup
+        const local=meshGroup.worldToLocal(pt.clone());
+        const x=parseFloat(local.x.toFixed(2));
+        const y=parseFloat(local.y.toFixed(2));
+        const z=parseFloat(local.z.toFixed(2));
+        // pedir nome do spot
+        const nome=prompt('Nome deste spot (ex: Núcleo, Membrana...):');
+        if(nome){
+          const legenda=prompt('Legenda explicativa deste spot:','');
+          // adicionar linha na tabela de spots
+          document.getElementById('sub-modal').classList.add('open');
+          addSpotRow({name:nome,desc:legenda||nome,x,y,z});
+          exitPickMode();
+        }
+      }
+    };
+    col.addEventListener('click',col._pickListener);
+    // cursor seguindo o mouse
+    col._moveListener=function(e){
+      const cur=document.getElementById('spot-cursor');
+      const rect=col.getBoundingClientRect();
+      cur.classList.add('on');
+      cur.style.left=(e.clientX-rect.left)+'px';
+      cur.style.top=(e.clientY-rect.top)+'px';
+    };
+    col.addEventListener('mousemove',col._moveListener);
+  } else {
+    exitPickMode();
+  }
+}
+
+function exitPickMode(){
+  pickMode=false;
+  const col=document.getElementById('canvas-col');
+  const bar=document.getElementById('spot-mode-bar');
+  const hint=document.getElementById('canvas-hint');
+  const cur=document.getElementById('spot-cursor');
+  const btn=document.getElementById('pick-mode-btn');
+  col.classList.remove('spot-mode');
+  bar.classList.remove('on');
+  cur.classList.remove('on');
+  if(hint)hint.style.display='';
+  if(btn){btn.classList.remove('active');btn.textContent='🎯 Clicar no modelo';}
+  if(col._pickListener){col.removeEventListener('click',col._pickListener);col._pickListener=null;}
+  if(col._moveListener){col.removeEventListener('mousemove',col._moveListener);col._moveListener=null;}
+}
 
 // HELPERS
 function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;');}
