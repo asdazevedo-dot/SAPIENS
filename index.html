@@ -44,6 +44,10 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .form-full{width:100%;margin-top:.4rem}
 .auth-switch{text-align:center;margin-top:1rem;font-size:.82rem;color:var(--muted)}
 .auth-switch a{color:var(--accent);cursor:pointer}
+.auth-error{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:#e74c3c;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:.8rem;display:none}
+.auth-error.show{display:block}
+.auth-info{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--accent);border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:.8rem;display:none}
+.auth-info.show{display:block}
 .plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.2rem}
 .plan-opt{border:1px solid var(--border);border-radius:10px;padding:.85rem;cursor:pointer;transition:all .2s}
 .plan-opt.selected{border-color:var(--accent);background:rgba(0,229,160,.07)}
@@ -56,12 +60,14 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
 .mod-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s}
 .mod-card:hover{border-color:var(--accent);transform:translateY(-3px)}
-.mod-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:3.5rem}
+.mod-card.locked{opacity:.5;cursor:not-allowed}
+.mod-card.locked:hover{transform:none;border-color:var(--border)}
+.mod-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative}
+.lock-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border-radius:20px;padding:.2rem .5rem;font-size:.7rem;color:var(--muted)}
 .mod-body{padding:.9rem 1rem 1rem}
 .mod-body h3{font-size:.95rem;margin-bottom:.3rem}
 .mod-body p{font-size:.78rem;color:var(--muted);line-height:1.5}
 .loading{text-align:center;padding:3rem;color:var(--muted);font-size:.88rem}
-/* VIEWER */
 #screen-viewer.active{display:block;height:100vh}
 .viewer-container{display:grid;grid-template-columns:1fr 400px;height:calc(100vh - 61px);overflow:hidden}
 #canvas-col{position:relative;background:#060f1e;cursor:grab;overflow:hidden;width:100%;height:100%;min-height:400px}
@@ -92,7 +98,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .video-label-text strong{font-size:.9rem;color:var(--accent2)}
 .video-label-text span{font-size:.75rem;color:var(--muted)}
 @media(max-width:800px){.viewer-container{grid-template-columns:1fr;grid-template-rows:50vh auto;height:auto}}
-/* ADMIN */
 .admin-wrap{padding:2rem;max-width:1000px;margin:0 auto}
 .admin-wrap>h2{font-size:1.4rem;margin-bottom:1.5rem}
 .admin-layout{display:grid;grid-template-columns:180px 1fr;gap:1.5rem}
@@ -119,8 +124,8 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;width:100%;max-width:520px;margin:auto}
 .modal h3{font-size:1.1rem;margin-bottom:1.1rem}
 .modal-footer{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.1rem}
-.modal input{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;padding:.45rem .65rem;font-size:.85rem;margin-top:.25rem}
-.modal input:focus{outline:none;border-color:var(--accent)}
+.modal input,.modal select{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;padding:.45rem .65rem;font-size:.85rem;margin-top:.25rem}
+.modal input:focus,.modal select:focus{outline:none;border-color:var(--accent)}
 .alert{border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:.8rem;display:none}
 .alert.show{display:block}
 .alert-ok{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--accent)}
@@ -140,13 +145,19 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,229,160,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.3rem}
 @keyframes spin{to{transform:rotate(360deg)}}
 .pick-spot-btn{background:rgba(0,229,160,.1);border:1px solid var(--accent);color:var(--accent);border-radius:7px;padding:.4rem .8rem;cursor:pointer;font-size:.78rem;font-family:'DM Sans',sans-serif;transition:all .2s;margin-left:.4rem}
-.pick-spot-btn:hover{background:rgba(0,229,160,.2)}
 .pick-spot-btn.active{background:var(--accent);color:var(--dark)}
 .spot-mode-bar{display:none;position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,229,160,.9);border-radius:20px;padding:.45rem 1.3rem;font-size:.8rem;color:#0a1628;font-weight:600;z-index:30;white-space:nowrap;pointer-events:none}
 .spot-mode-bar.on{display:block}
 #canvas-col.spot-mode{cursor:crosshair!important}
 .spot-cursor{position:absolute;width:20px;height:20px;background:rgba(0,229,160,.6);border:2px solid var(--accent);border-radius:50%;pointer-events:none;z-index:25;transform:translate(-50%,-50%);display:none}
 .spot-cursor.on{display:block}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:500}
+.badge-green{background:rgba(0,229,160,.15);color:var(--accent)}
+.badge-gray{background:rgba(122,158,144,.15);color:var(--muted)}
+.badge-blue{background:rgba(0,180,216,.15);color:var(--accent2)}
+.users-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.users-table th{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--border);color:var(--muted);font-weight:500;font-size:.78rem}
+.users-table td{padding:.6rem .8rem;border-bottom:1px solid rgba(26,58,80,.5)}
 </style>
 </head>
 <body>
@@ -186,11 +197,13 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
   <div class="auth-wrap">
     <div class="auth-card">
       <h2>Bem-vindo de volta</h2><p class="auth-sub">Entre para acessar os módulos</p>
+      <div class="auth-error" id="login-error"></div>
+      <div class="auth-info" id="login-info"></div>
       <div class="form-group"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com"></div>
       <div class="form-group"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
-      <button class="btn btn-primary form-full" onclick="doLogin()">Entrar</button>
+      <button class="btn btn-primary form-full" id="login-btn" onclick="doLogin()">Entrar</button>
       <div class="auth-switch">Não tem conta? <a onclick="go('register')">Assinar agora</a></div>
-      <div class="auth-switch" style="margin-top:.5rem"><a onclick="go('admin')">🔧 Área admin</a></div>
+      <div class="auth-switch" style="margin-top:.5rem"><a onclick="go('admin-login')">🔧 Área admin</a></div>
     </div>
   </div>
 </div>
@@ -205,11 +218,28 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
         <div class="plan-opt selected" id="plan-mensal" onclick="selPlan('mensal')"><h4>Mensal</h4><p>Cancele quando quiser</p><div class="plan-price">R$ 29/mês</div></div>
         <div class="plan-opt" id="plan-anual" onclick="selPlan('anual')"><h4>Anual</h4><p>Economize 30%</p><div class="plan-price">R$ 19/mês</div></div>
       </div>
+      <div class="auth-error" id="reg-error"></div>
+      <div class="auth-info" id="reg-info"></div>
       <div class="form-group"><label>Nome</label><input type="text" id="reg-name" placeholder="Seu nome"></div>
       <div class="form-group"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
       <div class="form-group"><label>Senha</label><input type="password" id="reg-pass" placeholder="min. 8 caracteres"></div>
-      <button class="btn btn-primary form-full" onclick="doRegister()">Criar conta</button>
+      <button class="btn btn-primary form-full" id="reg-btn" onclick="doRegister()">Criar conta</button>
       <div class="auth-switch">Já tem conta? <a onclick="go('login')">Entrar</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN ADMIN -->
+<div id="screen-admin-login" class="screen">
+  <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>🔧 Área Administrativa</h2><p class="auth-sub">Acesso restrito</p>
+      <div class="auth-error" id="admin-login-error"></div>
+      <div class="form-group"><label>E-mail admin</label><input type="email" id="admin-email" placeholder="admin@bioverse.com"></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="admin-pass" placeholder="••••••••"></div>
+      <button class="btn btn-primary form-full" id="admin-login-btn" onclick="doAdminLogin()">Entrar como Admin</button>
+      <div class="auth-switch"><a onclick="go('login')">← Voltar ao login normal</a></div>
     </div>
   </div>
 </div>
@@ -220,7 +250,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="logo">🔬 BioVerse</div>
     <div class="nav-btns">
       <span id="user-name-nav" style="font-size:.82rem;color:var(--muted);margin-right:.4rem"></span>
-      <button class="btn btn-ghost btn-sm" onclick="go('home')">Sair</button>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Sair</button>
     </div>
   </nav>
   <div class="grid-page">
@@ -267,15 +297,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
         <div id="struct-list"><p style="font-size:.8rem;color:var(--muted)">Nenhum spot cadastrado.</p></div>
       </div>
       <div class="video-section">
-        <div class="video-box" id="video-box">
-          <div class="video-placeholder" onclick="loadVideo()">
-            <div class="play-circle">▶</div>
-            <div class="video-label-text">
-              <strong>▶ Clique aqui e assista a videoaula</strong>
-              <span>Explicação completa sobre este tema</span>
-            </div>
-          </div>
-        </div>
+        <div class="video-box" id="video-box"></div>
       </div>
     </div>
   </div>
@@ -285,7 +307,10 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 <div id="screen-admin" class="screen">
   <nav>
     <div class="logo">🔬 BioVerse <span style="font-size:.68rem;color:var(--muted);margin-left:.3rem">ADMIN</span></div>
-    <div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('modules')">← Ver site</button></div>
+    <div class="nav-btns">
+      <span id="admin-name-nav" style="font-size:.82rem;color:var(--muted);margin-right:.4rem"></span>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Sair</button>
+    </div>
   </nav>
   <div class="admin-wrap">
     <h2>Painel Administrativo</h2>
@@ -293,19 +318,20 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
       <div class="admin-nav">
         <button class="admin-tab active" onclick="aTab('dashboard',this)">📊 Dashboard</button>
         <button class="admin-tab" onclick="aTab('modulos',this)">📦 Módulos</button>
+        <button class="admin-tab" onclick="aTab('usuarios',this)">👥 Usuários</button>
       </div>
       <div>
         <div class="admin-panel active" id="ap-dashboard">
           <div class="stat-cards">
             <div class="stat-card"><div class="num" id="stat-mods">—</div><div class="lbl">Módulos</div></div>
             <div class="stat-card"><div class="num" id="stat-subs">—</div><div class="lbl">Subtemas</div></div>
+            <div class="stat-card"><div class="num" id="stat-users">—</div><div class="lbl">Alunos</div></div>
           </div>
           <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;font-size:.83rem;color:var(--muted)">
             <p style="font-weight:600;color:var(--text);margin-bottom:.5rem">Como funciona</p>
-            <p style="margin-bottom:.3rem">1. Crie um <strong style="color:var(--accent)">Módulo</strong> (ex: Biologia Celular)</p>
-            <p style="margin-bottom:.3rem">2. Clique em <strong style="color:var(--accent)">+ Subtema</strong> para adicionar subtemas</p>
-            <p style="margin-bottom:.3rem">3. Cada subtema tem vídeo, arquivo 3D e spots</p>
-            <p>4. O aluno vê: Módulos → Subtemas → Viewer 3D ✅</p>
+            <p style="margin-bottom:.3rem">1. Crie <strong style="color:var(--accent)">Módulos</strong> e <strong style="color:var(--accent)">Subtemas</strong> com conteúdo 3D</p>
+            <p style="margin-bottom:.3rem">2. Em <strong style="color:var(--accent)">Usuários</strong> gerencie os alunos e libere acesso</p>
+            <p>3. Alunos com plano <strong style="color:var(--accent)">free</strong> só veem módulos liberados para free</p>
           </div>
         </div>
         <div class="admin-panel" id="ap-modulos">
@@ -316,6 +342,10 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
           <div class="alert alert-ok" id="alert-ok"></div>
           <div class="alert alert-err" id="alert-err"></div>
           <div id="admin-list"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
+        </div>
+        <div class="admin-panel" id="ap-usuarios">
+          <h3 style="margin-bottom:1rem">Usuários cadastrados</h3>
+          <div id="users-list"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
         </div>
       </div>
     </div>
@@ -329,6 +359,14 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="fgroup"><label>Nome</label><input type="text" id="m-name" placeholder="Ex: Biologia Celular"></div>
     <div class="fgroup"><label>Emoji</label><div class="emoji-picker" id="emoji-picker"></div></div>
     <div class="fgroup"><label>Descrição</label><input type="text" id="m-desc" placeholder="Breve descrição"></div>
+    <div class="fgroup"><label>Plano necessário para acessar</label>
+      <select id="m-plan">
+        <option value="free">Gratuito (todos veem)</option>
+        <option value="mensal">Plano Mensal</option>
+        <option value="anual">Plano Anual</option>
+        <option value="premium">Premium (todos os planos pagos)</option>
+      </select>
+    </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeMod()">Cancelar</button>
       <button class="btn btn-primary" id="mod-btn" onclick="saveMod()">Salvar</button>
@@ -363,45 +401,196 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
   </div>
 </div>
 
+<!-- MODAL USUÁRIO -->
+<div class="modal-bg" id="user-modal">
+  <div class="modal">
+    <h3>Gerenciar usuário</h3>
+    <div id="user-modal-info" style="font-size:.85rem;color:var(--muted);margin-bottom:1rem"></div>
+    <div class="fgroup"><label>Plano do aluno</label>
+      <select id="u-plan">
+        <option value="free">Gratuito</option>
+        <option value="mensal">Mensal</option>
+        <option value="anual">Anual</option>
+        <option value="premium">Premium</option>
+      </select>
+    </div>
+    <div class="fgroup"><label>Status</label>
+      <select id="u-active">
+        <option value="true">Ativo</option>
+        <option value="false">Bloqueado</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeUserModal()">Cancelar</button>
+      <button class="btn btn-primary" id="user-save-btn" onclick="saveUser()">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
+// ===== SUPABASE =====
 const SB='https://ayymsfzpeswdjpgebsvb.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5eW1zZnpwZXN3ZGpwZ2Vic3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODI1NjUsImV4cCI6MjA5Mzc1ODU2NX0.DvKcrvY61Y4qViEOj3rMUuIPWZpZhXboMom_NiNwSEo';
-async function api(path,method='GET',body=null){
-  const r=await fetch(SB+'/rest/v1/'+path,{method,headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':method==='POST'?'return=representation':''},body:body?JSON.stringify(body):null});
+
+// ADMIN — defina seu e-mail aqui
+const ADMIN_EMAIL='admin@bioverse.com';
+
+async function api(path,method='GET',body=null,token=null){
+  const headers={'apikey':KEY,'Content-Type':'application/json'};
+  if(token)headers['Authorization']='Bearer '+token;
+  else headers['Authorization']='Bearer '+KEY;
+  if(method==='POST')headers['Prefer']='return=representation';
+  const r=await fetch(SB+'/rest/v1/'+path,{method,headers,body:body?JSON.stringify(body):null});
   if(!r.ok)throw new Error(await r.text());
   const t=await r.text();return t?JSON.parse(t):[];
 }
 
+async function authApi(path,body){
+  const r=await fetch(SB+'/auth/v1/'+path,{method:'POST',headers:{'apikey':KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const d=await r.json();
+  if(!r.ok)throw new Error(d.error_description||d.msg||'Erro');
+  return d;
+}
+
+// ===== STATE =====
 const EMOJIS=['🧬','⚗️','🔬','🧫','🌿','🦠','🧪','🫀','🫁','🧠','🦴','🌱','🐠','🐛','🌺','🍃'];
 const BG=['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a','#1a0d2b'];
-let selEmoji='🧬',editModId=null,editSubId=null,curModId=null,curModName='',curSub=null;
+let selEmoji='🧬',editModId=null,editSubId=null,editUserId=null;
+let curModId=null,curModName='',curSub=null;
+let currentUser=null,currentProfile=null,isAdmin=false;
 let renderer=null,scene,camera,meshGroup,animId=null;
-let isDrag=false,prevX=0,prevY=0,pinchDist=null;
-let spotEls=[];
-let pickMode=false;
+let isDrag=false,prevX=0,prevY=0,pinchDist=null,spotEls=[],pickMode=false;
 
+// ===== AUTH =====
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const btn=document.getElementById('login-btn');
+  const err=document.getElementById('login-error');
+  const info=document.getElementById('login-info');
+  err.classList.remove('show');info.classList.remove('show');
+  if(!email||!pass){showEl(err,'Preencha e-mail e senha');return;}
+  btn.innerHTML='<span class="spinner"></span>Entrando...';btn.disabled=true;
+  try{
+    const d=await authApi('token?grant_type=password',{email,password:pass});
+    currentUser=d.user;
+    localStorage.setItem('sb_token',d.access_token);
+    localStorage.setItem('sb_refresh',d.refresh_token);
+    await loadProfile(d.access_token);
+    go('modules');
+  }catch(e){showEl(err,e.message==='Invalid login credentials'?'E-mail ou senha incorretos':e.message);}
+  btn.innerHTML='Entrar';btn.disabled=false;
+}
+
+async function doAdminLogin(){
+  const email=document.getElementById('admin-email').value.trim();
+  const pass=document.getElementById('admin-pass').value;
+  const btn=document.getElementById('admin-login-btn');
+  const err=document.getElementById('admin-login-error');
+  err.classList.remove('show');
+  if(!email||!pass){showEl(err,'Preencha e-mail e senha');return;}
+  btn.innerHTML='<span class="spinner"></span>Verificando...';btn.disabled=true;
+  try{
+    const d=await authApi('token?grant_type=password',{email,password:pass});
+    if(email!==ADMIN_EMAIL){showEl(err,'Acesso não autorizado.');btn.innerHTML='Entrar como Admin';btn.disabled=false;return;}
+    currentUser=d.user;isAdmin=true;
+    localStorage.setItem('sb_token',d.access_token);
+    document.getElementById('admin-name-nav').textContent=email;
+    go('admin');loadAdmin();
+  }catch(e){showEl(err,'E-mail ou senha incorretos');}
+  btn.innerHTML='Entrar como Admin';btn.disabled=false;
+}
+
+async function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const btn=document.getElementById('reg-btn');
+  const err=document.getElementById('reg-error');
+  const info=document.getElementById('reg-info');
+  err.classList.remove('show');info.classList.remove('show');
+  if(!name||!email||!pass){showEl(err,'Preencha todos os campos');return;}
+  if(pass.length<8){showEl(err,'A senha deve ter no mínimo 8 caracteres');return;}
+  btn.innerHTML='<span class="spinner"></span>Criando conta...';btn.disabled=true;
+  try{
+    const d=await authApi('signup',{email,password:pass,data:{name}});
+    showEl(info,'✅ Conta criada! Verifique seu e-mail para confirmar o cadastro.');
+  }catch(e){showEl(err,e.message);}
+  btn.innerHTML='Criar conta';btn.disabled=false;
+}
+
+async function loadProfile(token){
+  try{
+    const profiles=await api('profiles?id=eq.'+currentUser.id,'GET',null,token);
+    if(profiles.length>0){
+      currentProfile=profiles[0];
+      document.getElementById('user-name-nav').textContent=currentProfile.name||currentUser.email.split('@')[0];
+    }else{
+      // criar perfil se não existe
+      await api('profiles','POST',{id:currentUser.id,name:currentUser.user_metadata?.name||'',plan:'free'},token);
+      currentProfile={plan:'free',active:true};
+      document.getElementById('user-name-nav').textContent=currentUser.user_metadata?.name||currentUser.email.split('@')[0];
+    }
+  }catch(e){console.error('Erro ao carregar perfil:',e);}
+}
+
+async function checkSession(){
+  const token=localStorage.getItem('sb_token');
+  if(!token)return false;
+  try{
+    const r=await fetch(SB+'/auth/v1/user',{headers:{'apikey':KEY,'Authorization':'Bearer '+token}});
+    if(!r.ok)return false;
+    const d=await r.json();
+    currentUser=d;
+    await loadProfile(token);
+    return true;
+  }catch(e){return false;}
+}
+
+function doLogout(){
+  localStorage.removeItem('sb_token');localStorage.removeItem('sb_refresh');
+  currentUser=null;currentProfile=null;isAdmin=false;
+  go('home');
+}
+
+function getToken(){return localStorage.getItem('sb_token');}
+
+// ===== NAV =====
 function go(s){
   document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
   document.getElementById('screen-'+s).classList.add('active');
   if(s==='modules')loadMods();
   if(s==='admin')loadAdmin();
 }
-function doLogin(){const e=document.getElementById('login-email').value;if(!e){alert('Preencha o e-mail');return;}document.getElementById('user-name-nav').textContent=e.split('@')[0];go('modules');}
-function doRegister(){const n=document.getElementById('reg-name').value;if(!n){alert('Preencha o nome');return;}document.getElementById('user-name-nav').textContent=n;go('modules');}
 function selPlan(p){document.querySelectorAll('.plan-opt').forEach(x=>x.classList.remove('selected'));document.getElementById('plan-'+p).classList.add('selected');}
+function showEl(el,msg){el.textContent=msg;el.classList.add('show');}
 
+// ===== MÓDULOS =====
 async function loadMods(){
   const g=document.getElementById('modules-grid');
   g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
   try{
     const mods=await api('modules?order=id');
     if(!mods.length){g.innerHTML='<div class="loading">Nenhum módulo ainda.</div>';return;}
-    g.innerHTML=mods.map((m,i)=>`<div class="mod-card" onclick="openMod('${m.id}','${esc(m.name)}','${esc(m.desc||'')}')">
-      <div class="mod-thumb" style="background:${BG[i%BG.length]}">${m.emoji||'🧬'}</div>
-      <div class="mod-body"><h3>${m.name}</h3><p>${m.desc||''}</p></div></div>`).join('');
+    const plan=currentProfile?.plan||'free';
+    g.innerHTML=mods.map((m,i)=>{
+      const hasAccess=canAccess(m.plan_required,plan);
+      return `<div class="mod-card${hasAccess?'':' locked'}" onclick="${hasAccess?`openMod('${m.id}','${esc(m.name)}','${esc(m.desc||'')}')`:''}" >
+        <div class="mod-thumb" style="background:${BG[i%BG.length]}">${m.emoji||'🧬'}${hasAccess?'':'<div class="lock-badge">🔒 Upgrade</div>'}</div>
+        <div class="mod-body"><h3>${m.name}</h3><p>${m.desc||''}</p></div>
+      </div>`;
+    }).join('');
   }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
+}
+
+function canAccess(required,userPlan){
+  if(!required||required==='free')return true;
+  if(userPlan==='premium'||userPlan==='anual')return true;
+  if(required==='mensal'&&userPlan==='mensal')return true;
+  if(required===userPlan)return true;
+  return false;
 }
 
 async function openMod(id,name,desc){
@@ -420,6 +609,7 @@ async function openMod(id,name,desc){
   }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
 }
 
+// ===== VIEWER =====
 function openViewer(s){
   if(typeof s==='string')s=JSON.parse(s);
   curSub=s;
@@ -473,38 +663,28 @@ function startThree(){
   if(animId){cancelAnimationFrame(animId);animId=null;}
   document.querySelectorAll('.spot-btn,.spot-popup').forEach(e=>e.remove());
   spotEls=[];isDrag=false;
-
   const col=document.getElementById('canvas-col');
   const canvas=document.getElementById('bio-canvas');
-
-  // tamanho fixo baseado na janela
   const navH=61;
   const W=col.offsetWidth||window.innerWidth-400;
   const H=window.innerHeight-navH;
   col.style.height=H+'px';
   canvas.width=W;canvas.height=H;
   canvas.style.width=W+'px';canvas.style.height=H+'px';
-
-  // renderer com encoding correto para cores reais
   if(renderer){renderer.dispose();renderer=null;}
   renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
   renderer.setSize(W,H,false);
   renderer.setPixelRatio(Math.min(devicePixelRatio,2));
   renderer.outputEncoding=THREE.sRGBEncoding;
   renderer.physicallyCorrectLights=true;
-
   scene=new THREE.Scene();
   camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
   camera.position.set(0,0,4);
-
-  // luzes brancas neutras
   scene.add(new THREE.AmbientLight(0xffffff,1.0));
   const l1=new THREE.DirectionalLight(0xffffff,1.5);l1.position.set(5,5,5);scene.add(l1);
   const l2=new THREE.DirectionalLight(0xffffff,0.8);l2.position.set(-5,3,-5);scene.add(l2);
   const l3=new THREE.DirectionalLight(0xffffff,0.5);l3.position.set(0,-5,0);scene.add(l3);
-
   meshGroup=new THREE.Group();scene.add(meshGroup);
-
   const glbFile=curSub?curSub.glb||'':'';
   if(glbFile){
     const loader=new THREE.GLTFLoader();
@@ -513,44 +693,28 @@ function startThree(){
       model.traverse(child=>{
         if(child.isMesh){
           const oldMat=child.material;
-          // pegar cor original se existir, senão usar branco
           let color=0xcccccc;
           if(oldMat.color)color=oldMat.color.getHex();
-          // substituir por MeshStandardMaterial simples que funciona no browser
           child.material=new THREE.MeshStandardMaterial({
-            color:color,
-            roughness:oldMat.roughness!=null?oldMat.roughness:0.5,
+            color,roughness:oldMat.roughness!=null?oldMat.roughness:0.5,
             metalness:oldMat.metalness!=null?oldMat.metalness:0.1,
-            // preservar textura se existir
-            map:oldMat.map||null,
-            normalMap:oldMat.normalMap||null,
-            side:THREE.DoubleSide,
+            map:oldMat.map||null,normalMap:oldMat.normalMap||null,side:THREE.DoubleSide
           });
-          if(oldMat.map){
-            child.material.map.encoding=THREE.sRGBEncoding;
-            child.material.map.needsUpdate=true;
-          }
+          if(child.material.map){child.material.map.encoding=THREE.sRGBEncoding;child.material.map.needsUpdate=true;}
         }
       });
-      // centralizar e escalar
       const box=new THREE.Box3().setFromObject(model);
       const center=box.getCenter(new THREE.Vector3());
       const size=box.getSize(new THREE.Vector3());
       model.position.sub(center);
       model.scale.setScalar(2.5/Math.max(size.x,size.y,size.z));
       meshGroup.add(model);
-    },null,err=>{console.warn('Erro .glb:',err);buildPlaceholder();});
-  }else{
-    buildPlaceholder();
-  }
-
-  // spots
+    },null,()=>buildPlaceholder());
+  }else{buildPlaceholder();}
   const spots=curSub?curSub.spots||[]:[];
   spots.forEach((s,i)=>{
-    const btn=document.createElement('div');
-    btn.className='spot-btn';btn.id='spb-'+i;btn.textContent=i+1;
-    const pop=document.createElement('div');
-    pop.className='spot-popup';pop.id='spp-'+i;
+    const btn=document.createElement('div');btn.className='spot-btn';btn.id='spb-'+i;btn.textContent=i+1;
+    const pop=document.createElement('div');pop.className='spot-popup';pop.id='spp-'+i;
     pop.innerHTML=`<h4>${s.name}</h4><p>${s.desc||''}</p>`;
     btn.addEventListener('click',e=>{
       e.stopPropagation();
@@ -562,99 +726,56 @@ function startThree(){
     col.appendChild(btn);col.appendChild(pop);
     spotEls.push({btn,pop,v:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
   });
-
-  // ===== CONTROLES — órbita esférica com zoom na direção do mouse =====
+  // órbita
   let theta=0,phi=Math.PI/2,radius=4;
   const orbitTarget=new THREE.Vector3(0,0,0);
-
   function updateCam(){
-    camera.position.set(
-      orbitTarget.x+radius*Math.sin(phi)*Math.sin(theta),
-      orbitTarget.y+radius*Math.cos(phi),
-      orbitTarget.z+radius*Math.sin(phi)*Math.cos(theta)
-    );
+    camera.position.set(orbitTarget.x+radius*Math.sin(phi)*Math.sin(theta),orbitTarget.y+radius*Math.cos(phi),orbitTarget.z+radius*Math.sin(phi)*Math.cos(theta));
     camera.lookAt(orbitTarget);
   }
   updateCam();
-
   col.onwheel=e=>{
     e.preventDefault();
-    // zoom na direção do mouse
     const rect=col.getBoundingClientRect();
     const nx=((e.clientX-rect.left)/rect.width)*2-1;
     const ny=-((e.clientY-rect.top)/rect.height)*2+1;
     const mouseDir=new THREE.Vector3(nx,ny,0.5).unproject(camera).sub(camera.position).normalize();
     const zoomAmt=e.deltaY*0.003;
     radius=Math.max(0.5,Math.min(15,radius+zoomAmt));
-    // deslocar levemente o target para o ponto do mouse
     orbitTarget.addScaledVector(mouseDir,-zoomAmt*0.5);
     updateCam();
   };
-
   function onDown(x,y){isDrag=true;prevX=x;prevY=y;col.style.cursor='grabbing';}
-  function onMove(x,y){
-    if(!isDrag)return;
-    theta-=(x-prevX)*.008;
-    phi=Math.max(0.05,Math.min(Math.PI-0.05,phi+(y-prevY)*.008));
-    prevX=x;prevY=y;
-    updateCam();
-  }
+  function onMove(x,y){if(!isDrag)return;theta-=(x-prevX)*.008;phi=Math.max(0.05,Math.min(Math.PI-0.05,phi+(y-prevY)*.008));prevX=x;prevY=y;updateCam();}
   function onUp(){isDrag=false;col.style.cursor='grab';}
-
   col.onmousedown=e=>{if(!e.target.classList.contains('spot-btn')&&!pickMode){onDown(e.clientX,e.clientY);e.preventDefault();}};
   document.onmousemove=e=>onMove(e.clientX,e.clientY);
   document.onmouseup=onUp;
-  col.ontouchstart=e=>{
-    if(e.target.classList.contains('spot-btn'))return;
-    if(e.touches.length===1)onDown(e.touches[0].clientX,e.touches[0].clientY);
-    if(e.touches.length===2)pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-    e.preventDefault();
-  };
-  col.ontouchmove=e=>{
-    if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY);
-    if(e.touches.length===2&&pinchDist){
-      const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-      radius=Math.max(0.5,Math.min(15,radius*(pinchDist/d)));
-      pinchDist=d;updateCam();
-    }
-    e.preventDefault();
-  };
+  col.ontouchstart=e=>{if(e.target.classList.contains('spot-btn'))return;if(e.touches.length===1)onDown(e.touches[0].clientX,e.touches[0].clientY);if(e.touches.length===2)pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);e.preventDefault();};
+  col.ontouchmove=e=>{if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY);if(e.touches.length===2&&pinchDist){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);radius=Math.max(0.5,Math.min(15,radius*(pinchDist/d)));pinchDist=d;updateCam();}e.preventDefault();};
   col.ontouchend=()=>{isDrag=false;pinchDist=null;};
-
-  // raycaster para oclusão dos spots
   const spotRay=new THREE.Raycaster();
-
   function loop(){
     animId=requestAnimationFrame(loop);
     renderer.render(scene,camera);
     const W2=col.clientWidth,H2=col.clientHeight;
     spotEls.forEach(({btn,pop,v})=>{
-      const wp=v.clone();
-      meshGroup.localToWorld(wp);
+      const wp=v.clone();meshGroup.localToWorld(wp);
       const p=wp.clone().project(camera);
       const sx=(p.x*.5+.5)*W2,sy=(-.5*p.y+.5)*H2;
       btn.style.left=(sx-13)+'px';btn.style.top=(sy-13)+'px';
       pop.style.left=(sx+18)+'px';pop.style.top=(sy-20)+'px';
-
-      // 1) atrás da câmera
       const behindCam=p.z>1;
-
-      // 2) ocluído pela geometria do modelo
       let occluded=false;
       if(!behindCam){
         const dir=new THREE.Vector3().subVectors(wp,camera.position).normalize();
         spotRay.set(camera.position,dir);
         const hits=spotRay.intersectObject(meshGroup,true);
-        const distToSpot=camera.position.distanceTo(wp);
-        // se o primeiro hit estiver ANTES do spot (com margem de 5cm), está oculto
-        if(hits.length>0&&hits[0].distance<distToSpot-0.05){
-          occluded=true;
-        }
+        const dist=camera.position.distanceTo(wp);
+        if(hits.length>0&&hits[0].distance<dist-0.05)occluded=true;
       }
-
       const hidden=behindCam||occluded;
-      btn.style.opacity=hidden?'0':'1';
-      btn.style.pointerEvents=hidden?'none':'all';
+      btn.style.opacity=hidden?'0':'1';btn.style.pointerEvents=hidden?'none':'all';
       if(hidden)pop.classList.remove('show');
     });
   }
@@ -662,11 +783,8 @@ function startThree(){
 }
 
 function buildPlaceholder(){
-  const geo=new THREE.SphereGeometry(1,32,32);
-  const mat=new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3,metalness:.4});
-  meshGroup.add(new THREE.Mesh(geo,mat));
-  const wmat=new THREE.MeshBasicMaterial({color:0x00e5a0,wireframe:true,opacity:.15,transparent:true});
-  meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1.01,16,16),wmat));
+  meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1,32,32),new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3,metalness:.4})));
+  meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1.01,16,16),new THREE.MeshBasicMaterial({color:0x00e5a0,wireframe:true,opacity:.15,transparent:true})));
 }
 
 // ===== PICK MODE =====
@@ -679,7 +797,7 @@ function togglePickMode(){
   if(pickMode){
     document.getElementById('sub-modal').classList.remove('open');
     col.classList.add('spot-mode');bar.classList.add('on');btn.classList.add('active');
-    btn.textContent='✅ Modo ativo — clique no modelo';
+    btn.textContent='✅ Clique no modelo';
     col._pick=e=>{
       const rect=col.getBoundingClientRect();
       const nx=((e.clientX-rect.left)/rect.width)*2-1;
@@ -691,12 +809,7 @@ function togglePickMode(){
         const local=meshGroup.worldToLocal(hits[0].point.clone());
         const x=+local.x.toFixed(2),y=+local.y.toFixed(2),z=+local.z.toFixed(2);
         const nome=prompt('Nome deste spot:');
-        if(nome){
-          const leg=prompt('Legenda explicativa:','');
-          document.getElementById('sub-modal').classList.add('open');
-          addSpotRow({name:nome,desc:leg||'',x,y,z});
-          exitPickMode();
-        }
+        if(nome){const leg=prompt('Legenda explicativa:','');document.getElementById('sub-modal').classList.add('open');addSpotRow({name:nome,desc:leg||'',x,y,z});exitPickMode();}
       }
     };
     col._move=e=>{const r=col.getBoundingClientRect();cur.classList.add('on');cur.style.left=(e.clientX-r.left)+'px';cur.style.top=(e.clientY-r.top)+'px';};
@@ -722,12 +835,31 @@ async function loadAdmin(){
     document.getElementById('stat-mods').textContent=mods.length;
     document.getElementById('stat-subs').textContent=subs.length;
     renderAdminList(mods,subs);
+    loadUsers();
   }catch(e){console.error(e);}
+}
+async function loadUsers(){
+  try{
+    const users=await api('profiles?order=created_at',  'GET',null,getToken());
+    document.getElementById('stat-users').textContent=users.length;
+    const l=document.getElementById('users-list');
+    if(!users.length){l.innerHTML='<p style="color:var(--muted);font-size:.85rem">Nenhum usuário cadastrado ainda.</p>';return;}
+    l.innerHTML=`<table class="users-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Plano</th><th>Status</th><th></th></tr></thead><tbody>${
+      users.map(u=>`<tr>
+        <td>${u.name||'—'}</td>
+        <td style="color:var(--muted)">${u.email||'—'}</td>
+        <td><span class="badge badge-blue">${u.plan||'free'}</span></td>
+        <td><span class="badge ${u.active!==false?'badge-green':'badge-gray'}">${u.active!==false?'Ativo':'Bloqueado'}</span></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openUserModal('${u.id}','${esc(u.name||'')}','${u.plan||'free'}',${u.active!==false})">✏️</button></td>
+      </tr>`).join('')
+    }</tbody></table>`;
+  }catch(e){document.getElementById('users-list').innerHTML='<p style="color:#e74c3c;font-size:.85rem">Erro ao carregar usuários.</p>';}
 }
 function aTab(n,btn){
   document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.admin-panel').forEach(x=>x.classList.remove('active'));
   btn.classList.add('active');document.getElementById('ap-'+n).classList.add('active');
+  if(n==='usuarios')loadUsers();
 }
 function renderAdminList(mods,subs){
   const l=document.getElementById('admin-list');
@@ -737,7 +869,7 @@ function renderAdminList(mods,subs){
     return `<div style="margin-bottom:.8rem">
       <div class="list-item">
         <div class="left"><div class="thumb-sm">${m.emoji||'🧬'}</div>
-        <div><div class="item-title">${m.name}</div><div class="item-sub">${ms.length} subtema(s)</div></div></div>
+        <div><div class="item-title">${m.name}</div><div class="item-sub">${ms.length} subtema(s) · Plano: ${m.plan_required||'free'}</div></div></div>
         <div class="item-actions">
           <button class="btn btn-primary btn-sm" onclick="openNewSub('${m.id}','${esc(m.name)}')">+ Subtema</button>
           <button class="btn btn-ghost btn-sm" onclick='editMod(${JSON.stringify(m)})'>✏️</button>
@@ -754,18 +886,22 @@ function renderAdminList(mods,subs){
     </div>`;
   }).join('');
 }
-function openNewMod(){editModId=null;selEmoji='🧬';document.getElementById('mod-modal-title').textContent='Novo módulo';document.getElementById('m-name').value='';document.getElementById('m-desc').value='';buildEmoji();document.getElementById('mod-modal').classList.add('open');}
-function editMod(m){if(typeof m==='string')m=JSON.parse(m);editModId=m.id;selEmoji=m.emoji||'🧬';document.getElementById('mod-modal-title').textContent='Editar módulo';document.getElementById('m-name').value=m.name||'';document.getElementById('m-desc').value=m.desc||'';buildEmoji();document.getElementById('mod-modal').classList.add('open');}
+
+// MÓDULO CRUD
+function openNewMod(){editModId=null;selEmoji='🧬';document.getElementById('mod-modal-title').textContent='Novo módulo';document.getElementById('m-name').value='';document.getElementById('m-desc').value='';document.getElementById('m-plan').value='free';buildEmoji();document.getElementById('mod-modal').classList.add('open');}
+function editMod(m){if(typeof m==='string')m=JSON.parse(m);editModId=m.id;selEmoji=m.emoji||'🧬';document.getElementById('mod-modal-title').textContent='Editar módulo';document.getElementById('m-name').value=m.name||'';document.getElementById('m-desc').value=m.desc||'';document.getElementById('m-plan').value=m.plan_required||'free';buildEmoji();document.getElementById('mod-modal').classList.add('open');}
 function closeMod(){document.getElementById('mod-modal').classList.remove('open');}
 async function saveMod(){
   const name=document.getElementById('m-name').value.trim();if(!name){alert('Preencha o nome');return;}
-  const data={name,emoji:selEmoji,desc:document.getElementById('m-desc').value};
+  const data={name,emoji:selEmoji,desc:document.getElementById('m-desc').value,plan_required:document.getElementById('m-plan').value};
   const btn=document.getElementById('mod-btn');btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
   try{if(editModId)await api('modules?id=eq.'+editModId,'PATCH',data);else await api('modules','POST',data);closeMod();showOk('✅ Módulo salvo!');loadAdmin();}
   catch(e){showErr('❌ '+e.message);}
   btn.innerHTML='Salvar';btn.disabled=false;
 }
 async function delMod(id){if(!confirm('Excluir módulo e subtemas?'))return;try{await api('submodules?module_id=eq.'+id,'DELETE');await api('modules?id=eq.'+id,'DELETE');loadAdmin();}catch(e){alert('Erro: '+e.message);}}
+
+// SUBTEMA CRUD
 function openNewSub(modId,modName){editSubId=null;document.getElementById('sub-modal-title').textContent='Novo subtema — '+modName;document.getElementById('s-name').value='';document.getElementById('s-desc').value='';document.getElementById('s-video').value='';document.getElementById('s-glb').value='';document.getElementById('sub-modal').dataset.modId=modId;buildSpotRows([]);document.getElementById('sub-modal').classList.add('open');}
 function editSub(s){if(typeof s==='string')s=JSON.parse(s);editSubId=s.id;document.getElementById('sub-modal-title').textContent='Editar subtema';document.getElementById('s-name').value=s.name||'';document.getElementById('s-desc').value=s.desc||'';document.getElementById('s-video').value=s.video||'';document.getElementById('s-glb').value=s.glb||'';document.getElementById('sub-modal').dataset.modId=s.module_id;buildSpotRows(s.spots||[]);document.getElementById('sub-modal').classList.add('open');}
 function closeSub(){document.getElementById('sub-modal').classList.remove('open');}
@@ -784,6 +920,27 @@ async function saveSub(){
   btn.innerHTML='Salvar subtema';btn.disabled=false;
 }
 async function delSub(id){if(!confirm('Excluir este subtema?'))return;try{await api('submodules?id=eq.'+id,'DELETE');loadAdmin();}catch(e){alert('Erro: '+e.message);}}
+
+// USUÁRIO
+function openUserModal(id,name,plan,active){
+  editUserId=id;
+  document.getElementById('user-modal-info').textContent='Usuário: '+name;
+  document.getElementById('u-plan').value=plan;
+  document.getElementById('u-active').value=String(active);
+  document.getElementById('user-modal').classList.add('open');
+}
+function closeUserModal(){document.getElementById('user-modal').classList.remove('open');}
+async function saveUser(){
+  const btn=document.getElementById('user-save-btn');
+  btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
+  try{
+    await api('profiles?id=eq.'+editUserId,'PATCH',{plan:document.getElementById('u-plan').value,active:document.getElementById('u-active').value==='true'},getToken());
+    closeUserModal();showOk('✅ Usuário atualizado!');loadUsers();
+  }catch(e){showErr('❌ '+e.message);}
+  btn.innerHTML='Salvar';btn.disabled=false;
+}
+
+// HELPERS
 function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 function buildEmoji(){const p=document.getElementById('emoji-picker');p.innerHTML='';EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selEmoji?' sel':''}" onclick="pickE('${e}',this)">${e}</span>`;});}
 function pickE(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
@@ -798,6 +955,13 @@ function addSpotRow(s){
 }
 function showOk(m){const e=document.getElementById('alert-ok');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),4000);}
 function showErr(m){const e=document.getElementById('alert-err');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),5000);}
+
+// ===== INICIALIZAÇÃO =====
+// Verificar se já tem sessão ativa
+(async()=>{
+  const ok=await checkSession();
+  if(ok)go('modules');
+})();
 </script>
 </body>
 </html>
