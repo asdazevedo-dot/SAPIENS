@@ -236,8 +236,9 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="auth-card">
       <h2>🔧 Área Administrativa</h2><p class="auth-sub">Acesso restrito</p>
       <div class="auth-error" id="admin-login-error"></div>
-      <div class="form-group"><label>E-mail admin</label><input type="email" id="admin-email" placeholder="admin@bioverse.com"></div>
-      <div class="form-group"><label>Senha</label><input type="password" id="admin-pass" placeholder="••••••••"></div>
+      <div class="form-group"><label>E-mail admin</label><input type="email" id="admin-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>Senha da conta</label><input type="password" id="admin-pass" placeholder="••••••••"></div>
+      <div class="form-group"><label>Código secreto admin</label><input type="password" id="admin-secret" placeholder="Código exclusivo do administrador"></div>
       <button class="btn btn-primary form-full" id="admin-login-btn" onclick="doAdminLogin()">Entrar como Admin</button>
       <div class="auth-switch"><a onclick="go('login')">← Voltar ao login normal</a></div>
     </div>
@@ -434,8 +435,9 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 const SB='https://ayymsfzpeswdjpgebsvb.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5eW1zZnpwZXN3ZGpwZ2Vic3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODI1NjUsImV4cCI6MjA5Mzc1ODU2NX0.DvKcrvY61Y4qViEOj3rMUuIPWZpZhXboMom_NiNwSEo';
 
-// ADMIN — defina seu e-mail aqui
+// ADMIN — defina seu e-mail E senha secreta aqui
 const ADMIN_EMAIL='sapiens.bio3d@gmail.com';
+const ADMIN_SECRET='Sapiens@Biologia3D#'; // senha extra só do admin
 
 async function api(path,method='GET',body=null,token=null){
   const headers={'apikey':KEY,'Content-Type':'application/json'};
@@ -487,16 +489,23 @@ async function doLogin(){
 async function doAdminLogin(){
   const email=document.getElementById('admin-email').value.trim();
   const pass=document.getElementById('admin-pass').value;
+  const secret=document.getElementById('admin-secret').value;
   const btn=document.getElementById('admin-login-btn');
   const err=document.getElementById('admin-login-error');
   err.classList.remove('show');
-  if(!email||!pass){showEl(err,'Preencha e-mail e senha');return;}
+  if(!email||!pass||!secret){showEl(err,'Preencha todos os campos');return;}
+  // verificar código secreto ANTES de qualquer requisição
+  if(secret!==ADMIN_SECRET){
+    setTimeout(()=>showEl(err,'Código secreto inválido.'),500); // delay para dificultar força bruta
+    btn.innerHTML='Entrar como Admin';btn.disabled=false;return;
+  }
+  if(email!==ADMIN_EMAIL){showEl(err,'Acesso não autorizado.');return;}
   btn.innerHTML='<span class="spinner"></span>Verificando...';btn.disabled=true;
   try{
     const d=await authApi('token?grant_type=password',{email,password:pass});
-    if(email!==ADMIN_EMAIL){showEl(err,'Acesso não autorizado.');btn.innerHTML='Entrar como Admin';btn.disabled=false;return;}
     currentUser=d.user;isAdmin=true;
     localStorage.setItem('sb_token',d.access_token);
+    localStorage.setItem('is_admin','1');
     document.getElementById('admin-name-nav').textContent=email;
     go('admin');loadAdmin();
   }catch(e){showEl(err,'E-mail ou senha incorretos');}
