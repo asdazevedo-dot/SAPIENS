@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/success",
+      "destination": "/public/success.html"
+    },
+    {
+      "source": "/cancel",
+      "destination": "/public/cancel.html"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/public/index.html"
+    }
+  ]
+}

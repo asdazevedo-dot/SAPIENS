@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BioVerse — Biologia em 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--dark:#0a1628;--card:#0f2035;--border:#1a3a50;--accent:#00e5a0;--accent2:#00b4d8;--text:#e8f4f0;--muted:#7a9e90}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Syne',sans-serif}
+.screen{display:none}.screen.active{display:block}
+nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;border-bottom:1px solid var(--border);background:rgba(10,22,40,.97);position:sticky;top:0;z-index:100;height:61px}
+.logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:700;color:var(--accent)}
+.nav-btns{display:flex;gap:.5rem;align-items:center}
+.btn{padding:.5rem 1.1rem;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:var(--accent);color:var(--dark)}
+.btn-primary:hover{background:#00ffb3}
+.btn-danger{background:#c0392b;color:#fff}
+.btn-sm{padding:.35rem .8rem;font-size:.78rem}
+.hero{padding:5rem 2rem 3rem;max-width:860px;margin:0 auto;text-align:center}
+.hero h1{font-size:clamp(1.8rem,5vw,3rem);font-weight:700;line-height:1.15;margin-bottom:1.2rem}
+.hero h1 span{color:var(--accent)}
+.hero p{font-size:1rem;color:var(--muted);max-width:520px;margin:0 auto 2rem;line-height:1.7}
+.hero-pills{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.pill{background:var(--card);border:1px solid var(--border);padding:.3rem .8rem;border-radius:20px;font-size:.78rem;color:var(--muted)}
+.hero-cta{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1rem;padding:2rem;max-width:860px;margin:0 auto}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem}
+.feat-icon{font-size:1.5rem;margin-bottom:.5rem}
+.feat-card h3{font-size:.9rem;margin-bottom:.3rem}
+.feat-card p{font-size:.8rem;color:var(--muted);line-height:1.5}
+.auth-wrap{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 61px);padding:2rem}
+.auth-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:400px}
+.auth-card h2{font-size:1.4rem;margin-bottom:.3rem}
+.auth-sub{font-size:.83rem;color:var(--muted);margin-bottom:1.6rem}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.35rem}
+.form-group input{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:.6rem .85rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88rem}
+.form-group input:focus{outline:none;border-color:var(--accent)}
+.form-full{width:100%;margin-top:.4rem}
+.auth-switch{text-align:center;margin-top:1rem;font-size:.82rem;color:var(--muted)}
+.auth-switch a{color:var(--accent);cursor:pointer}
+.auth-error{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:#e74c3c;border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:.8rem;display:none}
+.auth-error.show{display:block}
+.auth-info{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--accent);border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:.8rem;display:none}
+.auth-info.show{display:block}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.2rem}
+.plan-opt{border:1px solid var(--border);border-radius:10px;padding:.85rem;cursor:pointer;transition:all .2s}
+.plan-opt.selected{border-color:var(--accent);background:rgba(0,229,160,.07)}
+.plan-opt h4{font-size:.88rem;margin-bottom:.2rem}
+.plan-opt p{font-size:.75rem;color:var(--muted)}
+.plan-price{font-size:1rem;font-weight:700;color:var(--accent);margin-top:.3rem}
+.grid-page{padding:2rem;max-width:1100px;margin:0 auto}
+.grid-page h2{font-size:1.4rem;margin-bottom:.3rem}
+.grid-sub{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.mod-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s}
+.mod-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+.mod-card.locked{opacity:.5;cursor:not-allowed}
+.mod-card.locked:hover{transform:none;border-color:var(--border)}
+.mod-thumb{height:130px;display:flex;align-items:center;justify-content:center;font-size:3.5rem;position:relative}
+.lock-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border-radius:20px;padding:.2rem .5rem;font-size:.7rem;color:var(--muted)}
+.mod-body{padding:.9rem 1rem 1rem}
+.mod-body h3{font-size:.95rem;margin-bottom:.3rem}
+.mod-body p{font-size:.78rem;color:var(--muted);line-height:1.5}
+.loading{text-align:center;padding:3rem;color:var(--muted);font-size:.88rem}
+#screen-viewer.active{display:block;height:100vh}
+.viewer-container{display:grid;grid-template-columns:1fr 400px;height:calc(100vh - 61px);overflow:hidden}
+#canvas-col{position:relative;background:#060f1e;cursor:grab;overflow:hidden;width:100%;height:100%;min-height:400px}
+#canvas-col:active{cursor:grabbing}
+#bio-canvas{display:block;position:absolute;top:0;left:0;width:100%;height:100%}
+.canvas-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(255,255,255,.4);background:rgba(0,0,0,.5);padding:.25rem .7rem;border-radius:20px;white-space:nowrap;pointer-events:none;z-index:5}
+.spot-btn{position:absolute;width:26px;height:26px;background:var(--accent);border-radius:50%;border:2.5px solid var(--dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--dark);z-index:10;transition:transform .15s}
+.spot-btn:hover{transform:scale(1.25)}
+.spot-popup{position:absolute;background:rgba(6,15,30,.97);border:1px solid var(--accent);border-radius:10px;padding:.6rem .9rem;font-size:.78rem;max-width:180px;z-index:20;line-height:1.45;pointer-events:none;opacity:0;transition:opacity .2s}
+.spot-popup.show{opacity:1}
+.spot-popup h4{font-size:.8rem;color:var(--accent);margin-bottom:.2rem}
+.side-panel{background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.side-inner{padding:1.5rem 1.5rem .5rem}
+.side-title{font-size:1.1rem;margin-bottom:.4rem}
+.side-desc{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1.2rem}
+.structs-label{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem}
+.struct-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .5rem;border-radius:7px;cursor:pointer;font-size:.83rem;transition:background .2s}
+.struct-item:hover{background:rgba(255,255,255,.04)}
+.struct-item.active{background:rgba(0,229,160,.1);color:var(--accent)}
+.struct-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.video-section{padding:1rem 1.5rem 1.5rem}
+.video-box{background:var(--dark);border-radius:10px;overflow:hidden}
+.video-box iframe{width:100%;height:200px;display:block;border:none}
+.video-placeholder{display:flex;flex-direction:row;align-items:center;gap:1rem;color:var(--text);cursor:pointer;border-radius:12px;border:2px solid var(--accent2);background:rgba(0,180,216,.08);padding:1rem 1.2rem;transition:all .2s}
+.video-placeholder:hover{background:rgba(0,180,216,.16);transform:translateY(-1px)}
+.play-circle{width:48px;height:48px;border-radius:50%;background:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:#fff;flex-shrink:0}
+.video-label-text{display:flex;flex-direction:column;gap:.2rem}
+.video-label-text strong{font-size:.9rem;color:var(--accent2)}
+.video-label-text span{font-size:.75rem;color:var(--muted)}
+@media(max-width:800px){.viewer-container{grid-template-columns:1fr;grid-template-rows:50vh auto;height:auto}}
+.admin-wrap{padding:2rem;max-width:1000px;margin:0 auto}
+.admin-wrap>h2{font-size:1.4rem;margin-bottom:1.5rem}
+.admin-layout{display:grid;grid-template-columns:180px 1fr;gap:1.5rem}
+.admin-nav{display:flex;flex-direction:column;gap:.3rem}
+.admin-tab{background:transparent;border:none;border-radius:8px;padding:.6rem .85rem;text-align:left;font-family:'DM Sans',sans-serif;font-size:.85rem;cursor:pointer;color:var(--muted);transition:all .2s}
+.admin-tab:hover{background:var(--card);color:var(--text)}
+.admin-tab.active{background:rgba(0,229,160,.1);color:var(--accent)}
+.admin-panel{display:none}.admin-panel.active{display:block}
+.stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem;margin-bottom:1.5rem}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.stat-card .num{font-size:1.7rem;font-weight:700;font-family:'Syne',sans-serif;color:var(--accent)}
+.stat-card .lbl{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+.list-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.list-item .left{display:flex;align-items:center;gap:.7rem}
+.thumb-sm{width:38px;height:38px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--dark)}
+.item-title{font-size:.88rem;font-weight:500}
+.item-sub{font-size:.75rem;color:var(--muted)}
+.item-actions{display:flex;gap:.4rem;flex-shrink:0}
+.sublist{margin-left:1rem;border-left:2px solid var(--border);padding-left:.8rem;margin-bottom:.5rem}
+.sub-item{display:flex;align-items:center;justify-content:space-between;padding:.4rem .5rem;border-radius:6px;font-size:.8rem;margin-bottom:.25rem}
+.sub-item:hover{background:rgba(255,255,255,.03)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:flex-start;justify-content:center;padding:1.5rem 1rem;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;width:100%;max-width:520px;margin:auto}
+.modal h3{font-size:1.1rem;margin-bottom:1.1rem}
+.modal-footer{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.1rem}
+.modal input,.modal select{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;padding:.45rem .65rem;font-size:.85rem;margin-top:.25rem}
+.modal input:focus,.modal select:focus{outline:none;border-color:var(--accent)}
+.alert{border-radius:8px;padding:.6rem .9rem;font-size:.82rem;margin-bottom:.8rem;display:none}
+.alert.show{display:block}
+.alert-ok{background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);color:var(--accent)}
+.alert-err{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:#e74c3c}
+.spots-box{margin-top:.8rem;border:1px solid var(--border);border-radius:10px;padding:.9rem}
+.spots-box h4{font-size:.82rem;color:var(--muted);margin-bottom:.6rem}
+.spot-row{display:grid;grid-template-columns:1fr 1.2fr .7fr auto;gap:.4rem;margin-bottom:.4rem;align-items:center}
+.spot-row input{background:var(--dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;padding:.42rem .6rem;font-size:.82rem;width:100%;margin-top:0}
+.mini-btn{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#e74c3c;border-radius:6px;padding:.28rem .5rem;cursor:pointer;font-size:.72rem}
+.add-row-btn{background:transparent;border:1px dashed var(--border);color:var(--muted);border-radius:6px;padding:.35rem .7rem;cursor:pointer;font-size:.78rem;width:100%;margin-top:.3rem;transition:all .2s}
+.add-row-btn:hover{border-color:var(--accent);color:var(--accent)}
+.emoji-picker{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.35rem}
+.emoji-opt{font-size:1.3rem;cursor:pointer;padding:.28rem;border-radius:6px;border:1px solid transparent}
+.emoji-opt.sel{border-color:var(--accent);background:rgba(0,229,160,.1)}
+.fgroup{margin-bottom:.9rem}
+.fgroup label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:.2rem}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,229,160,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.3rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pick-spot-btn{background:rgba(0,229,160,.1);border:1px solid var(--accent);color:var(--accent);border-radius:7px;padding:.4rem .8rem;cursor:pointer;font-size:.78rem;font-family:'DM Sans',sans-serif;transition:all .2s;margin-left:.4rem}
+.pick-spot-btn.active{background:var(--accent);color:var(--dark)}
+.spot-mode-bar{display:none;position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(0,229,160,.9);border-radius:20px;padding:.45rem 1.3rem;font-size:.8rem;color:#0a1628;font-weight:600;z-index:30;white-space:nowrap;pointer-events:none}
+.spot-mode-bar.on{display:block}
+#canvas-col.spot-mode{cursor:crosshair!important}
+.spot-cursor{position:absolute;width:20px;height:20px;background:rgba(0,229,160,.6);border:2px solid var(--accent);border-radius:50%;pointer-events:none;z-index:25;transform:translate(-50%,-50%);display:none}
+.spot-cursor.on{display:block}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:20px;font-size:.72rem;font-weight:500}
+.badge-green{background:rgba(0,229,160,.15);color:var(--accent)}
+.badge-gray{background:rgba(122,158,144,.15);color:var(--muted)}
+.badge-blue{background:rgba(0,180,216,.15);color:var(--accent2)}
+.users-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.users-table th{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--border);color:var(--muted);font-weight:500;font-size:.78rem}
+.users-table td{padding:.6rem .8rem;border-bottom:1px solid rgba(26,58,80,.5)}
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <nav>
+    <div class="logo">🔬 BioVerse</div>
+    <div class="nav-btns">
+      <button class="btn btn-ghost" onclick="go('login')">Entrar</button>
+      <button class="btn btn-primary" onclick="go('register')">Assinar</button>
+    </div>
+  </nav>
+  <div class="hero">
+    <h1>Aprenda Biologia em <span>3D interativo</span></h1>
+    <p>Explore estruturas celulares, moléculas e organismos em modelos tridimensionais com legendas e videoaulas.</p>
+    <div class="hero-pills">
+      <span class="pill">🧬 Biologia Celular</span><span class="pill">⚗️ Bioquímica</span>
+      <span class="pill">🔬 Histologia</span><span class="pill">🧫 Genética</span><span class="pill">🌿 Botânica</span>
+    </div>
+    <div class="hero-cta">
+      <button class="btn btn-primary" style="padding:.7rem 1.8rem" onclick="go('register')">Começar agora</button>
+      <button class="btn btn-ghost" style="padding:.7rem 1.8rem" onclick="go('login')">Já tenho conta</button>
+    </div>
+  </div>
+  <div class="features">
+    <div class="feat-card"><div class="feat-icon">🔭</div><h3>Modelos 3D</h3><p>Exportados do Cinema 4D, rotativos com zoom.</p></div>
+    <div class="feat-card"><div class="feat-icon">📍</div><h3>Spots</h3><p>Clique nos pontos do modelo para ver legendas.</p></div>
+    <div class="feat-card"><div class="feat-icon">🎬</div><h3>Videoaulas</h3><p>Vídeo explicativo ao lado do modelo em cada subtema.</p></div>
+    <div class="feat-card"><div class="feat-icon">📚</div><h3>Submódulos</h3><p>Cada tema dividido em subtemas detalhados.</p></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen">
+  <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>Bem-vindo de volta</h2><p class="auth-sub">Entre para acessar os módulos</p>
+      <div class="auth-error" id="login-error"></div>
+      <div class="auth-info" id="login-info"></div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <button class="btn btn-primary form-full" id="login-btn" onclick="doLogin()">Entrar</button>
+      <div class="auth-switch">Não tem conta? <a onclick="go('register')">Assinar agora</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- CADASTRO -->
+<div id="screen-register" class="screen">
+  <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>Criar conta</h2><p class="auth-sub">Escolha seu plano</p>
+      <div class="plan-grid">
+        <div class="plan-opt selected" id="plan-mensal" onclick="selPlan('mensal')"><h4>Mensal</h4><p>Cancele quando quiser</p><div class="plan-price">R$ 29/mês</div></div>
+        <div class="plan-opt" id="plan-anual" onclick="selPlan('anual')"><h4>Anual</h4><p>Economize 30%</p><div class="plan-price">R$ 19/mês</div></div>
+      </div>
+      <div class="auth-error" id="reg-error"></div>
+      <div class="auth-info" id="reg-info"></div>
+      <div class="form-group"><label>Nome</label><input type="text" id="reg-name" placeholder="Seu nome"></div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>Senha</label><input type="password" id="reg-pass" placeholder="min. 8 caracteres"></div>
+      <button class="btn btn-primary form-full" id="reg-btn" onclick="doRegister()">Criar conta</button>
+      <div class="auth-switch">Já tem conta? <a onclick="go('login')">Entrar</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN ADMIN -->
+<div id="screen-admin-login" class="screen">
+  <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>🔧 Área Administrativa</h2><p class="auth-sub">Acesso restrito</p>
+      <div class="auth-error" id="admin-login-error"></div>
+      <div class="form-group"><label>E-mail admin</label><input type="email" id="admin-email" placeholder="seu@email.com"></div>
+      <div class="form-group"><label>Senha da conta</label><input type="password" id="admin-pass" placeholder="••••••••"></div>
+      <div class="form-group"><label>Código secreto admin</label><input type="password" id="admin-secret" placeholder="Código exclusivo do administrador"></div>
+      <button class="btn btn-primary form-full" id="admin-login-btn" onclick="doAdminLogin()">Entrar como Admin</button>
+      <div class="auth-switch"><a onclick="go('login')">← Voltar ao login normal</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- MÓDULOS -->
+<div id="screen-modules" class="screen">
+  <nav>
+    <div class="logo">🔬 BioVerse</div>
+    <div class="nav-btns">
+      <span id="user-name-nav" style="font-size:.82rem;color:var(--muted);margin-right:.4rem"></span>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()">Sair</button>
+    </div>
+  </nav>
+  <div class="grid-page">
+    <h2>Módulos de Biologia</h2>
+    <p class="grid-sub">Escolha um módulo para explorar</p>
+    <div class="cards-grid" id="modules-grid"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
+  </div>
+</div>
+
+<!-- SUBMÓDULOS -->
+<div id="screen-submods" class="screen">
+  <nav>
+    <div class="logo">🔬 BioVerse</div>
+    <div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('modules')">← Módulos</button></div>
+  </nav>
+  <div class="grid-page">
+    <h2 id="submod-title"></h2>
+    <p class="grid-sub" id="submod-desc"></p>
+    <div class="cards-grid" id="submods-grid"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
+  </div>
+</div>
+
+<!-- VIEWER -->
+<div id="screen-viewer" class="screen">
+  <nav>
+    <div class="logo">🔬 BioVerse</div>
+    <div class="nav-btns">
+      <span id="viewer-bc" style="font-size:.78rem;color:var(--muted)"></span>
+      <button class="btn btn-ghost btn-sm" id="back-btn" style="margin-left:.5rem">← Voltar</button>
+    </div>
+  </nav>
+  <div class="viewer-container">
+    <div id="canvas-col">
+      <canvas id="bio-canvas"></canvas>
+      <div class="canvas-hint">🖱 Arraste para girar • Scroll para zoom</div>
+      <div class="spot-mode-bar" id="spot-mode-bar">📍 Clique no modelo para posicionar o spot</div>
+      <div class="spot-cursor" id="spot-cursor"></div>
+    </div>
+    <div class="side-panel">
+      <div class="side-inner">
+        <h3 class="side-title" id="viewer-title"></h3>
+        <p class="side-desc" id="viewer-desc-text"></p>
+        <div class="structs-label">ESTRUTURAS</div>
+        <div id="struct-list"><p style="font-size:.8rem;color:var(--muted)">Nenhum spot cadastrado.</p></div>
+      </div>
+      <div class="video-section">
+        <div class="video-box" id="video-box"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="screen-admin" class="screen">
+  <nav>
+    <div class="logo">🔬 BioVerse <span style="font-size:.68rem;color:var(--muted);margin-left:.3rem">ADMIN</span></div>
+    <div class="nav-btns">
+      <span id="admin-name-nav" style="font-size:.82rem;color:var(--muted);margin-right:.4rem"></span>
+      <button class="btn btn-ghost btn-sm" onclick="go('modules')">👁 Ver como aluno</button>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()" style="margin-left:.3rem">Sair</button>
+    </div>
+  </nav>
+  <div class="admin-wrap">
+    <h2>Painel Administrativo</h2>
+    <div class="admin-layout">
+      <div class="admin-nav">
+        <button class="admin-tab active" onclick="aTab('dashboard',this)">📊 Dashboard</button>
+        <button class="admin-tab" onclick="aTab('modulos',this)">📦 Módulos</button>
+        <button class="admin-tab" onclick="aTab('usuarios',this)">👥 Usuários</button>
+      </div>
+      <div>
+        <div class="admin-panel active" id="ap-dashboard">
+          <div class="stat-cards">
+            <div class="stat-card"><div class="num" id="stat-mods">—</div><div class="lbl">Módulos</div></div>
+            <div class="stat-card"><div class="num" id="stat-subs">—</div><div class="lbl">Subtemas</div></div>
+            <div class="stat-card"><div class="num" id="stat-users">—</div><div class="lbl">Alunos</div></div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem;font-size:.83rem;color:var(--muted)">
+            <p style="font-weight:600;color:var(--text);margin-bottom:.5rem">Como funciona</p>
+            <p style="margin-bottom:.3rem">1. Crie <strong style="color:var(--accent)">Módulos</strong> e <strong style="color:var(--accent)">Subtemas</strong> com conteúdo 3D</p>
+            <p style="margin-bottom:.3rem">2. Em <strong style="color:var(--accent)">Usuários</strong> gerencie os alunos e libere acesso</p>
+            <p>3. Alunos com plano <strong style="color:var(--accent)">free</strong> só veem módulos liberados para free</p>
+          </div>
+        </div>
+        <div class="admin-panel" id="ap-modulos">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+            <h3 style="margin:0">Módulos</h3>
+            <button class="btn btn-primary btn-sm" onclick="openNewMod()">+ Novo módulo</button>
+          </div>
+          <div class="alert alert-ok" id="alert-ok"></div>
+          <div class="alert alert-err" id="alert-err"></div>
+          <div id="admin-list"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
+        </div>
+        <div class="admin-panel" id="ap-usuarios">
+          <h3 style="margin-bottom:1rem">Usuários cadastrados</h3>
+          <div id="users-list"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MÓDULO -->
+<div class="modal-bg" id="mod-modal">
+  <div class="modal">
+    <h3 id="mod-modal-title">Novo módulo</h3>
+    <div class="fgroup"><label>Nome</label><input type="text" id="m-name" placeholder="Ex: Biologia Celular"></div>
+    <div class="fgroup"><label>Emoji</label><div class="emoji-picker" id="emoji-picker"></div></div>
+    <div class="fgroup"><label>Descrição</label><input type="text" id="m-desc" placeholder="Breve descrição"></div>
+    <div class="fgroup"><label>Plano necessário para acessar</label>
+      <select id="m-plan">
+        <option value="free">Gratuito (todos veem)</option>
+        <option value="mensal">Plano Mensal</option>
+        <option value="anual">Plano Anual</option>
+        <option value="premium">Premium (todos os planos pagos)</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeMod()">Cancelar</button>
+      <button class="btn btn-primary" id="mod-btn" onclick="saveMod()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SUBTEMA -->
+<div class="modal-bg" id="sub-modal">
+  <div class="modal">
+    <h3 id="sub-modal-title">Novo subtema</h3>
+    <div class="fgroup"><label>Nome</label><input type="text" id="s-name" placeholder="Ex: Membrana Plasmática"></div>
+    <div class="fgroup"><label>Descrição</label><input type="text" id="s-desc" placeholder="Breve descrição"></div>
+    <div class="fgroup"><label>Link do vídeo (YouTube ou Vimeo)</label><input type="text" id="s-video" placeholder="https://youtube.com/watch?v=..."></div>
+    <div class="fgroup"><label>Arquivo 3D (.glb)</label><input type="text" id="s-glb" placeholder="alveolos.glb"></div>
+    <div class="spots-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
+        <h4 style="margin:0">Spots — pontos clicáveis</h4>
+        <button class="pick-spot-btn" id="pick-mode-btn" onclick="togglePickMode()">🎯 Clicar no modelo</button>
+      </div>
+      <!-- Mini viewer 3D para posicionar spots -->
+      <div id="admin-viewer-wrap" style="display:none;margin-bottom:.8rem">
+        <div id="admin-canvas-col" style="position:relative;background:#060f1e;border-radius:10px;height:280px;cursor:grab;overflow:hidden">
+          <canvas id="admin-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block"></canvas>
+          <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(255,255,255,.4);background:rgba(0,0,0,.5);padding:.2rem .6rem;border-radius:20px;white-space:nowrap;pointer-events:none">Arraste para girar • Clique para adicionar spot</div>
+          <div id="admin-spot-bar" style="display:none;position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,229,160,.9);border-radius:20px;padding:.3rem 1rem;font-size:.75rem;color:#0a1628;font-weight:600;pointer-events:none">📍 Clique no modelo para posicionar o spot</div>
+        </div>
+      </div>
+      <div style="background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:.6rem .9rem;margin-bottom:.8rem;font-size:.78rem;color:var(--muted);line-height:1.6">
+        💡 Cole o link do arquivo 3D acima e clique em <strong style="color:var(--accent)">🎯 Clicar no modelo</strong> para abrir o viewer e posicionar spots visualmente.
+      </div>
+      <div id="spot-rows"></div>
+      <button class="add-row-btn" onclick="addSpotRow()">+ Adicionar spot manualmente</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeSub()">Cancelar</button>
+      <button class="btn btn-primary" id="sub-btn" onclick="saveSub()">Salvar subtema</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL USUÁRIO -->
+<div class="modal-bg" id="user-modal">
+  <div class="modal">
+    <h3>Gerenciar usuário</h3>
+    <div id="user-modal-info" style="font-size:.85rem;color:var(--muted);margin-bottom:1rem"></div>
+    <div class="fgroup"><label>Plano do aluno</label>
+      <select id="u-plan">
+        <option value="free">Gratuito</option>
+        <option value="mensal">Mensal</option>
+        <option value="anual">Anual</option>
+        <option value="premium">Premium</option>
+      </select>
+    </div>
+    <div class="fgroup"><label>Status</label>
+      <select id="u-active">
+        <option value="true">Ativo</option>
+        <option value="false">Bloqueado</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeUserModal()">Cancelar</button>
+      <button class="btn btn-primary" id="user-save-btn" onclick="saveUser()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+// ===== SUPABASE =====
+const SB_URL='https://ayymsfzpeswdjpgebsvb.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5eW1zZnpwZXN3ZGpwZ2Vic3ZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxODI1NjUsImV4cCI6MjA5Mzc1ODU2NX0.DvKcrvY61Y4qViEOj3rMUuIPWZpZhXboMom_NiNwSEo';
+const ADMIN_EMAIL='sapiens.bio3d@gmail.com';
+const STRIPE_PK='pk_test_51TYx6a1GoQKHBdJgugTjiu1CaaspW6sjdZ2ykjKilkHnJcyGbunglvHZhBXx4pcR4njpcdcQhEHIPB4Hwg5MMCLH00u0oN8HFY';
+const PLANS={
+  mensal:{priceId:'price_1TYxIO1GoQKHBdJgfYWURm1c',name:'Plano Mensal',price:'R$ 29/mês'},
+  anual:{priceId:'price_1TYxGw1GoQKHBdJgoPbxp5gI',name:'Plano Anual',price:'R$ 19/mês'}
+};
+const ADMIN_SECRET='Sapiens@Biologia3D#';
+
+// chamadas ao backend seguro (sem expor chaves)
+async function api(path,method='GET',body=null,token=null){
+  const headers={'Content-Type':'application/json'};
+  if(token)headers['Authorization']='Bearer '+token;
+  const r=await fetch('/api/'+path,{method,headers,body:body?JSON.stringify(body):null});
+  if(!r.ok)throw new Error(await r.text());
+  const t=await r.text();return t?JSON.parse(t):[];
+}
+
+// chamadas diretas ao Supabase (perfis, auth)
+async function apiSb(path,method='GET',body=null,token=null){
+  const headers={'apikey':SB_KEY,'Content-Type':'application/json'};
+  if(token)headers['Authorization']='Bearer '+token;
+  else headers['Authorization']='Bearer '+SB_KEY;
+  if(method==='POST')headers['Prefer']='return=representation';
+  const r=await fetch(SB_URL+'/rest/v1/'+path,{method,headers,body:body?JSON.stringify(body):null});
+  if(!r.ok)throw new Error(await r.text());
+  const t=await r.text();return t?JSON.parse(t):[];
+}
+
+async function authApi(path,body){
+  const r=await fetch(SB_URL+'/auth/v1/'+path,{method:'POST',headers:{'apikey':SB_KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const d=await r.json();
+  if(!r.ok)throw new Error(d.error_description||d.msg||'Erro');
+  return d;
+}
+
+// ===== STATE =====
+const EMOJIS=['🧬','⚗️','🔬','🧫','🌿','🦠','🧪','🫀','🫁','🧠','🦴','🌱','🐠','🐛','🌺','🍃'];
+const BG=['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a','#1a0d2b'];
+let selEmoji='🧬',editModId=null,editSubId=null,editUserId=null;
+let curModId=null,curModName='',curSub=null;
+let currentUser=null,currentProfile=null,isAdmin=false;
+let renderer=null,scene,camera,meshGroup,animId=null;
+let isDrag=false,prevX=0,prevY=0,pinchDist=null,spotEls=[],pickMode=false;
+
+// ===== AUTH =====
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const btn=document.getElementById('login-btn');
+  const err=document.getElementById('login-error');
+  const info=document.getElementById('login-info');
+  err.classList.remove('show');info.classList.remove('show');
+  if(!email||!pass){showEl(err,'Preencha e-mail e senha');return;}
+  btn.innerHTML='<span class="spinner"></span>Entrando...';btn.disabled=true;
+  try{
+    const d=await authApi('token?grant_type=password',{email,password:pass});
+    currentUser=d.user;
+    localStorage.setItem('sb_token',d.access_token);
+    localStorage.setItem('sb_refresh',d.refresh_token);
+    await loadProfile(d.access_token);
+    go('modules');
+  }catch(e){showEl(err,e.message==='Invalid login credentials'?'E-mail ou senha incorretos':e.message);}
+  btn.innerHTML='Entrar';btn.disabled=false;
+}
+
+async function doAdminLogin(){
+  const email=document.getElementById('admin-email').value.trim();
+  const pass=document.getElementById('admin-pass').value;
+  const secret=document.getElementById('admin-secret').value;
+  const btn=document.getElementById('admin-login-btn');
+  const err=document.getElementById('admin-login-error');
+  err.classList.remove('show');
+  if(!email||!pass||!secret){showEl(err,'Preencha todos os campos');return;}
+  // verificar código secreto ANTES de qualquer requisição
+  if(secret!==ADMIN_SECRET){
+    setTimeout(()=>showEl(err,'Código secreto inválido.'),500); // delay para dificultar força bruta
+    btn.innerHTML='Entrar como Admin';btn.disabled=false;return;
+  }
+  if(email!==ADMIN_EMAIL){showEl(err,'Acesso não autorizado.');return;}
+  btn.innerHTML='<span class="spinner"></span>Verificando...';btn.disabled=true;
+  try{
+    const d=await authApi('token?grant_type=password',{email,password:pass});
+    currentUser=d.user;isAdmin=true;
+    localStorage.setItem('sb_token',d.access_token);
+    localStorage.setItem('is_admin','1');
+    document.getElementById('admin-name-nav').textContent=email;
+    go('admin');loadAdmin();
+  }catch(e){showEl(err,'E-mail ou senha incorretos');}
+  btn.innerHTML='Entrar como Admin';btn.disabled=false;
+}
+
+async function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const btn=document.getElementById('reg-btn');
+  const err=document.getElementById('reg-error');
+  const info=document.getElementById('reg-info');
+  err.classList.remove('show');info.classList.remove('show');
+  if(!name||!email||!pass){showEl(err,'Preencha todos os campos');return;}
+  if(pass.length<8){showEl(err,'A senha deve ter no mínimo 8 caracteres');return;}
+  btn.innerHTML='<span class="spinner"></span>Criando conta...';btn.disabled=true;
+  try{
+    const d=await authApi('signup',{email,password:pass,data:{name}});
+    // pegar userId independente do formato da resposta
+    const userId=d?.user?.id||d?.id||null;
+    const planKey=document.querySelector('.plan-opt.selected').id.replace('plan-','');
+    const plan=PLANS[planKey];
+    if(userId){
+      // tem userId — ir para pagamento
+      btn.innerHTML='<span class="spinner"></span>Redirecionando para pagamento...';
+      const r=await fetch('/api/checkout',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({priceId:plan.priceId,userId:userId,userEmail:email,plan:planKey})
+      });
+      const data=await r.json();
+      if(data.url){
+        window.location.href=data.url;
+        return;
+      }
+    }
+    // fallback — fazer login automático e ir para pagamento
+    btn.innerHTML='<span class="spinner"></span>Fazendo login...';
+    try{
+      const login=await authApi('token?grant_type=password',{email,password:pass});
+      if(login?.user?.id){
+        localStorage.setItem('sb_token',login.access_token);
+        const r=await fetch('/api/checkout',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({priceId:plan.priceId,userId:login.user.id,userEmail:email,plan:planKey})
+        });
+        const data=await r.json();
+        if(data.url){window.location.href=data.url;return;}
+      }
+    }catch(le){}
+    showEl(info,'✅ Conta criada! Faça login e assine seu plano.');
+  }catch(e){showEl(err,e.message);}
+  btn.innerHTML='Criar conta';btn.disabled=false;
+}
+
+async function loadProfile(token){
+  try{
+    const profiles=await apiSb('profiles?id=eq.'+currentUser.id,'GET',null,token);
+    if(profiles.length>0){
+      currentProfile=profiles[0];
+      document.getElementById('user-name-nav').textContent=currentProfile.name||currentUser.email.split('@')[0];
+    }else{
+      // criar perfil se não existe
+      await apiSb('profiles','POST',{id:currentUser.id,name:currentUser.user_metadata?.name||'',plan:'free'},token);
+      currentProfile={plan:'free',active:true};
+      document.getElementById('user-name-nav').textContent=currentUser.user_metadata?.name||currentUser.email.split('@')[0];
+    }
+  }catch(e){console.error('Erro ao carregar perfil:',e);}
+}
+
+async function checkSession(){
+  const token=localStorage.getItem('sb_token');
+  if(!token)return false;
+  try{
+    const r=await fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+token}});
+    if(!r.ok)return false;
+    const d=await r.json();
+    currentUser=d;
+    await loadProfile(token);
+    return true;
+  }catch(e){return false;}
+}
+
+function doLogout(){
+  localStorage.removeItem('sb_token');localStorage.removeItem('sb_refresh');
+  currentUser=null;currentProfile=null;isAdmin=false;
+  go('home');
+}
+
+function getToken(){return localStorage.getItem('sb_token');}
+
+// ===== NAV =====
+function go(s){
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  document.getElementById('screen-'+s).classList.add('active');
+  if(s==='modules')loadMods();
+  if(s==='admin')loadAdmin();
+}
+function selPlan(p){document.querySelectorAll('.plan-opt').forEach(x=>x.classList.remove('selected'));document.getElementById('plan-'+p).classList.add('selected');}
+function showEl(el,msg){el.textContent=msg;el.classList.add('show');}
+
+// ===== MÓDULOS =====
+async function loadMods(){
+  const g=document.getElementById('modules-grid');
+  g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  try{
+    const mods=await api('modules');
+    if(!mods.length){g.innerHTML='<div class="loading">Nenhum módulo ainda.</div>';return;}
+    const plan=currentProfile?.plan||'free';
+    g.innerHTML=mods.map((m,i)=>{
+      const hasAccess=canAccess(m.plan_required,plan);
+      return `<div class="mod-card${hasAccess?'':' locked'}" onclick="${hasAccess?`openMod('${m.id}','${esc(m.name)}','${esc(m.desc||'')}')`:''}" >
+        <div class="mod-thumb" style="background:${BG[i%BG.length]}">${m.emoji||'🧬'}${hasAccess?'':'<div class="lock-badge">🔒 Upgrade</div>'}</div>
+        <div class="mod-body"><h3>${m.name}</h3><p>${m.desc||''}</p></div>
+      </div>`;
+    }).join('');
+  }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
+}
+
+function canAccess(required,userPlan){
+  if(!required||required==='free')return true;
+  if(userPlan==='premium'||userPlan==='anual')return true;
+  if(required==='mensal'&&userPlan==='mensal')return true;
+  if(required===userPlan)return true;
+  return false;
+}
+
+async function openMod(id,name,desc){
+  curModId=id;curModName=name;
+  document.getElementById('submod-title').textContent=name;
+  document.getElementById('submod-desc').textContent=desc;
+  go('submods');
+  const g=document.getElementById('submods-grid');
+  g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  try{
+    const subs=await api('submodules?module_id='+id);
+    if(!subs.length){g.innerHTML='<div class="loading">Nenhum subtema neste módulo ainda.</div>';return;}
+    g.innerHTML=subs.map((s,i)=>`<div class="mod-card" onclick='openViewer(${JSON.stringify(s)})'>
+      <div class="mod-thumb" style="background:${BG[(i+2)%BG.length]};font-size:2.5rem">🔬</div>
+      <div class="mod-body"><h3>${s.name}</h3><p>${s.desc||''}</p></div></div>`).join('');
+  }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
+}
+
+// ===== VIEWER =====
+function openViewer(s){
+  if(typeof s==='string')s=JSON.parse(s);
+  curSub=s;
+  document.getElementById('viewer-bc').textContent=curModName+' › '+s.name;
+  document.getElementById('back-btn').onclick=()=>openMod(curModId,curModName,'');
+  document.getElementById('viewer-title').textContent=s.name;
+  document.getElementById('viewer-desc-text').textContent=s.desc||'';
+  setupVideo(s.video);
+  renderStructs(s.spots||[]);
+  go('viewer');
+  setTimeout(startThree,100);
+}
+
+function renderStructs(spots){
+  const l=document.getElementById('struct-list');
+  if(!spots||!spots.length){l.innerHTML='<p style="font-size:.8rem;color:var(--muted)">Nenhum spot cadastrado.</p>';return;}
+  l.innerHTML=spots.map((s,i)=>`<div class="struct-item" id="sti-${i}" onclick="focusSpot(${i})"><div class="struct-dot"></div>${s.name}</div>`).join('');
+}
+function focusSpot(i){
+  document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
+  const el=document.getElementById('sti-'+i);if(el)el.classList.add('active');
+  document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
+  const sp=document.getElementById('spp-'+i);if(sp)sp.classList.add('show');
+}
+function setupVideo(url){
+  const box=document.getElementById('video-box');
+  box.dataset.url=url||'';
+  if(url){
+    box.innerHTML=`<div class="video-placeholder" onclick="loadVideo()"><div class="play-circle">▶</div><div class="video-label-text"><strong>▶ Clique aqui e assista a videoaula</strong><span>Explicação completa sobre este tema</span></div></div>`;
+  }else{
+    box.innerHTML=`<div style="padding:.8rem 1rem;font-size:.8rem;color:var(--muted);border:1px dashed var(--border);border-radius:10px;text-align:center">Sem vídeo neste subtema</div>`;
+  }
+}
+function loadVideo(){
+  const url=document.getElementById('video-box').dataset.url;if(!url)return;
+  const box=document.getElementById('video-box');
+  let src='';
+  if(url.includes('youtu')){
+    let id='';
+    if(url.includes('shorts/'))id=url.split('shorts/')[1].split('?')[0];
+    else if(url.includes('v='))id=url.split('v=')[1].split('&')[0];
+    else id=url.split('/').pop().split('?')[0];
+    src='https://www.youtube.com/embed/'+id+'?autoplay=1';
+  }else if(url.includes('vimeo')){src='https://player.vimeo.com/video/'+url.split('/').pop()+'?autoplay=1';}
+  else{src=url;}
+  box.innerHTML=`<iframe src="${src}" frameborder="0" allowfullscreen allow="autoplay"></iframe>`;
+}
+
+// ===== THREE.JS =====
+function startThree(){
+  if(animId){cancelAnimationFrame(animId);animId=null;}
+  document.querySelectorAll('.spot-btn,.spot-popup').forEach(e=>e.remove());
+  spotEls=[];isDrag=false;
+  const col=document.getElementById('canvas-col');
+  const canvas=document.getElementById('bio-canvas');
+  const navH=61;
+  const W=col.offsetWidth||window.innerWidth-400;
+  const H=window.innerHeight-navH;
+  col.style.height=H+'px';
+  canvas.width=W;canvas.height=H;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  if(renderer){renderer.dispose();renderer=null;}
+  renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setSize(W,H,false);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.physicallyCorrectLights=true;
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
+  camera.position.set(0,0,4);
+  scene.add(new THREE.AmbientLight(0xffffff,1.0));
+  const l1=new THREE.DirectionalLight(0xffffff,1.5);l1.position.set(5,5,5);scene.add(l1);
+  const l2=new THREE.DirectionalLight(0xffffff,0.8);l2.position.set(-5,3,-5);scene.add(l2);
+  const l3=new THREE.DirectionalLight(0xffffff,0.5);l3.position.set(0,-5,0);scene.add(l3);
+  meshGroup=new THREE.Group();scene.add(meshGroup);
+  const glbFile=curSub?curSub.glb||'':'';
+  if(glbFile){
+    const loader=new THREE.GLTFLoader();
+    loader.load(glbFile,gltf=>{
+      const model=gltf.scene;
+      model.traverse(child=>{
+        if(child.isMesh){
+          const oldMat=child.material;
+          let color=0xcccccc;
+          if(oldMat.color)color=oldMat.color.getHex();
+          child.material=new THREE.MeshStandardMaterial({
+            color,roughness:oldMat.roughness!=null?oldMat.roughness:0.5,
+            metalness:oldMat.metalness!=null?oldMat.metalness:0.1,
+            map:oldMat.map||null,normalMap:oldMat.normalMap||null,side:THREE.DoubleSide
+          });
+          if(child.material.map){child.material.map.encoding=THREE.sRGBEncoding;child.material.map.needsUpdate=true;}
+        }
+      });
+      const box=new THREE.Box3().setFromObject(model);
+      const center=box.getCenter(new THREE.Vector3());
+      const size=box.getSize(new THREE.Vector3());
+      model.position.sub(center);
+      model.scale.setScalar(2.5/Math.max(size.x,size.y,size.z));
+      meshGroup.add(model);
+    },null,()=>buildPlaceholder());
+  }else{buildPlaceholder();}
+  const spots=curSub?curSub.spots||[]:[];
+  spots.forEach((s,i)=>{
+    const btn=document.createElement('div');btn.className='spot-btn';btn.id='spb-'+i;btn.textContent=i+1;
+    const pop=document.createElement('div');pop.className='spot-popup';pop.id='spp-'+i;
+    pop.innerHTML=`<h4>${s.name}</h4><p>${s.desc||''}</p>`;
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const vis=pop.classList.contains('show');
+      document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
+      document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
+      if(!vis){pop.classList.add('show');const si=document.getElementById('sti-'+i);if(si)si.classList.add('active');}
+    });
+    col.appendChild(btn);col.appendChild(pop);
+    spotEls.push({btn,pop,v:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
+  });
+  // órbita
+  let theta=0,phi=Math.PI/2,radius=4;
+  const orbitTarget=new THREE.Vector3(0,0,0);
+  function updateCam(){
+    camera.position.set(orbitTarget.x+radius*Math.sin(phi)*Math.sin(theta),orbitTarget.y+radius*Math.cos(phi),orbitTarget.z+radius*Math.sin(phi)*Math.cos(theta));
+    camera.lookAt(orbitTarget);
+  }
+  updateCam();
+  col.onwheel=e=>{
+    e.preventDefault();
+    const rect=col.getBoundingClientRect();
+    const nx=((e.clientX-rect.left)/rect.width)*2-1;
+    const ny=-((e.clientY-rect.top)/rect.height)*2+1;
+    const mouseDir=new THREE.Vector3(nx,ny,0.5).unproject(camera).sub(camera.position).normalize();
+    const zoomAmt=e.deltaY*0.003;
+    radius=Math.max(0.5,Math.min(15,radius+zoomAmt));
+    orbitTarget.addScaledVector(mouseDir,-zoomAmt*0.5);
+    updateCam();
+  };
+  function onDown(x,y){isDrag=true;prevX=x;prevY=y;col.style.cursor='grabbing';}
+  function onMove(x,y){if(!isDrag)return;theta-=(x-prevX)*.008;phi=Math.max(0.05,Math.min(Math.PI-0.05,phi+(y-prevY)*.008));prevX=x;prevY=y;updateCam();}
+  function onUp(){isDrag=false;col.style.cursor='grab';}
+  col.onmousedown=e=>{if(!e.target.classList.contains('spot-btn')&&!pickMode){onDown(e.clientX,e.clientY);e.preventDefault();}};
+  document.onmousemove=e=>onMove(e.clientX,e.clientY);
+  document.onmouseup=onUp;
+  col.ontouchstart=e=>{if(e.target.classList.contains('spot-btn'))return;if(e.touches.length===1)onDown(e.touches[0].clientX,e.touches[0].clientY);if(e.touches.length===2)pinchDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);e.preventDefault();};
+  col.ontouchmove=e=>{if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY);if(e.touches.length===2&&pinchDist){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);radius=Math.max(0.5,Math.min(15,radius*(pinchDist/d)));pinchDist=d;updateCam();}e.preventDefault();};
+  col.ontouchend=()=>{isDrag=false;pinchDist=null;};
+  const spotRay=new THREE.Raycaster();
+  function loop(){
+    animId=requestAnimationFrame(loop);
+    renderer.render(scene,camera);
+    const W2=col.clientWidth,H2=col.clientHeight;
+    spotEls.forEach(({btn,pop,v})=>{
+      const wp=v.clone();meshGroup.localToWorld(wp);
+      const p=wp.clone().project(camera);
+      const sx=(p.x*.5+.5)*W2,sy=(-.5*p.y+.5)*H2;
+      btn.style.left=(sx-13)+'px';btn.style.top=(sy-13)+'px';
+      pop.style.left=(sx+18)+'px';pop.style.top=(sy-20)+'px';
+      const behindCam=p.z>1;
+      let occluded=false;
+      if(!behindCam){
+        const dir=new THREE.Vector3().subVectors(wp,camera.position).normalize();
+        spotRay.set(camera.position,dir);
+        const hits=spotRay.intersectObject(meshGroup,true);
+        const dist=camera.position.distanceTo(wp);
+        if(hits.length>0&&hits[0].distance<dist-0.05)occluded=true;
+      }
+      const hidden=behindCam||occluded;
+      btn.style.opacity=hidden?'0':'1';btn.style.pointerEvents=hidden?'none':'all';
+      if(hidden)pop.classList.remove('show');
+    });
+  }
+  loop();
+}
+
+function buildPlaceholder(){
+  meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1,32,32),new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3,metalness:.4})));
+  meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1.01,16,16),new THREE.MeshBasicMaterial({color:0x00e5a0,wireframe:true,opacity:.15,transparent:true})));
+}
+
+// ===== PICK MODE =====
+// ===== ADMIN VIEWER 3D =====
+let adminRenderer=null,adminScene,adminCamera,adminMesh,adminAnimId=null;
+let adminIsDrag=false,adminPrevX=0,adminPrevY=0;
+let adminTheta=0,adminPhi=Math.PI/2,adminRadius=4;
+let adminPickMode=false;
+
+function togglePickMode(){
+  const glbFile=document.getElementById('s-glb').value.trim();
+  const wrap=document.getElementById('admin-viewer-wrap');
+  const btn=document.getElementById('pick-mode-btn');
+  
+  if(!adminPickMode){
+    // abrir viewer
+    wrap.style.display='block';
+    btn.classList.add('active');
+    btn.textContent='✅ Fechar viewer';
+    adminPickMode=true;
+    setTimeout(()=>initAdminViewer(glbFile),100);
+  } else {
+    // fechar viewer
+    wrap.style.display='none';
+    btn.classList.remove('active');
+    btn.textContent='🎯 Clicar no modelo';
+    adminPickMode=false;
+    if(adminAnimId){cancelAnimationFrame(adminAnimId);adminAnimId=null;}
+  }
+}
+
+function initAdminViewer(glbFile){
+  if(adminAnimId){cancelAnimationFrame(adminAnimId);adminAnimId=null;}
+  const col=document.getElementById('admin-canvas-col');
+  const canvas=document.getElementById('admin-canvas');
+  const W=col.offsetWidth||480;
+  const H=280;
+  canvas.width=W;canvas.height=H;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+
+  if(adminRenderer){adminRenderer.dispose();adminRenderer=null;}
+  adminRenderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  adminRenderer.setSize(W,H,false);
+  adminRenderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  adminRenderer.outputEncoding=THREE.sRGBEncoding;
+  adminRenderer.physicallyCorrectLights=true;
+
+  adminScene=new THREE.Scene();
+  adminCamera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
+  adminCamera.position.set(0,0,4);
+
+  adminScene.add(new THREE.AmbientLight(0xffffff,1.0));
+  const l1=new THREE.DirectionalLight(0xffffff,1.5);l1.position.set(5,5,5);adminScene.add(l1);
+  const l2=new THREE.DirectionalLight(0xffffff,0.8);l2.position.set(-5,3,-5);adminScene.add(l2);
+
+  adminMesh=new THREE.Group();adminScene.add(adminMesh);
+
+  if(glbFile){
+    const loader=new THREE.GLTFLoader();
+    loader.load(glbFile,gltf=>{
+      const model=gltf.scene;
+      model.traverse(child=>{
+        if(child.isMesh){
+          const oldMat=child.material;
+          let color=0xcccccc;
+          if(oldMat.color)color=oldMat.color.getHex();
+          child.material=new THREE.MeshStandardMaterial({
+            color,roughness:oldMat.roughness!=null?oldMat.roughness:0.5,
+            metalness:oldMat.metalness!=null?oldMat.metalness:0.1,
+            map:oldMat.map||null,side:THREE.DoubleSide
+          });
+          if(child.material.map){child.material.map.encoding=THREE.sRGBEncoding;child.material.map.needsUpdate=true;}
+        }
+      });
+      const box=new THREE.Box3().setFromObject(model);
+      const center=box.getCenter(new THREE.Vector3());
+      const size=box.getSize(new THREE.Vector3());
+      model.position.sub(center);
+      model.scale.setScalar(2.5/Math.max(size.x,size.y,size.z));
+      adminMesh.add(model);
+    },null,()=>{
+      // placeholder se não carregar
+      adminMesh.add(new THREE.Mesh(new THREE.SphereGeometry(1,32,32),new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3})));
+    });
+  } else {
+    adminMesh.add(new THREE.Mesh(new THREE.SphereGeometry(1,32,32),new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3})));
+  }
+
+  // controles órbita
+  function updateAdminCam(){
+    adminCamera.position.set(
+      adminRadius*Math.sin(adminPhi)*Math.sin(adminTheta),
+      adminRadius*Math.cos(adminPhi),
+      adminRadius*Math.sin(adminPhi)*Math.cos(adminTheta)
+    );
+    adminCamera.lookAt(0,0,0);
+  }
+  updateAdminCam();
+
+  col.onmousedown=e=>{
+    if(e.target.id==='admin-canvas'||col.contains(e.target)){
+      adminIsDrag=true;adminPrevX=e.clientX;adminPrevY=e.clientY;
+      col.style.cursor='grabbing';
+    }
+  };
+  document.addEventListener('mousemove',e=>{
+    if(!adminIsDrag)return;
+    adminTheta-=(e.clientX-adminPrevX)*.008;
+    adminPhi=Math.max(0.05,Math.min(Math.PI-0.05,adminPhi+(e.clientY-adminPrevY)*.008));
+    adminPrevX=e.clientX;adminPrevY=e.clientY;
+    updateAdminCam();
+  });
+  document.addEventListener('mouseup',()=>{adminIsDrag=false;col.style.cursor='grab';});
+  col.onwheel=e=>{
+    adminRadius=Math.max(1,Math.min(10,adminRadius+e.deltaY*.005));
+    updateAdminCam();e.preventDefault();
+  };
+
+  // clicar para adicionar spot
+  col.onclick=e=>{
+    if(adminIsDrag)return;
+    const rect=col.getBoundingClientRect();
+    const nx=((e.clientX-rect.left)/rect.width)*2-1;
+    const ny=-((e.clientY-rect.top)/rect.height)*2+1;
+    const ray=new THREE.Raycaster();
+    ray.setFromCamera(new THREE.Vector2(nx,ny),adminCamera);
+    const hits=ray.intersectObject(adminMesh,true);
+    if(hits.length>0){
+      const local=adminMesh.worldToLocal(hits[0].point.clone());
+      const x=+local.x.toFixed(2),y=+local.y.toFixed(2),z=+local.z.toFixed(2);
+      const nome=prompt('Nome deste spot (ex: Núcleo, Veia...):');
+      if(nome){
+        const leg=prompt('Legenda explicativa:','');
+        addSpotRow({name:nome,desc:leg||'',x,y,z});
+      }
+    }
+  };
+
+  // loop
+  function adminLoop(){
+    adminAnimId=requestAnimationFrame(adminLoop);
+    adminRenderer.render(adminScene,adminCamera);
+  }
+  adminLoop();
+}
+
+function exitPickMode(){
+  adminPickMode=false;
+  document.getElementById('admin-viewer-wrap').style.display='none';
+  const btn=document.getElementById('pick-mode-btn');
+  if(btn){btn.classList.remove('active');btn.textContent='🎯 Clicar no modelo';}
+  if(adminAnimId){cancelAnimationFrame(adminAnimId);adminAnimId=null;}
+}
+
+// ===== ADMIN =====
+async function loadAdmin(){
+  try{
+    const [mods,subs]=await Promise.all([apiSb('modules?order=id'),apiSb('submodules?order=id')]);
+    document.getElementById('stat-mods').textContent=mods.length;
+    document.getElementById('stat-subs').textContent=subs.length;
+    renderAdminList(mods,subs);
+    loadUsers();
+  }catch(e){console.error(e);}
+}
+async function loadUsers(){
+  try{
+    const users=await apiSb('profiles?order=created_at','GET',null,getToken());
+    document.getElementById('stat-users').textContent=users.length;
+    const l=document.getElementById('users-list');
+    if(!users.length){l.innerHTML='<p style="color:var(--muted);font-size:.85rem">Nenhum usuário cadastrado ainda.</p>';return;}
+    l.innerHTML=`<table class="users-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Plano</th><th>Status</th><th></th></tr></thead><tbody>${
+      users.map(u=>`<tr>
+        <td>${u.name||'—'}</td>
+        <td style="color:var(--muted)">${u.email||'—'}</td>
+        <td><span class="badge badge-blue">${u.plan||'free'}</span></td>
+        <td><span class="badge ${u.active!==false?'badge-green':'badge-gray'}">${u.active!==false?'Ativo':'Bloqueado'}</span></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openUserModal('${u.id}','${esc(u.name||'')}','${u.plan||'free'}',${u.active!==false})">✏️</button></td>
+      </tr>`).join('')
+    }</tbody></table>`;
+  }catch(e){document.getElementById('users-list').innerHTML='<p style="color:#e74c3c;font-size:.85rem">Erro ao carregar usuários.</p>';}
+}
+function aTab(n,btn){
+  document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(x=>x.classList.remove('active'));
+  btn.classList.add('active');document.getElementById('ap-'+n).classList.add('active');
+  if(n==='usuarios')loadUsers();
+}
+function renderAdminList(mods,subs){
+  const l=document.getElementById('admin-list');
+  if(!mods.length){l.innerHTML='<p style="color:var(--muted);font-size:.85rem">Nenhum módulo. Crie o primeiro!</p>';return;}
+  l.innerHTML=mods.map(m=>{
+    const ms=subs.filter(s=>String(s.module_id)===String(m.id));
+    return `<div style="margin-bottom:.8rem">
+      <div class="list-item">
+        <div class="left"><div class="thumb-sm">${m.emoji||'🧬'}</div>
+        <div><div class="item-title">${m.name}</div><div class="item-sub">${ms.length} subtema(s) · Plano: ${m.plan_required||'free'}</div></div></div>
+        <div class="item-actions">
+          <button class="btn btn-primary btn-sm" onclick="openNewSub('${m.id}','${esc(m.name)}')">+ Subtema</button>
+          <button class="btn btn-ghost btn-sm" onclick='editMod(${JSON.stringify(m)})'>✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delMod('${m.id}')">🗑</button>
+        </div>
+      </div>
+      ${ms.length?`<div class="sublist">${ms.map(s=>`
+        <div class="sub-item"><span style="color:var(--muted);margin-right:.4rem">↳</span>
+        <span style="flex:1">${s.name}</span>
+        <div style="display:flex;gap:.3rem">
+          <button class="btn btn-ghost btn-sm" onclick='editSub(${JSON.stringify(s)})'>✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="delSub('${s.id}')">🗑</button>
+        </div></div>`).join('')}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// MÓDULO CRUD
+function openNewMod(){editModId=null;selEmoji='🧬';document.getElementById('mod-modal-title').textContent='Novo módulo';document.getElementById('m-name').value='';document.getElementById('m-desc').value='';document.getElementById('m-plan').value='free';buildEmoji();document.getElementById('mod-modal').classList.add('open');}
+function editMod(m){if(typeof m==='string')m=JSON.parse(m);editModId=m.id;selEmoji=m.emoji||'🧬';document.getElementById('mod-modal-title').textContent='Editar módulo';document.getElementById('m-name').value=m.name||'';document.getElementById('m-desc').value=m.desc||'';document.getElementById('m-plan').value=m.plan_required||'free';buildEmoji();document.getElementById('mod-modal').classList.add('open');}
+function closeMod(){document.getElementById('mod-modal').classList.remove('open');}
+async function saveMod(){
+  const name=document.getElementById('m-name').value.trim();if(!name){alert('Preencha o nome');return;}
+  const data={name,emoji:selEmoji,desc:document.getElementById('m-desc').value,plan_required:document.getElementById('m-plan').value};
+  const btn=document.getElementById('mod-btn');btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
+  try{if(editModId)await apiSb('modules?id=eq.'+editModId,'PATCH',data,getToken());else await apiSb('modules','POST',data,getToken());closeMod();showOk('✅ Módulo salvo!');loadAdmin();}
+  catch(e){showErr('❌ '+e.message);}
+  btn.innerHTML='Salvar';btn.disabled=false;
+}
+async function delMod(id){if(!confirm('Excluir módulo e subtemas?'))return;try{await apiSb('submodules?module_id=eq.'+id,'DELETE',null,getToken());await apiSb('modules?id=eq.'+id,'DELETE',null,getToken());loadAdmin();}catch(e){alert('Erro: '+e.message);}}
+
+// SUBTEMA CRUD
+function openNewSub(modId,modName){editSubId=null;document.getElementById('sub-modal-title').textContent='Novo subtema — '+modName;document.getElementById('s-name').value='';document.getElementById('s-desc').value='';document.getElementById('s-video').value='';document.getElementById('s-glb').value='';document.getElementById('sub-modal').dataset.modId=modId;buildSpotRows([]);document.getElementById('sub-modal').classList.add('open');}
+function editSub(s){if(typeof s==='string')s=JSON.parse(s);editSubId=s.id;document.getElementById('sub-modal-title').textContent='Editar subtema';document.getElementById('s-name').value=s.name||'';document.getElementById('s-desc').value=s.desc||'';document.getElementById('s-video').value=s.video||'';document.getElementById('s-glb').value=s.glb||'';document.getElementById('sub-modal').dataset.modId=s.module_id;buildSpotRows(s.spots||[]);document.getElementById('sub-modal').classList.add('open');}
+function closeSub(){document.getElementById('sub-modal').classList.remove('open');}
+async function saveSub(){
+  const name=document.getElementById('s-name').value.trim();if(!name){alert('Preencha o nome');return;}
+  const spots=[];
+  document.querySelectorAll('#spot-rows .spot-row').forEach(row=>{
+    const n=row.querySelector('.sn').value.trim(),d=row.querySelector('.sd').value.trim(),pos=row.querySelector('.sp').value.split(',').map(Number);
+    if(n)spots.push({name:n,desc:d||'',x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
+  });
+  const modId=document.getElementById('sub-modal').dataset.modId;
+  const data={name,desc:document.getElementById('s-desc').value,video:document.getElementById('s-video').value,glb:document.getElementById('s-glb').value,spots,module_id:modId};
+  const btn=document.getElementById('sub-btn');btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
+  try{if(editSubId)await apiSb('submodules?id=eq.'+editSubId,'PATCH',data,getToken());else await apiSb('submodules','POST',data,getToken());closeSub();showOk('✅ Subtema salvo!');loadAdmin();}
+  catch(e){showErr('❌ '+e.message);}
+  btn.innerHTML='Salvar subtema';btn.disabled=false;
+}
+async function delSub(id){if(!confirm('Excluir este subtema?'))return;try{await apiSb('submodules?id=eq.'+id,'DELETE',null,getToken());loadAdmin();}catch(e){alert('Erro: '+e.message);}}
+
+// USUÁRIO
+function openUserModal(id,name,plan,active){
+  editUserId=id;
+  document.getElementById('user-modal-info').textContent='Usuário: '+name;
+  document.getElementById('u-plan').value=plan;
+  document.getElementById('u-active').value=String(active);
+  document.getElementById('user-modal').classList.add('open');
+}
+function closeUserModal(){document.getElementById('user-modal').classList.remove('open');}
+async function saveUser(){
+  const btn=document.getElementById('user-save-btn');
+  btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
+  try{
+    await apiSb('profiles?id=eq.'+editUserId,'PATCH',{plan:document.getElementById('u-plan').value,active:document.getElementById('u-active').value==='true'},getToken());
+    closeUserModal();showOk('✅ Usuário atualizado!');loadUsers();
+  }catch(e){showErr('❌ '+e.message);}
+  btn.innerHTML='Salvar';btn.disabled=false;
+}
+
+// HELPERS
+function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+function buildEmoji(){const p=document.getElementById('emoji-picker');p.innerHTML='';EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selEmoji?' sel':''}" onclick="pickE('${e}',this)">${e}</span>`;});}
+function pickE(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
+function buildSpotRows(s){const c=document.getElementById('spot-rows');c.innerHTML='';s.forEach(x=>addSpotRow(x));}
+function addSpotRow(s){
+  const c=document.getElementById('spot-rows'),r=document.createElement('div');r.className='spot-row';
+  r.innerHTML=`<input type="text" class="sn" placeholder="Nome" value="${s?s.name:''}">
+    <input type="text" class="sd" placeholder="Legenda" value="${s?s.desc:''}">
+    <input type="text" class="sp" placeholder="0,0,0" value="${s?s.x+','+s.y+','+s.z:''}">
+    <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
+  c.appendChild(r);
+}
+function showOk(m){const e=document.getElementById('alert-ok');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),4000);}
+function showErr(m){const e=document.getElementById('alert-err');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),5000);}
+
+// ===== INICIALIZAÇÃO =====
+(async()=>{
+  // Verificar se a URL tem #admin para acessar painel
+  if(window.location.hash==='#painel-r4uGI1VvK4EzsURn'){
+    go('admin-login');
+    return;
+  }
+  // Verificar sessão ativa
+  const ok=await checkSession();
+  if(ok){
+    // Se era admin, voltar para admin
+    if(localStorage.getItem('is_admin')==='1'){
+      isAdmin=true;
+      document.getElementById('admin-name-nav').textContent=ADMIN_EMAIL;
+      go('admin');loadAdmin();
+    } else {
+      go('modules');
+    }
+  }
+})();
+
+// Detectar mudança de hash na URL
+window.addEventListener('hashchange',()=>{
+  if(window.location.hash==='#painel-r4uGI1VvK4EzsURn')go('admin-login');
+});
+</script>
+</body>
+</html>
