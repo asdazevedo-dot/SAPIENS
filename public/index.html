@@ -388,6 +388,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
         <h4 style="margin:0">Spots — pontos clicáveis</h4>
         <button class="pick-spot-btn" id="pick-mode-btn" onclick="togglePickMode()">🎯 Clicar no modelo</button>
       </div>
+      <!-- Mini viewer 3D para posicionar spots -->
       <div id="admin-viewer-wrap" style="display:none;margin-bottom:.8rem">
         <div id="admin-canvas-col" style="position:relative;background:#060f1e;border-radius:10px;height:280px;cursor:grab;overflow:hidden">
           <canvas id="admin-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block"></canvas>
@@ -448,6 +449,7 @@ const PLANS={
 };
 const ADMIN_SECRET='Sapiens@Biologia3D#';
 
+// chamadas ao backend seguro (sem expor chaves)
 async function api(path,method='GET',body=null,token=null){
   const headers={'Content-Type':'application/json'};
   if(token)headers['Authorization']='Bearer '+token;
@@ -456,6 +458,7 @@ async function api(path,method='GET',body=null,token=null){
   const t=await r.text();return t?JSON.parse(t):[];
 }
 
+// chamadas diretas ao Supabase (perfis, auth)
 async function apiSb(path,method='GET',body=null,token=null){
   const headers={'apikey':SB_KEY,'Content-Type':'application/json'};
   if(token)headers['Authorization']='Bearer '+token;
@@ -471,18 +474,6 @@ async function authApi(path,body){
   const d=await r.json();
   if(!r.ok)throw new Error(d.error_description||d.msg||'Erro');
   return d;
-}
-
-async function goToCheckout(userId,email,planKey){
-  const plan=PLANS[planKey];
-  const r=await fetch('/api/checkout',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({priceId:plan.priceId,userId,userEmail:email,plan:planKey})
-  });
-  const data=await r.json();
-  if(data.url){window.location.href=data.url;return true;}
-  return false;
 }
 
 // ===== STATE =====
@@ -510,13 +501,6 @@ async function doLogin(){
     localStorage.setItem('sb_token',d.access_token);
     localStorage.setItem('sb_refresh',d.refresh_token);
     await loadProfile(d.access_token);
-    // se não tem plano pago, redireciona para pagamento
-    if(!currentProfile?.plan||currentProfile.plan==='free'){
-      btn.innerHTML='<span class="spinner"></span>Redirecionando para pagamento...';
-      const planKey=document.querySelector('.plan-opt.selected')?.id.replace('plan-','')||'mensal';
-      const ok=await goToCheckout(currentUser.id,email,planKey);
-      if(ok)return;
-    }
     go('modules');
   }catch(e){showEl(err,e.message==='Invalid login credentials'?'E-mail ou senha incorretos':e.message);}
   btn.innerHTML='Entrar';btn.disabled=false;
@@ -530,8 +514,9 @@ async function doAdminLogin(){
   const err=document.getElementById('admin-login-error');
   err.classList.remove('show');
   if(!email||!pass||!secret){showEl(err,'Preencha todos os campos');return;}
+  // verificar código secreto ANTES de qualquer requisição
   if(secret!==ADMIN_SECRET){
-    setTimeout(()=>showEl(err,'Código secreto inválido.'),500);
+    setTimeout(()=>showEl(err,'Código secreto inválido.'),500); // delay para dificultar força bruta
     btn.innerHTML='Entrar como Admin';btn.disabled=false;return;
   }
   if(email!==ADMIN_EMAIL){showEl(err,'Acesso não autorizado.');return;}
@@ -560,27 +545,43 @@ async function doRegister(){
   btn.innerHTML='<span class="spinner"></span>Criando conta...';btn.disabled=true;
   try{
     const d=await authApi('signup',{email,password:pass,data:{name}});
+    // pegar userId independente do formato da resposta
     const userId=d?.user?.id||d?.id||null;
     const planKey=document.querySelector('.plan-opt.selected').id.replace('plan-','');
+    const plan=PLANS[planKey];
     if(userId){
+      // tem userId — ir para pagamento
       btn.innerHTML='<span class="spinner"></span>Redirecionando para pagamento...';
-      const ok=await goToCheckout(userId,email,planKey);
-      if(ok)return;
+      const r=await fetch('/api/checkout',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({priceId:plan.priceId,userId:userId,userEmail:email,plan:planKey})
+      });
+      const data=await r.json();
+      if(data.url){
+        window.location.href=data.url;
+        return;
+      }
     }
-    // fallback: login automático e redireciona
+    // fallback — fazer login automático e ir para pagamento
     btn.innerHTML='<span class="spinner"></span>Fazendo login...';
     try{
       const login=await authApi('token?grant_type=password',{email,password:pass});
       if(login?.user?.id){
         localStorage.setItem('sb_token',login.access_token);
-        localStorage.setItem('sb_refresh',login.refresh_token);
-        currentUser=login.user;
-        btn.innerHTML='<span class="spinner"></span>Redirecionando para pagamento...';
-        const ok=await goToCheckout(login.user.id,email,planKey);
-        if(ok)return;
+        const r=await fetch('/api/checkout',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({priceId:plan.priceId,userId:login.user.id,userEmail:email,plan:planKey})
+        });
+        const data=await r.json();
+        if(data.url){window.location.href=data.url;return;}
       }
     }catch(le){}
-    showEl(info,'✅ Conta criada! Faça login para assinar seu plano.');
+    // salvar plano pendente para após confirmação de e-mail
+    const planKey2=document.querySelector('.plan-opt.selected').id.replace('plan-','');
+    localStorage.setItem('pending_plan',planKey2);
+    showEl(info,'✅ Conta criada! Verifique seu e-mail e clique no link de confirmação. Após confirmar você será direcionado ao pagamento.');
   }catch(e){showEl(err,e.message);}
   btn.innerHTML='Criar conta';btn.disabled=false;
 }
@@ -592,6 +593,7 @@ async function loadProfile(token){
       currentProfile=profiles[0];
       document.getElementById('user-name-nav').textContent=currentProfile.name||currentUser.email.split('@')[0];
     }else{
+      // criar perfil se não existe
       await apiSb('profiles','POST',{id:currentUser.id,name:currentUser.user_metadata?.name||'',plan:'free'},token);
       currentProfile={plan:'free',active:true};
       document.getElementById('user-name-nav').textContent=currentUser.user_metadata?.name||currentUser.email.split('@')[0];
@@ -789,6 +791,7 @@ function startThree(){
     col.appendChild(btn);col.appendChild(pop);
     spotEls.push({btn,pop,v:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
   });
+  // órbita
   let theta=0,phi=Math.PI/2,radius=4;
   const orbitTarget=new THREE.Vector3(0,0,0);
   function updateCam(){
@@ -849,6 +852,7 @@ function buildPlaceholder(){
   meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1.01,16,16),new THREE.MeshBasicMaterial({color:0x00e5a0,wireframe:true,opacity:.15,transparent:true})));
 }
 
+// ===== PICK MODE =====
 // ===== ADMIN VIEWER 3D =====
 let adminRenderer=null,adminScene,adminCamera,adminMesh,adminAnimId=null;
 let adminIsDrag=false,adminPrevX=0,adminPrevY=0;
@@ -859,13 +863,16 @@ function togglePickMode(){
   const glbFile=document.getElementById('s-glb').value.trim();
   const wrap=document.getElementById('admin-viewer-wrap');
   const btn=document.getElementById('pick-mode-btn');
+  
   if(!adminPickMode){
+    // abrir viewer
     wrap.style.display='block';
     btn.classList.add('active');
     btn.textContent='✅ Fechar viewer';
     adminPickMode=true;
     setTimeout(()=>initAdminViewer(glbFile),100);
   } else {
+    // fechar viewer
     wrap.style.display='none';
     btn.classList.remove('active');
     btn.textContent='🎯 Clicar no modelo';
@@ -882,19 +889,24 @@ function initAdminViewer(glbFile){
   const H=280;
   canvas.width=W;canvas.height=H;
   canvas.style.width=W+'px';canvas.style.height=H+'px';
+
   if(adminRenderer){adminRenderer.dispose();adminRenderer=null;}
   adminRenderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
   adminRenderer.setSize(W,H,false);
   adminRenderer.setPixelRatio(Math.min(devicePixelRatio,2));
   adminRenderer.outputEncoding=THREE.sRGBEncoding;
   adminRenderer.physicallyCorrectLights=true;
+
   adminScene=new THREE.Scene();
   adminCamera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
   adminCamera.position.set(0,0,4);
+
   adminScene.add(new THREE.AmbientLight(0xffffff,1.0));
   const l1=new THREE.DirectionalLight(0xffffff,1.5);l1.position.set(5,5,5);adminScene.add(l1);
   const l2=new THREE.DirectionalLight(0xffffff,0.8);l2.position.set(-5,3,-5);adminScene.add(l2);
+
   adminMesh=new THREE.Group();adminScene.add(adminMesh);
+
   if(glbFile){
     const loader=new THREE.GLTFLoader();
     loader.load(glbFile,gltf=>{
@@ -904,7 +916,11 @@ function initAdminViewer(glbFile){
           const oldMat=child.material;
           let color=0xcccccc;
           if(oldMat.color)color=oldMat.color.getHex();
-          child.material=new THREE.MeshStandardMaterial({color,roughness:oldMat.roughness!=null?oldMat.roughness:0.5,metalness:oldMat.metalness!=null?oldMat.metalness:0.1,map:oldMat.map||null,side:THREE.DoubleSide});
+          child.material=new THREE.MeshStandardMaterial({
+            color,roughness:oldMat.roughness!=null?oldMat.roughness:0.5,
+            metalness:oldMat.metalness!=null?oldMat.metalness:0.1,
+            map:oldMat.map||null,side:THREE.DoubleSide
+          });
           if(child.material.map){child.material.map.encoding=THREE.sRGBEncoding;child.material.map.needsUpdate=true;}
         }
       });
@@ -914,19 +930,45 @@ function initAdminViewer(glbFile){
       model.position.sub(center);
       model.scale.setScalar(2.5/Math.max(size.x,size.y,size.z));
       adminMesh.add(model);
-    },null,()=>{adminMesh.add(new THREE.Mesh(new THREE.SphereGeometry(1,32,32),new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3})));});
+    },null,()=>{
+      // placeholder se não carregar
+      adminMesh.add(new THREE.Mesh(new THREE.SphereGeometry(1,32,32),new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3})));
+    });
   } else {
     adminMesh.add(new THREE.Mesh(new THREE.SphereGeometry(1,32,32),new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3})));
   }
+
+  // controles órbita
   function updateAdminCam(){
-    adminCamera.position.set(adminRadius*Math.sin(adminPhi)*Math.sin(adminTheta),adminRadius*Math.cos(adminPhi),adminRadius*Math.sin(adminPhi)*Math.cos(adminTheta));
+    adminCamera.position.set(
+      adminRadius*Math.sin(adminPhi)*Math.sin(adminTheta),
+      adminRadius*Math.cos(adminPhi),
+      adminRadius*Math.sin(adminPhi)*Math.cos(adminTheta)
+    );
     adminCamera.lookAt(0,0,0);
   }
   updateAdminCam();
-  col.onmousedown=e=>{if(e.target.id==='admin-canvas'||col.contains(e.target)){adminIsDrag=true;adminPrevX=e.clientX;adminPrevY=e.clientY;col.style.cursor='grabbing';}};
-  document.addEventListener('mousemove',e=>{if(!adminIsDrag)return;adminTheta-=(e.clientX-adminPrevX)*.008;adminPhi=Math.max(0.05,Math.min(Math.PI-0.05,adminPhi+(e.clientY-adminPrevY)*.008));adminPrevX=e.clientX;adminPrevY=e.clientY;updateAdminCam();});
+
+  col.onmousedown=e=>{
+    if(e.target.id==='admin-canvas'||col.contains(e.target)){
+      adminIsDrag=true;adminPrevX=e.clientX;adminPrevY=e.clientY;
+      col.style.cursor='grabbing';
+    }
+  };
+  document.addEventListener('mousemove',e=>{
+    if(!adminIsDrag)return;
+    adminTheta-=(e.clientX-adminPrevX)*.008;
+    adminPhi=Math.max(0.05,Math.min(Math.PI-0.05,adminPhi+(e.clientY-adminPrevY)*.008));
+    adminPrevX=e.clientX;adminPrevY=e.clientY;
+    updateAdminCam();
+  });
   document.addEventListener('mouseup',()=>{adminIsDrag=false;col.style.cursor='grab';});
-  col.onwheel=e=>{adminRadius=Math.max(1,Math.min(10,adminRadius+e.deltaY*.005));updateAdminCam();e.preventDefault();};
+  col.onwheel=e=>{
+    adminRadius=Math.max(1,Math.min(10,adminRadius+e.deltaY*.005));
+    updateAdminCam();e.preventDefault();
+  };
+
+  // clicar para adicionar spot
   col.onclick=e=>{
     if(adminIsDrag)return;
     const rect=col.getBoundingClientRect();
@@ -939,10 +981,18 @@ function initAdminViewer(glbFile){
       const local=adminMesh.worldToLocal(hits[0].point.clone());
       const x=+local.x.toFixed(2),y=+local.y.toFixed(2),z=+local.z.toFixed(2);
       const nome=prompt('Nome deste spot (ex: Núcleo, Veia...):');
-      if(nome){const leg=prompt('Legenda explicativa:','');addSpotRow({name:nome,desc:leg||'',x,y,z});}
+      if(nome){
+        const leg=prompt('Legenda explicativa:','');
+        addSpotRow({name:nome,desc:leg||'',x,y,z});
+      }
     }
   };
-  function adminLoop(){adminAnimId=requestAnimationFrame(adminLoop);adminRenderer.render(adminScene,adminCamera);}
+
+  // loop
+  function adminLoop(){
+    adminAnimId=requestAnimationFrame(adminLoop);
+    adminRenderer.render(adminScene,adminCamera);
+  }
   adminLoop();
 }
 
@@ -1013,6 +1063,7 @@ function renderAdminList(mods,subs){
   }).join('');
 }
 
+// MÓDULO CRUD
 function openNewMod(){editModId=null;selEmoji='🧬';document.getElementById('mod-modal-title').textContent='Novo módulo';document.getElementById('m-name').value='';document.getElementById('m-desc').value='';document.getElementById('m-plan').value='free';buildEmoji();document.getElementById('mod-modal').classList.add('open');}
 function editMod(m){if(typeof m==='string')m=JSON.parse(m);editModId=m.id;selEmoji=m.emoji||'🧬';document.getElementById('mod-modal-title').textContent='Editar módulo';document.getElementById('m-name').value=m.name||'';document.getElementById('m-desc').value=m.desc||'';document.getElementById('m-plan').value=m.plan_required||'free';buildEmoji();document.getElementById('mod-modal').classList.add('open');}
 function closeMod(){document.getElementById('mod-modal').classList.remove('open');}
@@ -1026,6 +1077,7 @@ async function saveMod(){
 }
 async function delMod(id){if(!confirm('Excluir módulo e subtemas?'))return;try{await apiSb('submodules?module_id=eq.'+id,'DELETE',null,getToken());await apiSb('modules?id=eq.'+id,'DELETE',null,getToken());loadAdmin();}catch(e){alert('Erro: '+e.message);}}
 
+// SUBTEMA CRUD
 function openNewSub(modId,modName){editSubId=null;document.getElementById('sub-modal-title').textContent='Novo subtema — '+modName;document.getElementById('s-name').value='';document.getElementById('s-desc').value='';document.getElementById('s-video').value='';document.getElementById('s-glb').value='';document.getElementById('sub-modal').dataset.modId=modId;buildSpotRows([]);document.getElementById('sub-modal').classList.add('open');}
 function editSub(s){if(typeof s==='string')s=JSON.parse(s);editSubId=s.id;document.getElementById('sub-modal-title').textContent='Editar subtema';document.getElementById('s-name').value=s.name||'';document.getElementById('s-desc').value=s.desc||'';document.getElementById('s-video').value=s.video||'';document.getElementById('s-glb').value=s.glb||'';document.getElementById('sub-modal').dataset.modId=s.module_id;buildSpotRows(s.spots||[]);document.getElementById('sub-modal').classList.add('open');}
 function closeSub(){document.getElementById('sub-modal').classList.remove('open');}
@@ -1045,6 +1097,7 @@ async function saveSub(){
 }
 async function delSub(id){if(!confirm('Excluir este subtema?'))return;try{await apiSb('submodules?id=eq.'+id,'DELETE',null,getToken());loadAdmin();}catch(e){alert('Erro: '+e.message);}}
 
+// USUÁRIO
 function openUserModal(id,name,plan,active){
   editUserId=id;
   document.getElementById('user-modal-info').textContent='Usuário: '+name;
@@ -1063,6 +1116,7 @@ async function saveUser(){
   btn.innerHTML='Salvar';btn.disabled=false;
 }
 
+// HELPERS
 function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 function buildEmoji(){const p=document.getElementById('emoji-picker');p.innerHTML='';EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selEmoji?' sel':''}" onclick="pickE('${e}',this)">${e}</span>`;});}
 function pickE(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
@@ -1080,10 +1134,15 @@ function showErr(m){const e=document.getElementById('alert-err');e.textContent=m
 
 // ===== INICIALIZAÇÃO =====
 (async()=>{
-  if(window.location.hash==='#painel-r4uGI1VvK4EzsURn'){
+  const hash=window.location.hash;
+
+  // URL admin secreta
+  if(hash==='#painel-r4uGI1VvK4EzsURn'){
     go('admin-login');
     return;
   }
+
+  // Verificar sessão ativa
   const ok=await checkSession();
   if(ok){
     if(localStorage.getItem('is_admin')==='1'){
@@ -1091,18 +1150,32 @@ function showErr(m){const e=document.getElementById('alert-err');e.textContent=m
       document.getElementById('admin-name-nav').textContent=ADMIN_EMAIL;
       go('admin');loadAdmin();
     } else {
-      // se não tem plano pago, redireciona para pagamento
-      if(!currentProfile?.plan||currentProfile.plan==='free'){
-        const email=currentUser.email;
-        const planKey='mensal';
-        await goToCheckout(currentUser.id,email,planKey);
-        return;
+      // verificar se o plano é free e precisa assinar
+      const plan=currentProfile?.plan||'free';
+      const pendingPlan=localStorage.getItem('pending_plan');
+      if(pendingPlan&&plan==='free'){
+        // usuário confirmou e-mail mas ainda não pagou — ir para pagamento
+        localStorage.removeItem('pending_plan');
+        const planData=PLANS[pendingPlan];
+        if(planData){
+          try{
+            const token=getToken();
+            const r=await fetch('/api/checkout',{
+              method:'POST',
+              headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+              body:JSON.stringify({priceId:planData.priceId,userId:currentUser.id,userEmail:currentUser.email,plan:pendingPlan})
+            });
+            const data=await r.json();
+            if(data.url){window.location.href=data.url;return;}
+          }catch(e){console.error(e);}
+        }
       }
       go('modules');
     }
   }
 })();
 
+// Detectar mudança de hash na URL
 window.addEventListener('hashchange',()=>{
   if(window.location.hash==='#painel-r4uGI1VvK4EzsURn')go('admin-login');
 });
