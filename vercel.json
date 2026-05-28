@@ -1,17 +1,9 @@
 {
   "rewrites": [
-    {
-      "source": "/success",
-      "destination": "/public/success.html"
-    },
-    {
-      "source": "/cancel",
-      "destination": "/public/cancel.html"
-    },
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/public/index.html"
-    }
+    { "source": "/success", "destination": "/public/success.html" },
+    { "source": "/cancel", "destination": "/public/cancel.html" },
+    { "source": "/api/:path*", "destination": "/api/:path*" },
+    { "source": "/:path*", "destination": "/public/index.html" }
   ],
   "functions": {
     "api/*.js": {
