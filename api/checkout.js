@@ -1,4 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { createClient } = require('@supabase/supabase-js');
+const ws = require('ws');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,7 +18,7 @@ module.exports = async (req, res) => {
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: userEmail,
-      success_url: `${process.env.SITE_URL}/success?session_id={CHECKOUT_SESSION_ID}&user_id=${userId}&plan=${plan}`,
+      success_url: `${process.env.SITE_URL}/?payment=success&session_id={CHECKOUT_SESSION_ID}&user_id=${userId}&plan=${plan}`,
       cancel_url: `${process.env.SITE_URL}/cancel`,
       metadata: { userId, plan },
       locale: 'pt-BR',
