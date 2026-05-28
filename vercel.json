@@ -1,14 +1,11 @@
 {
-  "rewrites": [
-    { "source": "/success", "destination": "/public/success.html" },
-    { "source": "/cancel", "destination": "/public/cancel.html" },
-    { "source": "/api/:path*", "destination": "/api/:path*" },
-    { "source": "/:path*", "destination": "/public/index.html" }
-  ],
   "functions": {
     "api/*.js": {
       "memory": 1024,
       "maxDuration": 10
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/((?!api|_next).*)", "destination": "/public/$1" }
+  ]
 }
