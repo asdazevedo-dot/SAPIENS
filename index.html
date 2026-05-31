@@ -1148,7 +1148,9 @@ function showErr(m){const e=document.getElementById('alert-err');e.textContent=m
     const sessionId=urlParams.get('session_id');
     const userId=urlParams.get('user_id');
     const plan=urlParams.get('plan');
-    if(sessionId&&userId){
+    // verificar se já está logado
+    const token=getToken();
+    if(token&&sessionId&&userId){
       try{
         await fetch('/api/verify-payment',{
           method:'POST',
@@ -1156,16 +1158,20 @@ function showErr(m){const e=document.getElementById('alert-err');e.textContent=m
           body:JSON.stringify({session_id:sessionId,user_id:userId,plan})
         });
       }catch(e){console.error(e);}
+      window.history.replaceState({},'','/');
+      const ok2=await checkSession();
+      if(ok2){go('modules');return;}
     }
-    // limpar URL
+    // não está logado — mostrar tela de login com mensagem de sucesso
     window.history.replaceState({},'','/');
-    // verificar sessão e ir para módulos
-    const ok2=await checkSession();
-    if(ok2){
-      go('modules');
-    } else {
-      go('login');
-    }
+    go('login');
+    setTimeout(()=>{
+      const info=document.getElementById('login-info');
+      if(info){
+        info.textContent='✅ Pagamento confirmado! Faça login para acessar os módulos.';
+        info.classList.add('show');
+      }
+    },300);
     return;
   }
 
