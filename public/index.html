@@ -1133,9 +1133,40 @@ function showOk(m){const e=document.getElementById('alert-ok');e.textContent=m;e
 function showErr(m){const e=document.getElementById('alert-err');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),5000);}
 
 // ===== INICIALIZAÇÃO =====
+// Detectar retorno do pagamento ?pago=1
+const _urlp=new URLSearchParams(window.location.search);
+if(_urlp.get('pago')==='1'){
+  const _uid=_urlp.get('uid');
+  const _pl=_urlp.get('pl');
+  const _sid=_urlp.get('sid');
+  window.history.replaceState({},'','/');
+  document.body.innerHTML=`
+    <div style="font-family:'DM Sans',sans-serif;background:#0a1628;color:#e8f4f0;min-height:100vh;display:flex;align-items:center;justify-content:center">
+      <div style="background:#0f2035;border:1px solid #1a3a50;border-radius:16px;padding:2.5rem;max-width:420px;width:90%;text-align:center">
+        <div style="font-size:3rem;margin-bottom:1rem">🎉</div>
+        <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:.5rem;color:#00e5a0">Pagamento confirmado!</h1>
+        <p id="pmsg" style="font-size:.9rem;color:#7a9e90;line-height:1.6;margin-bottom:1.5rem">Ativando seu acesso...</p>
+        <a href="/" id="pbtn" style="display:none;background:#00e5a0;color:#0a1628;padding:.7rem 2rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem">Fazer login e acessar</a>
+      </div>
+    </div>`;
+  (async()=>{
+    if(_uid&&_sid){
+      try{
+        await fetch('/api/verify-payment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:_sid,user_id:_uid,plan:_pl||'mensal'})});
+        document.getElementById('pmsg').textContent='✅ Acesso ativado! Clique para entrar na plataforma.';
+      }catch(e){
+        document.getElementById('pmsg').textContent='Pagamento recebido! Faça login para acessar.';
+      }
+    }else{
+      document.getElementById('pmsg').textContent='Pagamento recebido! Faça login para acessar.';
+    }
+    document.getElementById('pbtn').style.display='inline-block';
+  })();
+  throw new Error('pago');
+}
+
 (async()=>{
   const hash=window.location.hash;
-  const urlParams=new URLSearchParams(window.location.search);
 
   // URL admin secreta
   if(hash==='#painel-r4uGI1VvK4EzsURn'){
@@ -1143,22 +1174,22 @@ function showErr(m){const e=document.getElementById('alert-err');e.textContent=m
     return;
   }
 
-  // Verificar se voltou do pagamento
-  if(urlParams.get('payment')==='success'){
-    const sessionId=urlParams.get('session_id');
-    const userId=urlParams.get('user_id');
-    const plan=urlParams.get('plan');
-    if(sessionId&&userId){
-      try{
-        await fetch('/api/verify-payment',{
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({session_id:sessionId,user_id:userId,plan})
-        });
-      }catch(e){console.error(e);}
-    }
-    // limpar URL e ir para módulos
-    window.history.replaceState({},'','/');
+  // Verificar se voltou do pagamento (hash #pagamento-ok-userId-plan)
+  if(hash&&hash.startsWith('#pagamento-ok-')){
+    const parts=hash.replace('#pagamento-ok-','').split('-');
+    const userId=parts[0];
+    const plan=parts.slice(1).join('-');
+    window.history.replaceState({},'/','/');
+    // ir para login com mensagem
+    go('login');
+    setTimeout(()=>{
+      const info=document.getElementById('login-info');
+      if(info){
+        info.textContent='✅ Pagamento confirmado! Faça login para acessar os módulos.';
+        info.classList.add('show');
+      }
+    },300);
+    return;
   }
 
   // Verificar sessão ativa

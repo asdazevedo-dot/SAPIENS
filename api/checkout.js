@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: userEmail,
-      success_url: `${process.env.SITE_URL}/obrigado?session_id={CHECKOUT_SESSION_ID}&user_id=${userId}&plan=${plan}`,
+      success_url: `${process.env.SITE_URL}/?pago=1&sid={CHECKOUT_SESSION_ID}&uid=${userId}&pl=${plan}`,
       cancel_url: `${process.env.SITE_URL}/cancel`,
       metadata: { userId, plan },
       locale: 'pt-BR',
