@@ -210,19 +210,37 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 <!-- CADASTRO -->
 <div id="screen-register" class="screen">
   <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('home')">← Voltar</button></div></nav>
-  <div class="auth-wrap">
-    <div class="auth-card">
-      <h2>Criar conta</h2><p class="auth-sub">Escolha seu plano</p>
+  <div class="auth-wrap" style="align-items:flex-start;padding-top:2rem">
+    <div class="auth-card" style="max-width:520px">
+      <h2>Criar conta</h2><p class="auth-sub">Escolha seu plano e preencha seus dados</p>
       <div class="plan-grid">
         <div class="plan-opt selected" id="plan-mensal" onclick="selPlan('mensal')"><h4>Mensal</h4><p>Cancele quando quiser</p><div class="plan-price">R$ 29/mês</div></div>
         <div class="plan-opt" id="plan-anual" onclick="selPlan('anual')"><h4>Anual</h4><p>Economize 30%</p><div class="plan-price">R$ 19/mês</div></div>
       </div>
       <div class="auth-error" id="reg-error"></div>
       <div class="auth-info" id="reg-info"></div>
-      <div class="form-group"><label>Nome</label><input type="text" id="reg-name" placeholder="Seu nome"></div>
+      <p style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem;text-transform:uppercase;letter-spacing:.5px">Dados pessoais</p>
+      <div class="form-group"><label>Nome completo</label><input type="text" id="reg-name" placeholder="Seu nome completo"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem">
+        <div class="form-group"><label>CPF</label><input type="text" id="reg-cpf" placeholder="000.000.000-00"></div>
+        <div class="form-group"><label>Data de nascimento</label><input type="date" id="reg-birth"></div>
+      </div>
+      <div class="form-group"><label>Telefone</label><input type="text" id="reg-phone" placeholder="(00) 00000-0000"></div>
+      <p style="font-size:.8rem;color:var(--muted);margin:.8rem 0 .5rem;text-transform:uppercase;letter-spacing:.5px">Endereço</p>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:.7rem">
+        <div class="form-group"><label>Rua</label><input type="text" id="reg-street" placeholder="Nome da rua"></div>
+        <div class="form-group"><label>Número</label><input type="text" id="reg-number" placeholder="Nº"></div>
+      </div>
+      <div class="form-group"><label>Bairro</label><input type="text" id="reg-neighborhood" placeholder="Bairro"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 80px;gap:.7rem">
+        <div class="form-group"><label>Cidade</label><input type="text" id="reg-city" placeholder="Cidade"></div>
+        <div class="form-group"><label>CEP</label><input type="text" id="reg-zip" placeholder="00000-000"></div>
+        <div class="form-group"><label>UF</label><input type="text" id="reg-state" placeholder="UF" maxlength="2"></div>
+      </div>
+      <p style="font-size:.8rem;color:var(--muted);margin:.8rem 0 .5rem;text-transform:uppercase;letter-spacing:.5px">Acesso</p>
       <div class="form-group"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
       <div class="form-group"><label>Senha</label><input type="password" id="reg-pass" placeholder="min. 8 caracteres"></div>
-      <button class="btn btn-primary form-full" id="reg-btn" onclick="doRegister()">Criar conta</button>
+      <button class="btn btn-primary form-full" id="reg-btn" onclick="doRegister()">Criar conta e ir para pagamento</button>
       <div class="auth-switch">Já tem conta? <a onclick="go('login')">Entrar</a></div>
     </div>
   </div>
@@ -444,8 +462,8 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const ADMIN_EMAIL='sapiens.bio3d@gmail.com';
 const STRIPE_PK='pk_test_51TYx6a1GoQKHBdJgugTjiu1CaaspW6sjdZ2ykjKilkHnJcyGbunglvHZhBXx4pcR4njpcdcQhEHIPB4Hwg5MMCLH00u0oN8HFY';
 const PLANS={
-  mensal:{priceId:'price_1TYxIO1GoQKHBdJgfYWURm1c',name:'Plano Mensal',price:'R$ 29/mês'},
-  anual:{priceId:'price_1TYxGw1GoQKHBdJgoPbxp5gI',name:'Plano Anual',price:'R$ 19/mês'}
+  mensal:{priceId:'price_1TYxGw1GoQKHBdJgoPbxp5gI',name:'Plano Mensal',price:'R$ 29/mês'},
+  anual:{priceId:'price_1TYxIO1GoQKHBdJgfYWURm1c',name:'Plano Anual',price:'R$ 19/mês'}
 };
 const ADMIN_SECRET='Sapiens@Biologia3D#';
 
@@ -544,7 +562,16 @@ async function doRegister(){
   if(pass.length<8){showEl(err,'A senha deve ter no mínimo 8 caracteres');return;}
   btn.innerHTML='<span class="spinner"></span>Criando conta...';btn.disabled=true;
   try{
-    const d=await authApi('signup',{email,password:pass,data:{name}});
+    const cpf=document.getElementById('reg-cpf').value.trim();
+    const birth=document.getElementById('reg-birth').value;
+    const phone=document.getElementById('reg-phone').value.trim();
+    const street=document.getElementById('reg-street').value.trim();
+    const number=document.getElementById('reg-number').value.trim();
+    const neighborhood=document.getElementById('reg-neighborhood').value.trim();
+    const city=document.getElementById('reg-city').value.trim();
+    const zip=document.getElementById('reg-zip').value.trim();
+    const state=document.getElementById('reg-state').value.trim();
+    const d=await authApi('signup',{email,password:pass,data:{name,cpf,phone}});
     // pegar userId independente do formato da resposta
     const userId=d?.user?.id||d?.id||null;
     const planKey=document.querySelector('.plan-opt.selected').id.replace('plan-','');
@@ -594,7 +621,15 @@ async function loadProfile(token){
       document.getElementById('user-name-nav').textContent=currentProfile.name||currentUser.email.split('@')[0];
     }else{
       // criar perfil se não existe
-      await apiSb('profiles','POST',{id:currentUser.id,name:currentUser.user_metadata?.name||'',plan:'free'},token);
+      const meta=currentUser.user_metadata||{};
+      await apiSb('profiles','POST',{
+        id:currentUser.id,
+        name:meta.name||'',
+        plan:'free',
+        full_name:meta.name||'',
+        phone:meta.phone||'',
+        cpf:meta.cpf||''
+      },token);
       currentProfile={plan:'free',active:true};
       document.getElementById('user-name-nav').textContent=currentUser.user_metadata?.name||currentUser.email.split('@')[0];
     }
@@ -635,6 +670,16 @@ function showEl(el,msg){el.textContent=msg;el.classList.add('show');}
 // ===== MÓDULOS =====
 async function loadMods(){
   const g=document.getElementById('modules-grid');
+  // verificar se tem plano ativo
+  if(!currentProfile||currentProfile.plan==='free'){
+    g.innerHTML=`<div class="loading" style="text-align:center;padding:3rem">
+      <div style="font-size:2rem;margin-bottom:1rem">🔒</div>
+      <p style="color:var(--text);font-size:1rem;margin-bottom:.5rem">Você ainda não tem uma assinatura ativa.</p>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1.5rem">Assine um plano para acessar os módulos.</p>
+      <button class="btn btn-primary" onclick="go('register')">Ver planos</button>
+    </div>`;
+    return;
+  }
   g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
   try{
     const mods=await api('modules');
@@ -1145,8 +1190,8 @@ if(_urlp.get('pago')==='1'){
       <div style="background:#0f2035;border:1px solid #1a3a50;border-radius:16px;padding:2.5rem;max-width:420px;width:90%;text-align:center">
         <div style="font-size:3rem;margin-bottom:1rem">🎉</div>
         <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:.5rem;color:#00e5a0">Pagamento confirmado!</h1>
-        <p id="pmsg" style="font-size:.9rem;color:#7a9e90;line-height:1.6;margin-bottom:1.5rem">Ativando seu acesso...</p>
-        <a href="/" id="pbtn" style="display:none;background:#00e5a0;color:#0a1628;padding:.7rem 2rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem">Fazer login e acessar</a>
+        <p id="pmsg" style="font-size:.9rem;color:#7a9e90;line-height:1.6;margin-bottom:1.5rem">Seu acesso foi ativado com sucesso!</p>
+        <a href="/" id="pbtn" style="display:none;background:#00e5a0;color:#0a1628;padding:.7rem 2rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem;display:block;text-align:center">👉 Clique aqui para fazer seu login</a>
       </div>
     </div>`;
   (async()=>{
