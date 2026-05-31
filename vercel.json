@@ -6,10 +6,6 @@
     }
   },
   "rewrites": [
-    { "source": "/obrigado", "destination": "/public/obrigado.html" },
-    { "source": "/cancel", "destination": "/public/cancel.html" },
-    { "source": "/api/:path*", "destination": "/api/:path*" },
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/:path*", "destination": "/index.html" }
+    { "source": "/((?!api|obrigado|cancel).*)", "destination": "/index.html" }
   ]
 }

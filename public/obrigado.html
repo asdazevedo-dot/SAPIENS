@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pagamento confirmado!</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0a1628;color:#e8f4f0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:#0f2035;border:1px solid #1a3a50;border-radius:16px;padding:2.5rem;max-width:420px;width:90%;text-align:center}
+.icon{font-size:3rem;margin-bottom:1rem}
+h1{font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:.5rem;color:#00e5a0}
+p{font-size:.9rem;color:#7a9e90;line-height:1.6;margin-bottom:1.5rem}
+.btn{display:inline-block;background:#00e5a0;color:#0a1628;padding:.7rem 2rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;width:100%}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,229,160,.3);border-top-color:#00e5a0;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">🎉</div>
+  <h1>Pagamento confirmado!</h1>
+  <p id="msg">Seu acesso está sendo ativado...</p>
+  <button class="btn" id="btn" onclick="window.location.href='/'" style="display:none">Fazer login e acessar</button>
+</div>
+<script>
+async function activate(){
+  const params=new URLSearchParams(window.location.search);
+  const userId=params.get('user_id');
+  const plan=params.get('plan');
+  const sessionId=params.get('session_id');
+  
+  if(userId&&sessionId){
+    try{
+      await fetch('/api/verify-payment',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({session_id:sessionId,user_id:userId,plan:plan||'mensal'})
+      });
+      document.getElementById('msg').textContent='✅ Acesso ativado! Clique abaixo para entrar na plataforma.';
+    }catch(e){
+      document.getElementById('msg').textContent='Pagamento recebido! Faça login para acessar.';
+    }
+  } else {
+    document.getElementById('msg').textContent='Pagamento recebido! Faça login para acessar.';
+  }
+  document.getElementById('btn').style.display='block';
+}
+activate();
+</script>
+</body>
+</html>
