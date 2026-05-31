@@ -4,5 +4,10 @@
       "memory": 1024,
       "maxDuration": 10
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/obrigado", "destination": "/public/obrigado.html" },
+    { "source": "/cancel", "destination": "/public/cancel.html" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ]
 }
