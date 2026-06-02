@@ -203,7 +203,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
       <div class="form-group"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
       <button class="btn btn-primary form-full" id="login-btn" onclick="doLogin()">Entrar</button>
       <div class="auth-switch">Não tem conta? <a onclick="go('register')">Assinar agora</a></div>
-      <div class="auth-switch" style="margin-top:.5rem"><a onclick="forgotPassword()">Esqueci minha senha</a></div>
+      <div class="auth-switch" style="margin-top:.5rem"><a onclick="go('forgot')">Esqueci minha senha</a></div>
     </div>
   </div>
 </div>
@@ -246,6 +246,22 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
         <button class="btn btn-ghost form-full" onclick="retryPayment()">↩ Já tenho conta — ir para pagamento</button>
       </div>
       <div class="auth-switch">Já tem conta? <a onclick="go('login')">Entrar</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ESQUECI MINHA SENHA -->
+<div id="screen-forgot" class="screen">
+  <nav><div class="logo">🔬 BioVerse</div><div class="nav-btns"><button class="btn btn-ghost btn-sm" onclick="go('login')">← Voltar</button></div></nav>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>Recuperar senha</h2>
+      <p class="auth-sub">Digite seu e-mail cadastrado e enviaremos um link para redefinir sua senha.</p>
+      <div class="auth-error" id="forgot-error"></div>
+      <div class="auth-info" id="forgot-info"></div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="forgot-email" placeholder="seu@email.com"></div>
+      <button class="btn btn-primary form-full" id="forgot-btn" onclick="sendForgotEmail()">Enviar link de recuperação</button>
+      <div class="auth-switch"><a onclick="go('login')">← Voltar para o login</a></div>
     </div>
   </div>
 </div>
@@ -608,11 +624,49 @@ async function doResetPassword(){
       body:JSON.stringify({password:pass})
     });
     const d=await r.json();
-    if(!r.ok)throw new Error(d.message||'Erro ao redefinir senha');
+    if(!r.ok){
+      const msg=d.message||d.msg||'Erro ao redefinir senha';
+      if(msg.includes('same password')||msg.includes('different')||msg.includes('senha anterior')){
+        throw new Error('A nova senha não pode ser igual à senha anterior. Escolha uma senha diferente.');
+      }
+      throw new Error(msg);
+    }
     showEl(info,'✅ Senha alterada com sucesso! Faça login com a nova senha.');
     setTimeout(()=>go('login'),2500);
   }catch(e){showEl(err,e.message);}
   btn.innerHTML='Salvar nova senha';btn.disabled=false;
+}
+
+function validarCPF(cpf){
+  cpf=cpf.replace(/\D/g,'');
+  if(cpf.length!==11)return false;
+  if(/^(\d)\1+$/.test(cpf))return false; // todos dígitos iguais
+  let sum=0,rest;
+  for(let i=1;i<=9;i++)sum+=parseInt(cpf[i-1])*(11-i);
+  rest=(sum*10)%11;
+  if(rest===10||rest===11)rest=0;
+  if(rest!==parseInt(cpf[9]))return false;
+  sum=0;
+  for(let i=1;i<=10;i++)sum+=parseInt(cpf[i-1])*(12-i);
+  rest=(sum*10)%11;
+  if(rest===10||rest===11)rest=0;
+  if(rest!==parseInt(cpf[10]))return false;
+  return true;
+}
+
+async function sendForgotEmail(){
+  const email=document.getElementById('forgot-email').value.trim();
+  const btn=document.getElementById('forgot-btn');
+  const err=document.getElementById('forgot-error');
+  const info=document.getElementById('forgot-info');
+  err.classList.remove('show');info.classList.remove('show');
+  if(!email){showEl(err,'Digite seu e-mail');return;}
+  btn.innerHTML='<span class="spinner"></span>Enviando...';btn.disabled=true;
+  try{
+    await authApi('recover',{email,options:{redirectTo:window.location.origin+'/?type=recovery'}});
+    showEl(info,'✅ E-mail enviado! Verifique sua caixa de entrada e clique no link para redefinir sua senha.');
+  }catch(e){showEl(err,'Erro ao enviar e-mail: '+e.message);}
+  btn.innerHTML='Enviar link de recuperação';btn.disabled=false;
 }
 
 async function forgotPassword(){
@@ -663,6 +717,9 @@ async function doRegister(){
   err.classList.remove('show');info.classList.remove('show');
   if(!name||!email||!pass){showEl(err,'Preencha todos os campos');return;}
   if(pass.length<8){showEl(err,'A senha deve ter no mínimo 8 caracteres');return;}
+  // validar CPF
+  const cpfVal=document.getElementById('reg-cpf').value.replace(/\D/g,'');
+  if(cpfVal&&!validarCPF(cpfVal)){showEl(err,'CPF inválido. Verifique o número digitado.');return;}
   btn.innerHTML='<span class="spinner"></span>Verificando...';btn.disabled=true;
   // tentar fazer login primeiro — se já tem conta vai para pagamento
   try{
@@ -811,6 +868,12 @@ function showEl(el,msg){el.textContent=msg;el.classList.add('show');}
 // ===== MÓDULOS =====
 async function loadMods(){
   const g=document.getElementById('modules-grid');
+  g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  // recarregar perfil para garantir plano atualizado
+  const token=getToken();
+  if(token&&currentUser){
+    try{await loadProfile(token);}catch(e){}
+  }
   // verificar se tem plano ativo
   if(!currentProfile||currentProfile.plan==='free'){
     g.innerHTML=`<div class="loading" style="text-align:center;padding:3rem">
