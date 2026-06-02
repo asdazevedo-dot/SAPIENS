@@ -203,6 +203,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
       <div class="form-group"><label>Senha</label><input type="password" id="login-pass" placeholder="••••••••"></div>
       <button class="btn btn-primary form-full" id="login-btn" onclick="doLogin()">Entrar</button>
       <div class="auth-switch">Não tem conta? <a onclick="go('register')">Assinar agora</a></div>
+      <div class="auth-switch" style="margin-top:.5rem"><a onclick="forgotPassword()">Esqueci minha senha</a></div>
     </div>
   </div>
 </div>
@@ -524,6 +525,34 @@ async function doLogin(){
   btn.innerHTML='Entrar';btn.disabled=false;
 }
 
+async function assinarAgora(planKey){
+  const plan=PLANS[planKey];
+  if(!plan){alert('Plano inválido');return;}
+  if(!currentUser){go('register');return;}
+  try{
+    const r=await fetch('/api/checkout',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({priceId:plan.priceId,userId:currentUser.id,userEmail:currentUser.email,plan:planKey})
+    });
+    const data=await r.json();
+    if(data.url)window.location.href=data.url;
+    else alert('Erro ao criar sessão de pagamento');
+  }catch(e){alert('Erro: '+e.message);}
+}
+
+async function forgotPassword(){
+  const email=document.getElementById('login-email').value.trim();
+  const err=document.getElementById('login-error');
+  const info=document.getElementById('login-info');
+  err.classList.remove('show');info.classList.remove('show');
+  if(!email){showEl(err,'Digite seu e-mail para recuperar a senha');return;}
+  try{
+    await authApi('recover',{email});
+    showEl(info,'✅ E-mail de recuperação enviado! Verifique sua caixa de entrada.');
+  }catch(e){showEl(err,'Erro ao enviar e-mail: '+e.message);}
+}
+
 async function doAdminLogin(){
   const email=document.getElementById('admin-email').value.trim();
   const pass=document.getElementById('admin-pass').value;
@@ -676,7 +705,10 @@ async function loadMods(){
       <div style="font-size:2rem;margin-bottom:1rem">🔒</div>
       <p style="color:var(--text);font-size:1rem;margin-bottom:.5rem">Você ainda não tem uma assinatura ativa.</p>
       <p style="color:var(--muted);font-size:.85rem;margin-bottom:1.5rem">Assine um plano para acessar os módulos.</p>
-      <button class="btn btn-primary" onclick="go('register')">Ver planos</button>
+      <div style="display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="assinarAgora('mensal')">Assinar Mensal — R$29/mês</button>
+        <button class="btn btn-ghost" onclick="assinarAgora('anual')">Assinar Anual — R$19/mês</button>
+      </div>
     </div>`;
     return;
   }
