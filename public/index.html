@@ -589,7 +589,29 @@ async function doRegister(){
   err.classList.remove('show');info.classList.remove('show');
   if(!name||!email||!pass){showEl(err,'Preencha todos os campos');return;}
   if(pass.length<8){showEl(err,'A senha deve ter no mínimo 8 caracteres');return;}
-  btn.innerHTML='<span class="spinner"></span>Criando conta...';btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Verificando...';btn.disabled=true;
+  // tentar fazer login primeiro — se já tem conta vai para pagamento
+  try{
+    const loginTry=await authApi('token?grant_type=password',{email,password:pass});
+    if(loginTry?.user?.id){
+      // já tem conta — ir para pagamento
+      currentUser=loginTry.user;
+      localStorage.setItem('sb_token',loginTry.access_token);
+      const planKey=document.querySelector('.plan-opt.selected').id.replace('plan-','');
+      const plan=PLANS[planKey];
+      btn.innerHTML='<span class="spinner"></span>Redirecionando para pagamento...';
+      const r=await fetch('/api/checkout',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({priceId:plan.priceId,userId:loginTry.user.id,userEmail:email,plan:planKey})
+      });
+      const data=await r.json();
+      if(data.url){window.location.href=data.url;return;}
+    }
+  }catch(e){
+    // não tem conta ainda — continuar com cadastro normal
+  }
+  btn.innerHTML='<span class="spinner"></span>Criando conta...';
   try{
     const cpf=document.getElementById('reg-cpf').value.trim();
     const birth=document.getElementById('reg-birth').value;
@@ -688,6 +710,13 @@ function getToken(){return localStorage.getItem('sb_token');}
 
 // ===== NAV =====
 function go(s){
+  // se já está logado e vai para register, redirecionar para escolha de plano
+  if(s==='register'&&currentUser&&currentProfile){
+    document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+    document.getElementById('screen-modules').classList.add('active');
+    loadMods();
+    return;
+  }
   document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
   document.getElementById('screen-'+s).classList.add('active');
   if(s==='modules')loadMods();
