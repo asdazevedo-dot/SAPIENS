@@ -242,7 +242,26 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
       <div class="form-group"><label>E-mail</label><input type="email" id="reg-email" placeholder="seu@email.com"></div>
       <div class="form-group"><label>Senha</label><input type="password" id="reg-pass" placeholder="min. 8 caracteres"></div>
       <button class="btn btn-primary form-full" id="reg-btn" onclick="doRegister()">Criar conta e ir para pagamento</button>
+      <div id="retry-payment-wrap" style="display:none;margin-top:.8rem">
+        <button class="btn btn-ghost form-full" onclick="retryPayment()">↩ Já tenho conta — ir para pagamento</button>
+      </div>
       <div class="auth-switch">Já tem conta? <a onclick="go('login')">Entrar</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- REDEFINIR SENHA -->
+<div id="screen-reset" class="screen">
+  <nav><div class="logo">🔬 BioVerse</div></nav>
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>Redefinir senha</h2>
+      <p class="auth-sub">Digite sua nova senha</p>
+      <div class="auth-error" id="reset-error"></div>
+      <div class="auth-info" id="reset-info"></div>
+      <div class="form-group"><label>Nova senha</label><input type="password" id="reset-pass" placeholder="min. 8 caracteres"></div>
+      <div class="form-group"><label>Confirmar senha</label><input type="password" id="reset-pass2" placeholder="Repita a senha"></div>
+      <button class="btn btn-primary form-full" id="reset-btn" onclick="doResetPassword()">Salvar nova senha</button>
     </div>
   </div>
 </div>
@@ -541,6 +560,61 @@ async function assinarAgora(planKey){
   }catch(e){alert('Erro: '+e.message);}
 }
 
+// retry payment para quem já tem conta
+async function retryPayment(){
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-pass').value;
+  const err=document.getElementById('reg-error');
+  err.classList.remove('show');
+  if(!email||!pass){showEl(err,'Preencha e-mail e senha para continuar');return;}
+  try{
+    const login=await authApi('token?grant_type=password',{email,password:pass});
+    if(login?.user?.id){
+      const planKey=document.querySelector('.plan-opt.selected').id.replace('plan-','');
+      const plan=PLANS[planKey];
+      const r=await fetch('/api/checkout',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({priceId:plan.priceId,userId:login.user.id,userEmail:email,plan:planKey})
+      });
+      const data=await r.json();
+      if(data.url){window.location.href=data.url;return;}
+    }
+  }catch(e){showEl(err,'E-mail ou senha incorretos');}
+}
+
+let _resetToken=null;
+
+function showResetPassword(token){
+  _resetToken=token;
+  go('reset');
+}
+
+async function doResetPassword(){
+  const pass=document.getElementById('reset-pass').value;
+  const pass2=document.getElementById('reset-pass2').value;
+  const btn=document.getElementById('reset-btn');
+  const err=document.getElementById('reset-error');
+  const info=document.getElementById('reset-info');
+  err.classList.remove('show');info.classList.remove('show');
+  if(!pass||!pass2){showEl(err,'Preencha os dois campos');return;}
+  if(pass.length<8){showEl(err,'Senha deve ter no mínimo 8 caracteres');return;}
+  if(pass!==pass2){showEl(err,'As senhas não coincidem');return;}
+  btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
+  try{
+    const r=await fetch(SB_URL+'/auth/v1/user',{
+      method:'PUT',
+      headers:{'apikey':SB_KEY,'Content-Type':'application/json','Authorization':'Bearer '+_resetToken},
+      body:JSON.stringify({password:pass})
+    });
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.message||'Erro ao redefinir senha');
+    showEl(info,'✅ Senha alterada com sucesso! Faça login com a nova senha.');
+    setTimeout(()=>go('login'),2500);
+  }catch(e){showEl(err,e.message);}
+  btn.innerHTML='Salvar nova senha';btn.disabled=false;
+}
+
 async function forgotPassword(){
   const email=document.getElementById('login-email').value.trim();
   const err=document.getElementById('login-error');
@@ -610,6 +684,8 @@ async function doRegister(){
     }
   }catch(e){
     // não tem conta ainda — continuar com cadastro normal
+    // mostrar botão de retry por segurança
+    document.getElementById('retry-payment-wrap').style.display='block';
   }
   btn.innerHTML='<span class="spinner"></span>Criando conta...';
   try{
@@ -660,8 +736,15 @@ async function doRegister(){
     const planKey2=document.querySelector('.plan-opt.selected').id.replace('plan-','');
     localStorage.setItem('pending_plan',planKey2);
     showEl(info,'✅ Conta criada! Verifique seu e-mail e clique no link de confirmação. Após confirmar você será direcionado ao pagamento.');
-  }catch(e){showEl(err,e.message);}
-  btn.innerHTML='Criar conta';btn.disabled=false;
+  }catch(e){
+    if(e.message.includes('already registered')||e.message.includes('já cadastrado')){
+      showEl(err,'Este e-mail já está cadastrado. Use o botão abaixo para ir ao pagamento.');
+      document.getElementById('retry-payment-wrap').style.display='block';
+    }else{
+      showEl(err,e.message);
+    }
+  }
+  btn.innerHTML='Criar conta e ir para pagamento';btn.disabled=false;
 }
 
 async function loadProfile(token){
@@ -1285,6 +1368,15 @@ if(_urlp.get('pago')==='1'){
   if(_lp.get('login')==='1'){
     window.history.replaceState({},'','/');
     go('login');
+    return;
+  }
+
+  // Detectar recuperação de senha
+  if(_lp.get('type')==='recovery'||window.location.hash.includes('type=recovery')){
+    const hashParams=new URLSearchParams(window.location.hash.replace('#',''));
+    const token=_lp.get('access_token')||hashParams.get('access_token');
+    window.history.replaceState({},'/','/');
+    showResetPassword(token);
     return;
   }
 
