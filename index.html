@@ -1191,7 +1191,7 @@ if(_urlp.get('pago')==='1'){
         <div style="font-size:3rem;margin-bottom:1rem">🎉</div>
         <h1 style="font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:.5rem;color:#00e5a0">Pagamento confirmado!</h1>
         <p id="pmsg" style="font-size:.9rem;color:#7a9e90;line-height:1.6;margin-bottom:1.5rem">Seu acesso foi ativado com sucesso!</p>
-        <a href="/" id="pbtn" style="display:none;background:#00e5a0;color:#0a1628;padding:.7rem 2rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem;display:block;text-align:center">👉 Clique aqui para fazer seu login</a>
+        <a href="/?login=1" id="pbtn" style="display:none;background:#00e5a0;color:#0a1628;padding:.7rem 2rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.9rem;display:block;text-align:center">👉 Clique aqui para fazer seu login</a>
       </div>
     </div>`;
   (async()=>{
@@ -1216,6 +1216,14 @@ if(_urlp.get('pago')==='1'){
   // URL admin secreta
   if(hash==='#painel-r4uGI1VvK4EzsURn'){
     go('admin-login');
+    return;
+  }
+
+  // Ir direto para login se ?login=1
+  const _lp=new URLSearchParams(window.location.search);
+  if(_lp.get('login')==='1'){
+    window.history.replaceState({},'','/');
+    go('login');
     return;
   }
 
