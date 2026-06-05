@@ -327,6 +327,44 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
   </div>
 </div>
 
+
+<!-- SUB-SUBMÓDULOS -->
+<div id="screen-subsubs" class="screen">
+  <nav>
+    <div class="logo">🔬 BioVerse</div>
+    <div class="nav-btns">
+      <span id="subsub-bc" style="font-size:.78rem;color:var(--muted)"></span>
+      <button class="btn btn-ghost btn-sm" id="subsub-back-btn" style="margin-left:.5rem">← Voltar</button>
+    </div>
+  </nav>
+  <div class="grid-page">
+    <h2 id="subsub-title"></h2>
+    <p class="grid-sub" id="subsub-desc"></p>
+    <div id="compare-btn-wrap" style="display:none;margin-bottom:1.5rem">
+      <button class="btn btn-primary" onclick="goCompare()" style="padding:.6rem 1.4rem">
+        🔬 Comparar modelos
+      </button>
+    </div>
+    <div class="cards-grid" id="subsubs-grid"><div class="loading"><span class="spinner"></span>Carregando...</div></div>
+  </div>
+</div>
+
+<!-- COMPARAÇÃO 3D -->
+<div id="screen-compare" class="screen">
+  <nav>
+    <div class="logo">🔬 BioVerse</div>
+    <div class="nav-btns">
+      <button class="btn btn-ghost btn-sm" id="compare-back-btn">← Voltar</button>
+    </div>
+  </nav>
+  <div style="padding:1.5rem 2rem;max-width:1200px;margin:0 auto">
+    <h2 id="compare-title" style="margin-bottom:.5rem">Comparar modelos</h2>
+    <p id="compare-desc" style="font-size:.85rem;color:var(--muted);margin-bottom:1.2rem">Clique em uma estrutura para destacá-la em todos os modelos</p>
+    <div id="compare-structs" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem"></div>
+    <div id="compare-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem"></div>
+  </div>
+</div>
+
 <!-- VIEWER -->
 <div id="screen-viewer" class="screen">
   <nav>
@@ -456,9 +494,38 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
       <div id="spot-rows"></div>
       <button class="add-row-btn" onclick="addSpotRow()">+ Adicionar spot manualmente</button>
     </div>
+    <div class="fgroup">
+      <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
+        <input type="checkbox" id="s-has-comparison" style="width:auto;margin:0"> Este submódulo faz parte de uma comparação
+      </label>
+    </div>
+    <div class="fgroup" id="comparison-group-wrap" style="display:none">
+      <label>Grupo de comparação <span style="color:var(--muted);font-size:.75rem">(mesmo nome para submódulos que serão comparados)</span></label>
+      <input type="text" id="s-comparison-group" placeholder="Ex: celulas-eucariontes">
+    </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeSub()">Cancelar</button>
       <button class="btn btn-primary" id="sub-btn" onclick="saveSub()">Salvar subtema</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SUB-SUBMÓDULO -->
+<div class="modal-bg" id="subsub-modal">
+  <div class="modal">
+    <h3 id="subsub-modal-title">Nova estrutura</h3>
+    <div class="fgroup"><label>Nome</label><input type="text" id="ss-name" placeholder="Ex: Mitocôndria"></div>
+    <div class="fgroup"><label>Descrição</label><input type="text" id="ss-desc" placeholder="Breve descrição"></div>
+    <div class="fgroup"><label>Link do vídeo</label><input type="text" id="ss-video" placeholder="https://youtube.com/..."></div>
+    <div class="fgroup"><label>Arquivo 3D (.glb)</label><input type="text" id="ss-glb" placeholder="mitocondria.glb"></div>
+    <div class="spots-box">
+      <h4 style="margin-bottom:.6rem">Spots</h4>
+      <div id="ss-spot-rows"></div>
+      <button class="add-row-btn" onclick="addSSSpotRow()">+ Adicionar spot</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeSubSub()">Cancelar</button>
+      <button class="btn btn-primary" id="subsub-btn" onclick="saveSubSub()">Salvar estrutura</button>
     </div>
   </div>
 </div>
@@ -535,6 +602,7 @@ const EMOJIS=['🧬','⚗️','🔬','🧫','🌿','🦠','🧪','🫀','🫁','
 const BG=['#0d2b1a','#1a1a0d','#0d1a2b','#1a0d1a','#0d1a1a','#1a0d2b'];
 let selEmoji='🧬',editModId=null,editSubId=null,editUserId=null;
 let curModId=null,curModName='',curSub=null;
+let curSubId=null,curSubName='',curSubDesc='',curSubHasComparison=false,curCompareGroup=null;
 let currentUser=null,currentProfile=null,isAdmin=false;
 let renderer=null,scene,camera,meshGroup,animId=null;
 let isDrag=false,prevX=0,prevY=0,pinchDist=null,spotEls=[],pickMode=false;
@@ -920,13 +988,55 @@ async function openMod(id,name,desc){
   try{
     const subs=await api('submodules?module_id='+id);
     if(!subs.length){g.innerHTML='<div class="loading">Nenhum subtema neste módulo ainda.</div>';return;}
-    g.innerHTML=subs.map((s,i)=>`<div class="mod-card" onclick='openViewer(${JSON.stringify(s)})'>
+    g.innerHTML=subs.map((s,i)=>`<div class="mod-card" onclick="openSubSubs('${s.id}','${esc(s.name)}','${esc(s.desc||'')}',${!!s.has_comparison},'${s.comparison_group||''}')">
       <div class="mod-thumb" style="background:${BG[(i+2)%BG.length]};font-size:2.5rem">🔬</div>
       <div class="mod-body"><h3>${s.name}</h3><p>${s.desc||''}</p></div></div>`).join('');
   }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
 }
 
 // ===== VIEWER =====
+async function openSubSubs(subId, subName, subDesc, hasComparison, compGroup){
+  curSubId=subId;curSubName=subName;curSubDesc=subDesc;
+  curSubHasComparison=hasComparison;curCompareGroup=compGroup;
+  document.getElementById('subsub-bc').textContent=curModName+' › '+subName;
+  document.getElementById('subsub-back-btn').onclick=()=>openMod(curModId,curModName,'');
+  document.getElementById('subsub-title').textContent=subName;
+  document.getElementById('subsub-desc').textContent=subDesc||'';
+  // mostrar botão comparar se tiver grupo
+  const cw=document.getElementById('compare-btn-wrap');
+  if(hasComparison&&compGroup){cw.style.display='block';}else{cw.style.display='none';}
+  go('subsubs');
+  const g=document.getElementById('subsubs-grid');
+  g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  try{
+    const subs=await apiSb('sub_submodules?submodule_id=eq.'+subId+'&order=id');
+    if(!subs.length){
+      // sem sub-submódulos — abrir viewer direto
+      const subData=await apiSb('submodules?id=eq.'+subId);
+      if(subData.length)openViewer(subData[0]);
+      return;
+    }
+    g.innerHTML=subs.map((s,i)=>`<div class="mod-card" onclick='openViewerSubSub(${JSON.stringify(s)})'>
+      <div class="mod-thumb" style="background:${BG[(i+3)%BG.length]};font-size:2.5rem">🔬</div>
+      <div class="mod-body"><h3>${s.name}</h3><p>${s.description||''}</p></div></div>`).join('');
+  }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
+}
+
+function openViewerSubSub(s){
+  if(typeof s==='string')s=JSON.parse(s);
+  // converter formato para o viewer
+  const viewerData={
+    id:s.id,
+    name:s.name,
+    desc:s.description||'',
+    video:s.video||'',
+    glb:s.glb||'',
+    spots:s.spots||[]
+  };
+  document.getElementById('back-btn').onclick=()=>openSubSubs(curSubId,curSubName,curSubDesc,curSubHasComparison,curCompareGroup);
+  openViewer(viewerData);
+}
+
 function openViewer(s){
   if(typeof s==='string')s=JSON.parse(s);
   curSub=s;
@@ -1256,13 +1366,173 @@ function exitPickMode(){
   if(adminAnimId){cancelAnimationFrame(adminAnimId);adminAnimId=null;}
 }
 
+// ===== COMPARAÇÃO 3D =====
+let compareRenderers=[];
+
+async function goCompare(){
+  if(!curCompareGroup)return;
+  go('compare');
+  document.getElementById('compare-title').textContent='Comparar: '+curSubName;
+  document.getElementById('compare-back-btn').onclick=()=>openSubSubs(curSubId,curSubName,curSubDesc,curSubHasComparison,curCompareGroup);
+  
+  // buscar todos os submódulos do mesmo grupo
+  const grid=document.getElementById('compare-grid');
+  const structs=document.getElementById('compare-structs');
+  grid.innerHTML='<div class="loading"><span class="spinner"></span>Carregando modelos...</div>';
+  
+  try{
+    const subs=await apiSb('submodules?comparison_group=eq.'+curCompareGroup+'&order=id');
+    if(!subs.length){grid.innerHTML='<p style="color:var(--muted)">Nenhum modelo para comparar.</p>';return;}
+    
+    // coletar todos os spots únicos
+    const allSpots=new Map();
+    subs.forEach(s=>{
+      (s.spots||[]).forEach(sp=>{
+        if(!allSpots.has(sp.name))allSpots.set(sp.name,sp);
+      });
+    });
+    
+    // botões de estruturas
+    structs.innerHTML='<span style="font-size:.82rem;color:var(--muted);margin-right:.5rem">Destacar:</span>'+
+      [...allSpots.keys()].map(name=>`<button class="btn btn-ghost btn-sm" onclick="highlightStructure('${esc(name)}')" id="cmp-${esc(name)}" style="margin:.2rem">${name}</button>`).join('')+
+      '<button class="btn btn-ghost btn-sm" onclick="clearHighlight()" style="margin:.2rem;opacity:.6">Limpar</button>';
+    
+    // criar viewers
+    grid.innerHTML=subs.map((s,i)=>`
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+        <div style="padding:.7rem 1rem;border-bottom:1px solid var(--border)">
+          <h3 style="font-size:.9rem;margin:0">${s.name}</h3>
+        </div>
+        <div id="cmp-col-${i}" style="position:relative;background:#060f1e;height:260px;cursor:grab">
+          <canvas id="cmp-canvas-${i}" style="width:100%;height:100%;display:block"></canvas>
+        </div>
+      </div>`).join('');
+    
+    // iniciar renderers
+    compareRenderers.forEach(r=>{if(r)r.dispose();});
+    compareRenderers=[];
+    window._compareMeshes=[];
+    
+    setTimeout(()=>{
+      subs.forEach((s,i)=>initCompareViewer(s,i));
+    },100);
+    
+  }catch(e){grid.innerHTML='<p style="color:#e74c3c">Erro: '+e.message+'</p>';}
+}
+
+function initCompareViewer(sub, idx){
+  const col=document.getElementById('cmp-col-'+idx);
+  const canvas=document.getElementById('cmp-canvas-'+idx);
+  if(!col||!canvas)return;
+  const W=col.offsetWidth||300,H=260;
+  canvas.width=W;canvas.height=H;
+  
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setSize(W,H,false);
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  renderer.physicallyCorrectLights=true;
+  compareRenderers[idx]=renderer;
+  
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
+  camera.position.set(0,0,4);
+  scene.add(new THREE.AmbientLight(0xffffff,1.0));
+  const l=new THREE.DirectionalLight(0xffffff,1.5);l.position.set(5,5,5);scene.add(l);
+  
+  const meshGroup=new THREE.Group();scene.add(meshGroup);
+  if(!window._compareMeshes)window._compareMeshes=[];
+  window._compareMeshes[idx]={group:meshGroup,spots:sub.spots||[],originalMats:new Map()};
+  
+  if(sub.glb){
+    const loader=new THREE.GLTFLoader();
+    loader.load(sub.glb,gltf=>{
+      const model=gltf.scene;
+      model.traverse(child=>{
+        if(child.isMesh){
+          const oldMat=child.material;
+          let color=0xcccccc;
+          if(oldMat.color)color=oldMat.color.getHex();
+          child.material=new THREE.MeshStandardMaterial({color,roughness:.5,metalness:.1,map:oldMat.map||null,side:THREE.DoubleSide});
+          window._compareMeshes[idx].originalMats.set(child.uuid,child.material.color.getHex());
+        }
+      });
+      const box=new THREE.Box3().setFromObject(model);
+      const center=box.getCenter(new THREE.Vector3());
+      const size=box.getSize(new THREE.Vector3());
+      model.position.sub(center);
+      model.scale.setScalar(2.5/Math.max(size.x,size.y,size.z));
+      meshGroup.add(model);
+    });
+  }else{
+    meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1,32,32),new THREE.MeshStandardMaterial({color:0x1a3a5c})));
+  }
+  
+  // órbita simples
+  let theta=0,phi=Math.PI/2,radius=4,drag=false,px=0,py=0;
+  function updateCam(){camera.position.set(radius*Math.sin(phi)*Math.sin(theta),radius*Math.cos(phi),radius*Math.sin(phi)*Math.cos(theta));camera.lookAt(0,0,0);}
+  updateCam();
+  col.onmousedown=e=>{drag=true;px=e.clientX;py=e.clientY;};
+  document.addEventListener('mousemove',e=>{if(!drag)return;theta-=(e.clientX-px)*.008;phi=Math.max(.05,Math.min(Math.PI-.05,phi+(e.clientY-py)*.008));px=e.clientX;py=e.clientY;updateCam();});
+  document.addEventListener('mouseup',()=>drag=false);
+  col.onwheel=e=>{radius=Math.max(1,Math.min(10,radius+e.deltaY*.005));updateCam();e.preventDefault();};
+  
+  (function loop(){requestAnimationFrame(loop);renderer.render(scene,camera);})();
+}
+
+function highlightStructure(name){
+  // destacar estrutura em todos os viewers
+  document.querySelectorAll('[id^="cmp-"]').forEach(btn=>{
+    if(btn.tagName==='BUTTON')btn.classList.remove('btn-primary');
+  });
+  const btn=document.getElementById('cmp-'+name);
+  if(btn)btn.classList.add('btn-primary');
+  
+  if(!window._compareMeshes)return;
+  window._compareMeshes.forEach(mesh=>{
+    if(!mesh)return;
+    const spotNames=(mesh.spots||[]).map(s=>s.name.toLowerCase());
+    const hasStruct=spotNames.includes(name.toLowerCase());
+    mesh.group.traverse(child=>{
+      if(child.isMesh){
+        if(hasStruct){
+          child.material.color.setHex(0x00e5a0); // verde destaque
+          child.material.opacity=1;
+          child.material.transparent=false;
+        }else{
+          child.material.color.setHex(0x333333); // cinza apagado
+          child.material.opacity=0.3;
+          child.material.transparent=true;
+        }
+      }
+    });
+  });
+}
+
+function clearHighlight(){
+  document.querySelectorAll('[id^="cmp-"]').forEach(btn=>{
+    if(btn.tagName==='BUTTON')btn.classList.remove('btn-primary');
+  });
+  if(!window._compareMeshes)return;
+  window._compareMeshes.forEach(mesh=>{
+    if(!mesh)return;
+    mesh.group.traverse(child=>{
+      if(child.isMesh){
+        const orig=mesh.originalMats.get(child.uuid)||0xcccccc;
+        child.material.color.setHex(orig);
+        child.material.opacity=1;
+        child.material.transparent=false;
+      }
+    });
+  });
+}
+
 // ===== ADMIN =====
 async function loadAdmin(){
   try{
     const [mods,subs]=await Promise.all([apiSb('modules?order=id'),apiSb('submodules?order=id')]);
     document.getElementById('stat-mods').textContent=mods.length;
     document.getElementById('stat-subs').textContent=subs.length;
-    renderAdminList(mods,subs);
+    await renderAdminList(mods,subs);
     loadUsers();
   }catch(e){console.error(e);}
 }
@@ -1283,15 +1553,91 @@ async function loadUsers(){
     }</tbody></table>`;
   }catch(e){document.getElementById('users-list').innerHTML='<p style="color:#e74c3c;font-size:.85rem">Erro ao carregar usuários.</p>';}
 }
+// Toggle comparação no modal de subtema
+document.addEventListener('change',function(e){
+  if(e.target.id==='s-has-comparison'){
+    document.getElementById('comparison-group-wrap').style.display=e.target.checked?'block':'none';
+  }
+});
+
+// Sub-submódulo CRUD
+let editSSId=null,editSSSubId=null;
+
+function openNewSubSub(subId,subName){
+  editSSId=null;editSSSubId=subId;
+  document.getElementById('subsub-modal-title').textContent='Nova estrutura — '+subName;
+  document.getElementById('ss-name').value='';
+  document.getElementById('ss-desc').value='';
+  document.getElementById('ss-video').value='';
+  document.getElementById('ss-glb').value='';
+  document.getElementById('ss-spot-rows').innerHTML='';
+  document.getElementById('subsub-modal').classList.add('open');
+}
+
+function editSubSub(s){
+  if(typeof s==='string')s=JSON.parse(s);
+  editSSId=s.id;editSSSubId=s.submodule_id;
+  document.getElementById('subsub-modal-title').textContent='Editar estrutura';
+  document.getElementById('ss-name').value=s.name||'';
+  document.getElementById('ss-desc').value=s.description||'';
+  document.getElementById('ss-video').value=s.video||'';
+  document.getElementById('ss-glb').value=s.glb||'';
+  // spots
+  const rows=document.getElementById('ss-spot-rows');
+  rows.innerHTML='';
+  (s.spots||[]).forEach(sp=>addSSSpotRow(sp));
+  document.getElementById('subsub-modal').classList.add('open');
+}
+
+function closeSubSub(){document.getElementById('subsub-modal').classList.remove('open');}
+
+function addSSSpotRow(s){
+  const c2=document.getElementById('ss-spot-rows'),r=document.createElement('div');
+  r.className='spot-row';
+  r.innerHTML=`<input type="text" class="sn" placeholder="Nome" value="${s?s.name:''}">
+    <input type="text" class="sd" placeholder="Legenda" value="${s?s.desc:''}">
+    <input type="text" class="sp" placeholder="0,0,0" value="${s?s.x+','+s.y+','+s.z:''}">
+    <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
+  c2.appendChild(r);
+}
+
+async function saveSubSub(){
+  const name=document.getElementById('ss-name').value.trim();
+  if(!name){alert('Preencha o nome');return;}
+  const spots=[];
+  document.querySelectorAll('#ss-spot-rows .spot-row').forEach(row=>{
+    const n=row.querySelector('.sn').value.trim(),d=row.querySelector('.sd').value.trim(),pos=row.querySelector('.sp').value.split(',').map(Number);
+    if(n)spots.push({name:n,desc:d||'',x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
+  });
+  const data={name,description:document.getElementById('ss-desc').value,video:document.getElementById('ss-video').value,glb:document.getElementById('ss-glb').value,spots,submodule_id:editSSSubId};
+  const btn=document.getElementById('subsub-btn');btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
+  try{
+    if(editSSId)await apiSb('sub_submodules?id=eq.'+editSSId,'PATCH',data,getToken());
+    else await apiSb('sub_submodules','POST',data,getToken());
+    closeSubSub();showOk('✅ Estrutura salva!');loadAdmin();
+  }catch(e){showErr('❌ '+e.message);}
+  btn.innerHTML='Salvar estrutura';btn.disabled=false;
+}
+
+async function delSubSub(id){
+  if(!confirm('Excluir esta estrutura?'))return;
+  try{await apiSb('sub_submodules?id=eq.'+id,'DELETE',null,getToken());loadAdmin();}
+  catch(e){alert('Erro: '+e.message);}
+}
+
 function aTab(n,btn){
   document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.admin-panel').forEach(x=>x.classList.remove('active'));
   btn.classList.add('active');document.getElementById('ap-'+n).classList.add('active');
   if(n==='usuarios')loadUsers();
 }
-function renderAdminList(mods,subs){
+async function renderAdminList(mods,subs){
   const l=document.getElementById('admin-list');
   if(!mods.length){l.innerHTML='<p style="color:var(--muted);font-size:.85rem">Nenhum módulo. Crie o primeiro!</p>';return;}
+  // buscar sub-submódulos
+  let subsubs=[];
+  try{subsubs=await apiSb('sub_submodules?order=id');}catch(e){}
+  
   l.innerHTML=mods.map(m=>{
     const ms=subs.filter(s=>String(s.module_id)===String(m.id));
     return `<div style="margin-bottom:.8rem">
@@ -1304,13 +1650,27 @@ function renderAdminList(mods,subs){
           <button class="btn btn-danger btn-sm" onclick="delMod('${m.id}')">🗑</button>
         </div>
       </div>
-      ${ms.length?`<div class="sublist">${ms.map(s=>`
-        <div class="sub-item"><span style="color:var(--muted);margin-right:.4rem">↳</span>
-        <span style="flex:1">${s.name}</span>
-        <div style="display:flex;gap:.3rem">
-          <button class="btn btn-ghost btn-sm" onclick='editSub(${JSON.stringify(s)})'>✏️</button>
-          <button class="btn btn-danger btn-sm" onclick="delSub('${s.id}')">🗑</button>
-        </div></div>`).join('')}</div>`:''}
+      ${ms.length?`<div class="sublist">${ms.map(s=>{
+        const ss=subsubs.filter(x=>String(x.submodule_id)===String(s.id));
+        return `<div style="margin-bottom:.3rem">
+          <div class="sub-item">
+            <span style="color:var(--muted);margin-right:.4rem">↳</span>
+            <span style="flex:1">${s.name}${s.has_comparison?` <span class="badge badge-blue" style="font-size:.68rem">🔬 comparação</span>`:''}${s.comparison_group?` <span style="font-size:.7rem;color:var(--muted)">[${s.comparison_group}]</span>`:''}</span>
+            <div style="display:flex;gap:.3rem">
+              <button class="btn btn-primary btn-sm" onclick="openNewSubSub('${s.id}','${esc(s.name)}')">+ Estrutura</button>
+              <button class="btn btn-ghost btn-sm" onclick='editSub(${JSON.stringify(s)})'>✏️</button>
+              <button class="btn btn-danger btn-sm" onclick="delSub('${s.id}')">🗑</button>
+            </div>
+          </div>
+          ${ss.length?`<div class="sublist">${ss.map(x=>`
+            <div class="sub-item"><span style="color:var(--muted);margin-right:.4rem">↳↳</span>
+            <span style="flex:1">${x.name}</span>
+            <div style="display:flex;gap:.3rem">
+              <button class="btn btn-ghost btn-sm" onclick='editSubSub(${JSON.stringify(x)})'>✏️</button>
+              <button class="btn btn-danger btn-sm" onclick="delSubSub('${x.id}')">🗑</button>
+            </div></div>`).join('')}</div>`:''}
+        </div>`;
+      }).join('')}</div>`:''}
     </div>`;
   }).join('');
 }
@@ -1331,7 +1691,23 @@ async function delMod(id){if(!confirm('Excluir módulo e subtemas?'))return;try{
 
 // SUBTEMA CRUD
 function openNewSub(modId,modName){editSubId=null;document.getElementById('sub-modal-title').textContent='Novo subtema — '+modName;document.getElementById('s-name').value='';document.getElementById('s-desc').value='';document.getElementById('s-video').value='';document.getElementById('s-glb').value='';document.getElementById('sub-modal').dataset.modId=modId;buildSpotRows([]);document.getElementById('sub-modal').classList.add('open');}
-function editSub(s){if(typeof s==='string')s=JSON.parse(s);editSubId=s.id;document.getElementById('sub-modal-title').textContent='Editar subtema';document.getElementById('s-name').value=s.name||'';document.getElementById('s-desc').value=s.desc||'';document.getElementById('s-video').value=s.video||'';document.getElementById('s-glb').value=s.glb||'';document.getElementById('sub-modal').dataset.modId=s.module_id;buildSpotRows(s.spots||[]);document.getElementById('sub-modal').classList.add('open');}
+function editSub(s){
+  if(typeof s==='string')s=JSON.parse(s);
+  editSubId=s.id;
+  document.getElementById('sub-modal-title').textContent='Editar subtema';
+  document.getElementById('s-name').value=s.name||'';
+  document.getElementById('s-desc').value=s.desc||'';
+  document.getElementById('s-video').value=s.video||'';
+  document.getElementById('s-glb').value=s.glb||'';
+  document.getElementById('sub-modal').dataset.modId=s.module_id;
+  buildSpotRows(s.spots||[]);
+  // comparação
+  const hasComp=!!s.has_comparison;
+  document.getElementById('s-has-comparison').checked=hasComp;
+  document.getElementById('comparison-group-wrap').style.display=hasComp?'block':'none';
+  document.getElementById('s-comparison-group').value=s.comparison_group||'';
+  document.getElementById('sub-modal').classList.add('open');
+}
 function closeSub(){document.getElementById('sub-modal').classList.remove('open');}
 async function saveSub(){
   const name=document.getElementById('s-name').value.trim();if(!name){alert('Preencha o nome');return;}
@@ -1341,7 +1717,9 @@ async function saveSub(){
     if(n)spots.push({name:n,desc:d||'',x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
   });
   const modId=document.getElementById('sub-modal').dataset.modId;
-  const data={name,desc:document.getElementById('s-desc').value,video:document.getElementById('s-video').value,glb:document.getElementById('s-glb').value,spots,module_id:modId};
+  const hasComp=document.getElementById('s-has-comparison').checked;
+  const compGroup=document.getElementById('s-comparison-group').value.trim();
+  const data={name,desc:document.getElementById('s-desc').value,video:document.getElementById('s-video').value,glb:document.getElementById('s-glb').value,spots,module_id:modId,has_comparison:hasComp,comparison_group:hasComp?compGroup:null};
   const btn=document.getElementById('sub-btn');btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
   try{if(editSubId)await apiSb('submodules?id=eq.'+editSubId,'PATCH',data,getToken());else await apiSb('submodules','POST',data,getToken());closeSub();showOk('✅ Subtema salvo!');loadAdmin();}
   catch(e){showErr('❌ '+e.message);}
