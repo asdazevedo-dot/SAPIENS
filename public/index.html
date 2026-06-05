@@ -371,6 +371,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="logo">🔬 BioVerse</div>
     <div class="nav-btns">
       <span id="viewer-bc" style="font-size:.78rem;color:var(--muted)"></span>
+      <button class="btn btn-ghost btn-sm" id="compare-viewer-btn" style="display:none;margin-left:.5rem" onclick="goCompare()">🔬 Comparar</button>
       <button class="btn btn-ghost btn-sm" id="back-btn" style="margin-left:.5rem">← Voltar</button>
     </div>
   </nav>
@@ -988,9 +989,22 @@ async function openMod(id,name,desc){
   try{
     const subs=await api('submodules?module_id='+id);
     if(!subs.length){g.innerHTML='<div class="loading">Nenhum subtema neste módulo ainda.</div>';return;}
-    g.innerHTML=subs.map((s,i)=>`<div class="mod-card" onclick="openSubSubs('${s.id}','${esc(s.name)}','${esc(s.desc||'')}',${!!s.has_comparison},'${s.comparison_group||''}')">
+    // verificar se algum submódulo tem comparação
+    const hasAnyComparison=subs.some(s=>s.has_comparison&&s.comparison_group);
+    const compareGroup=hasAnyComparison?subs.find(s=>s.has_comparison)?.comparison_group:null;
+    
+    let html='';
+    if(hasAnyComparison){
+      html+=`<div style="margin-bottom:1.2rem">
+        <button class="btn btn-primary" onclick="startCompare('${compareGroup}')" style="padding:.6rem 1.4rem">
+          🔬 Comparar modelos
+        </button>
+      </div>`;
+    }
+    html+=`<div class="cards-grid">`+subs.map((s,i)=>`<div class="mod-card" onclick="openSubSubs('${s.id}','${esc(s.name)}','${esc(s.desc||'')}',${!!s.has_comparison},'${s.comparison_group||''}')">
       <div class="mod-thumb" style="background:${BG[(i+2)%BG.length]};font-size:2.5rem">🔬</div>
-      <div class="mod-body"><h3>${s.name}</h3><p>${s.desc||''}</p></div></div>`).join('');
+      <div class="mod-body"><h3>${s.name}</h3><p>${s.desc||''}</p></div></div>`).join('')+'</div>';
+    g.innerHTML=html;
   }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
 }
 
@@ -998,28 +1012,18 @@ async function openMod(id,name,desc){
 async function openSubSubs(subId, subName, subDesc, hasComparison, compGroup){
   curSubId=subId;curSubName=subName;curSubDesc=subDesc;
   curSubHasComparison=hasComparison;curCompareGroup=compGroup;
-  document.getElementById('subsub-bc').textContent=curModName+' › '+subName;
-  document.getElementById('subsub-back-btn').onclick=()=>openMod(curModId,curModName,'');
-  document.getElementById('subsub-title').textContent=subName;
-  document.getElementById('subsub-desc').textContent=subDesc||'';
-  // mostrar botão comparar se tiver grupo
-  const cw=document.getElementById('compare-btn-wrap');
-  if(hasComparison&&compGroup){cw.style.display='block';}else{cw.style.display='none';}
-  go('subsubs');
-  const g=document.getElementById('subsubs-grid');
-  g.innerHTML='<div class="loading"><span class="spinner"></span>Carregando...</div>';
+  // buscar dados do submódulo e abrir viewer direto
   try{
-    const subs=await apiSb('sub_submodules?submodule_id=eq.'+subId+'&order=id');
-    if(!subs.length){
-      // sem sub-submódulos — abrir viewer direto
-      const subData=await apiSb('submodules?id=eq.'+subId);
-      if(subData.length)openViewer(subData[0]);
-      return;
+    const subData=await apiSb('submodules?id=eq.'+subId);
+    if(subData.length){
+      // guardar info de comparação para usar no viewer
+      const sub=subData[0];
+      sub._hasComparison=hasComparison;
+      sub._compGroup=compGroup;
+      sub._subId=subId;
+      openViewer(sub);
     }
-    g.innerHTML=subs.map((s,i)=>`<div class="mod-card" onclick='openViewerSubSub(${JSON.stringify(s)})'>
-      <div class="mod-thumb" style="background:${BG[(i+3)%BG.length]};font-size:2.5rem">🔬</div>
-      <div class="mod-body"><h3>${s.name}</h3><p>${s.description||''}</p></div></div>`).join('');
-  }catch(e){g.innerHTML='<div class="loading" style="color:#e74c3c">Erro ao carregar.</div>';}
+  }catch(e){console.error(e);}
 }
 
 function openViewerSubSub(s){
@@ -1042,6 +1046,15 @@ function openViewer(s){
   curSub=s;
   document.getElementById('viewer-bc').textContent=curModName+' › '+s.name;
   document.getElementById('back-btn').onclick=()=>openMod(curModId,curModName,'');
+  // mostrar botão comparar se disponível
+  const cmpBtn=document.getElementById('compare-viewer-btn');
+  if(s._hasComparison&&s._compGroup){
+    curCompareGroup=s._compGroup;
+    cmpBtn.style.display='inline-block';
+    document.getElementById('compare-back-btn').onclick=()=>openViewer(s);
+  }else{
+    cmpBtn.style.display='none';
+  }
   document.getElementById('viewer-title').textContent=s.name;
   document.getElementById('viewer-desc-text').textContent=s.desc||'';
   setupVideo(s.video);
@@ -1053,7 +1066,43 @@ function openViewer(s){
 function renderStructs(spots){
   const l=document.getElementById('struct-list');
   if(!spots||!spots.length){l.innerHTML='<p style="font-size:.8rem;color:var(--muted)">Nenhum spot cadastrado.</p>';return;}
-  l.innerHTML=spots.map((s,i)=>`<div class="struct-item" id="sti-${i}" onclick="focusSpot(${i})"><div class="struct-dot"></div>${s.name}</div>`).join('');
+  l.innerHTML=spots.map((s,i)=>`
+    <div class="struct-item" id="sti-${i}" onclick="focusSpot(${i})">
+      <div class="struct-dot"></div>
+      <span style="flex:1">${s.name}</span>
+      <button onclick="event.stopPropagation();verDetalhes(${i})" 
+        style="background:transparent;border:1px solid var(--border);border-radius:5px;padding:.15rem .4rem;font-size:.68rem;color:var(--muted);cursor:pointer;flex-shrink:0" 
+        title="Ver em detalhes">🔍</button>
+    </div>`).join('');
+}
+
+async function verDetalhes(spotIdx){
+  const spot=curSub?.spots?.[spotIdx];
+  if(!spot)return;
+  // buscar sub-submódulo com esse nome
+  try{
+    const subId=curSub._subId||curSub.id;
+    if(!subId)return;
+    const results=await apiSb('sub_submodules?submodule_id=eq.'+subId+'&name=eq.'+encodeURIComponent(spot.name));
+    if(results.length>0){
+      // abrir viewer da estrutura
+      const estrutura=results[0];
+      const viewerData={
+        id:estrutura.id,
+        name:estrutura.name,
+        desc:estrutura.description||'',
+        video:estrutura.video||'',
+        glb:estrutura.glb||'',
+        spots:estrutura.spots||[]
+      };
+      document.getElementById('back-btn').onclick=()=>openViewer(curSub);
+      document.getElementById('compare-viewer-btn').style.display='none';
+      openViewer(viewerData);
+    }else{
+      // não tem modelo 3D próprio — mostrar popup informativo
+      alert('Estrutura "'+spot.name+'" ainda não tem modelo 3D detalhado cadastrado.');
+    }
+  }catch(e){console.error(e);}
 }
 function focusSpot(i){
   document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
@@ -1368,6 +1417,11 @@ function exitPickMode(){
 
 // ===== COMPARAÇÃO 3D =====
 let compareRenderers=[];
+
+async function startCompare(group){
+  curCompareGroup=group;
+  goCompare();
+}
 
 async function goCompare(){
   if(!curCompareGroup)return;
