@@ -57,7 +57,8 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .grid-page{padding:2rem;max-width:1100px;margin:0 auto}
 .grid-page h2{font-size:1.4rem;margin-bottom:.3rem}
 .grid-sub{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+.cards-grid{display:flex;flex-wrap:wrap;gap:1rem}
+.cards-grid .mod-card{width:200px;flex-shrink:0}
 .mod-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s}
 .mod-card:hover{border-color:var(--accent);transform:translateY(-3px)}
 .mod-card.locked{opacity:.5;cursor:not-allowed}
@@ -1435,7 +1436,8 @@ async function goCompare(){
   grid.innerHTML='<div class="loading"><span class="spinner"></span>Carregando modelos...</div>';
   
   try{
-    const subs=await apiSb('submodules?comparison_group=eq.'+curCompareGroup+'&order=id');
+    // buscar todos submódulos com mesmo grupo de comparação (em qualquer módulo)
+    const subs=await apiSb('submodules?comparison_group=eq.'+encodeURIComponent(curCompareGroup)+'&order=id');
     if(!subs.length){grid.innerHTML='<p style="color:var(--muted)">Nenhum modelo para comparar.</p>';return;}
     
     // coletar todos os spots únicos
@@ -1448,8 +1450,8 @@ async function goCompare(){
     
     // botões de estruturas
     structs.innerHTML='<span style="font-size:.82rem;color:var(--muted);margin-right:.5rem">Destacar:</span>'+
-      [...allSpots.keys()].map(name=>`<button class="btn btn-ghost btn-sm" onclick="highlightStructure('${esc(name)}')" id="cmp-${esc(name)}" style="margin:.2rem">${name}</button>`).join('')+
-      '<button class="btn btn-ghost btn-sm" onclick="clearHighlight()" style="margin:.2rem;opacity:.6">Limpar</button>';
+      [...allSpots.keys()].map(name=>`<button class="btn btn-ghost btn-sm cmp-struct-btn" onclick="highlightStructure('${esc(name)}')" id="cmpb-${esc(name)}" style="margin:.2rem">${name}</button>`).join('')+
+      '<button class="btn btn-ghost btn-sm" onclick="clearHighlight()" style="margin:.2rem;opacity:.6">✕ Limpar</button>';
     
     // criar viewers
     grid.innerHTML=subs.map((s,i)=>`
@@ -1534,28 +1536,34 @@ function initCompareViewer(sub, idx){
 }
 
 function highlightStructure(name){
-  // destacar estrutura em todos os viewers
-  document.querySelectorAll('[id^="cmp-"]').forEach(btn=>{
-    if(btn.tagName==='BUTTON')btn.classList.remove('btn-primary');
-  });
-  const btn=document.getElementById('cmp-'+name);
+  // destacar estrutura em todos os viewers pelo nome da camada/mesh do C4D
+  document.querySelectorAll('.cmp-struct-btn').forEach(btn=>btn.classList.remove('btn-primary'));
+  const btn=document.getElementById('cmpb-'+CSS.escape(name));
   if(btn)btn.classList.add('btn-primary');
   
   if(!window._compareMeshes)return;
   window._compareMeshes.forEach(mesh=>{
     if(!mesh)return;
-    const spotNames=(mesh.spots||[]).map(s=>s.name.toLowerCase());
-    const hasStruct=spotNames.includes(name.toLowerCase());
     mesh.group.traverse(child=>{
       if(child.isMesh){
-        if(hasStruct){
-          child.material.color.setHex(0x00e5a0); // verde destaque
+        // verificar se o nome do mesh/camada contém o nome da estrutura
+        const meshName=(child.name||'').toLowerCase();
+        const spotMatch=(mesh.spots||[]).some(s=>s.name.toLowerCase()===name.toLowerCase());
+        const nameMatch=meshName.includes(name.toLowerCase())||name.toLowerCase().includes(meshName);
+        const isMatch=nameMatch||spotMatch;
+        if(isMatch){
+          child.material=child.material.clone();
+          child.material.color.setHex(0x00e5a0);
           child.material.opacity=1;
           child.material.transparent=false;
+          child.material.emissive=new THREE.Color(0x00e5a0);
+          child.material.emissiveIntensity=0.3;
         }else{
-          child.material.color.setHex(0x333333); // cinza apagado
-          child.material.opacity=0.3;
+          child.material=child.material.clone();
+          child.material.color.setHex(0x444444);
+          child.material.opacity=0.25;
           child.material.transparent=true;
+          child.material.emissiveIntensity=0;
         }
       }
     });
