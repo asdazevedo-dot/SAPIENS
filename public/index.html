@@ -1073,10 +1073,8 @@ function renderStructs(spots){
   l.innerHTML=spots.map((s,i)=>`
     <div class="struct-item" id="sti-${i}" onclick="focusSpot(${i})">
       <div class="struct-dot"></div>
+      <span style="font-weight:500;margin-right:.3rem">${i+1}.</span>
       <span style="flex:1">${s.name}</span>
-      <button onclick="event.stopPropagation();verDetalhes(${i})" 
-        style="background:transparent;border:1px solid var(--border);border-radius:5px;padding:.15rem .4rem;font-size:.68rem;color:var(--muted);cursor:pointer;flex-shrink:0" 
-        title="Ver em detalhes">🔍</button>
     </div>`).join('');
 }
 
@@ -1196,6 +1194,8 @@ function startThree(){
     const btn=document.createElement('div');btn.className='spot-btn';btn.id='spb-'+i;btn.textContent=i+1;
     const pop=document.createElement('div');pop.className='spot-popup';pop.id='spp-'+i;
     pop.innerHTML=`<h4>${s.name}</h4><p>${s.desc||''}</p>`;
+    // posicionar popup sobre o canvas, não na lateral
+    pop.style.position='absolute';pop.style.zIndex='20';
     btn.addEventListener('click',e=>{
       e.stopPropagation();
       const vis=pop.classList.contains('show');
@@ -1204,7 +1204,7 @@ function startThree(){
       if(!vis){pop.classList.add('show');const si=document.getElementById('sti-'+i);if(si)si.classList.add('active');}
     });
     col.appendChild(btn);col.appendChild(pop);
-    spotEls.push({btn,pop,v:new THREE.Vector3(s.x||0,s.y||0,s.z||0)});
+    spotEls.push({btn,pop,v:new THREE.Vector3(s.x||0,s.y||0,s.z||0),spot:s});
   });
   // órbita
   let theta=0,phi=Math.PI/2,radius=4;
@@ -1235,16 +1235,42 @@ function startThree(){
   col.ontouchmove=e=>{if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY);if(e.touches.length===2&&pinchDist){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);radius=Math.max(0.5,Math.min(15,radius*(pinchDist/d)));pinchDist=d;updateCam();}e.preventDefault();};
   col.ontouchend=()=>{isDrag=false;pinchDist=null;};
   const spotRay=new THREE.Raycaster();
+  // Para spots com coordenadas 0,0,0 (por nome de camada), encontrar centro do mesh
+  function getSpotWorldPos(spot){
+    const v=new THREE.Vector3(spot.x||0,spot.y||0,spot.z||0);
+    // se coordenadas são zero, tentar encontrar mesh pelo nome
+    if(Math.abs(v.x)<0.01&&Math.abs(v.y)<0.01&&Math.abs(v.z)<0.01&&spot.name){
+      let found=null;
+      meshGroup.traverse(child=>{
+        if(child.isMesh){
+          const mn=(child.name||'').toLowerCase();
+          const sn=spot.name.toLowerCase();
+          if(mn===sn||mn.includes(sn)||sn.includes(mn))found=child;
+        }
+      });
+      if(found){
+        const box=new THREE.Box3().setFromObject(found);
+        box.getCenter(v);
+        meshGroup.worldToLocal(v);
+      }
+    }
+    return v;
+  }
+
   function loop(){
     animId=requestAnimationFrame(loop);
     renderer.render(scene,camera);
     const W2=col.clientWidth,H2=col.clientHeight;
-    spotEls.forEach(({btn,pop,v})=>{
-      const wp=v.clone();meshGroup.localToWorld(wp);
+    spotEls.forEach(({btn,pop,v,spot})=>{
+      // recalcular posição real do spot
+      const realV=spot?getSpotWorldPos(spot):v;
+      const wp=realV.clone();meshGroup.localToWorld(wp);
       const p=wp.clone().project(camera);
       const sx=(p.x*.5+.5)*W2,sy=(-.5*p.y+.5)*H2;
       btn.style.left=(sx-13)+'px';btn.style.top=(sy-13)+'px';
-      pop.style.left=(sx+18)+'px';pop.style.top=(sy-20)+'px';
+      // popup aparece SOBRE o modelo, não na lateral
+      const popX=sx+18,popY=Math.max(10,sy-60);
+      pop.style.left=Math.min(popX,W2-200)+'px';pop.style.top=popY+'px';
       const behindCam=p.z>1;
       let occluded=false;
       if(!behindCam){
