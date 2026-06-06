@@ -480,10 +480,6 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="spots-box">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
         <h4 style="margin:0">Spots — pontos clicáveis</h4>
-        <div style="display:flex;gap:.4rem">
-          <button class="pick-spot-btn" id="pick-mode-btn" onclick="togglePickMode()">🎯 Clicar no modelo</button>
-          <button class="pick-spot-btn" onclick="addSpotByLayerName()" style="background:rgba(0,180,216,.1);border-color:var(--accent2);color:var(--accent2)">📋 Por nome de camada</button>
-        </div>
       </div>
       <!-- Mini viewer 3D para posicionar spots -->
       <div id="admin-viewer-wrap" style="display:none;margin-bottom:.8rem">
@@ -494,7 +490,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
         </div>
       </div>
       <div style="background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:.6rem .9rem;margin-bottom:.8rem;font-size:.78rem;color:var(--muted);line-height:1.6">
-        💡 Cole o link do arquivo 3D acima e clique em <strong style="color:var(--accent)">🎯 Clicar no modelo</strong> para abrir o viewer e posicionar spots visualmente.
+        💡 Digite o <strong style="color:var(--accent)">nome exato da camada</strong> como está salvo no C4D (ex: <strong>Sphere</strong>, <strong>Mitocondria</strong>) e a legenda que aparecerá ao clicar.
       </div>
       <div id="spot-rows"></div>
       <button class="add-row-btn" onclick="addSpotRow()">+ Adicionar spot manualmente</button>
@@ -1108,7 +1104,7 @@ async function verDetalhes(spotIdx){
 }
 function focusSpot(i){
   document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
-  const el=document.getElementById('sti-'+i);if(el)el.classList.add('active');
+  const el=document.getElementById('sti-'+i);if(el){el.classList.add('active');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
   document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
   const sp=document.getElementById('spp-'+i);if(sp)sp.classList.add('show');
 }
@@ -1733,9 +1729,9 @@ function closeSubSub(){document.getElementById('subsub-modal').classList.remove(
 function addSSSpotRow(s){
   const c2=document.getElementById('ss-spot-rows'),r=document.createElement('div');
   r.className='spot-row';
-  r.innerHTML=`<input type="text" class="sn" placeholder="Nome" value="${s?s.name:''}">
+  r.style.gridTemplateColumns='1fr 1.5fr auto';
+  r.innerHTML=`<input type="text" class="sn" placeholder="Nome da camada C4D" value="${s?s.name:''}">
     <input type="text" class="sd" placeholder="Legenda" value="${s?s.desc:''}">
-    <input type="text" class="sp" placeholder="0,0,0" value="${s?s.x+','+s.y+','+s.z:''}">
     <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
   c2.appendChild(r);
 }
@@ -1852,8 +1848,8 @@ async function saveSub(){
   const name=document.getElementById('s-name').value.trim();if(!name){alert('Preencha o nome');return;}
   const spots=[];
   document.querySelectorAll('#spot-rows .spot-row').forEach(row=>{
-    const n=row.querySelector('.sn').value.trim(),d=row.querySelector('.sd').value.trim(),pos=row.querySelector('.sp').value.split(',').map(Number);
-    if(n)spots.push({name:n,desc:d||'',x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
+    const n=row.querySelector('.sn').value.trim(),d=row.querySelector('.sd').value.trim();
+    if(n)spots.push({name:n,desc:d||'',x:0,y:0,z:0});
   });
   const modId=document.getElementById('sub-modal').dataset.modId;
   const hasComp=document.getElementById('s-has-comparison').checked;
@@ -1892,9 +1888,9 @@ function pickE(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(
 function buildSpotRows(s){const c=document.getElementById('spot-rows');c.innerHTML='';s.forEach(x=>addSpotRow(x));}
 function addSpotRow(s){
   const c=document.getElementById('spot-rows'),r=document.createElement('div');r.className='spot-row';
-  r.innerHTML=`<input type="text" class="sn" placeholder="Nome" value="${s?s.name:''}">
-    <input type="text" class="sd" placeholder="Legenda" value="${s?s.desc:''}">
-    <input type="text" class="sp" placeholder="0,0,0" value="${s?s.x+','+s.y+','+s.z:''}">
+  r.style.gridTemplateColumns='1fr 1.5fr auto';
+  r.innerHTML=`<input type="text" class="sn" placeholder="Nome da camada C4D (ex: Sphere)" value="${s?s.name:''}">
+    <input type="text" class="sd" placeholder="Legenda explicativa" value="${s?s.desc:''}">
     <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
   c.appendChild(r);
 }
