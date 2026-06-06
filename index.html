@@ -1536,7 +1536,6 @@ function initCompareViewer(sub, idx){
 }
 
 function highlightStructure(name){
-  // destacar estrutura em todos os viewers pelo nome da camada/mesh do C4D
   document.querySelectorAll('.cmp-struct-btn').forEach(btn=>btn.classList.remove('btn-primary'));
   const btn=document.getElementById('cmpb-'+CSS.escape(name));
   if(btn)btn.classList.add('btn-primary');
@@ -1544,45 +1543,71 @@ function highlightStructure(name){
   if(!window._compareMeshes)return;
   window._compareMeshes.forEach(mesh=>{
     if(!mesh)return;
-    mesh.group.traverse(child=>{
-      if(child.isMesh){
-        // verificar se o nome do mesh/camada contém o nome da estrutura
-        const meshName=(child.name||'').toLowerCase();
-        const spotMatch=(mesh.spots||[]).some(s=>s.name.toLowerCase()===name.toLowerCase());
-        const nameMatch=meshName.includes(name.toLowerCase())||name.toLowerCase().includes(meshName);
-        const isMatch=nameMatch||spotMatch;
-        if(isMatch){
-          child.material=child.material.clone();
+    
+    // encontrar quais meshes correspondem ao nome do spot
+    // um spot tem x,y,z — vamos encontrar o mesh mais próximo dessa posição
+    const matchingSpot=(mesh.spots||[]).find(s=>s.name.toLowerCase()===name.toLowerCase());
+    
+    // listar todos os meshes com seus nomes para debug
+    const allMeshes=[];
+    mesh.group.traverse(child=>{if(child.isMesh)allMeshes.push(child);});
+    
+    if(matchingSpot&&allMeshes.length>0){
+      // encontrar o mesh mais próximo da posição do spot
+      const spotPos=new THREE.Vector3(matchingSpot.x||0,matchingSpot.y||0,matchingSpot.z||0);
+      let closestMesh=null,closestDist=Infinity;
+      allMeshes.forEach(child=>{
+        const box=new THREE.Box3().setFromObject(child);
+        const center=box.getCenter(new THREE.Vector3());
+        const dist=center.distanceTo(spotPos);
+        if(dist<closestDist){closestDist=dist;closestMesh=child;}
+      });
+      
+      allMeshes.forEach(child=>{
+        child.material=child.material.clone();
+        if(child===closestMesh){
           child.material.color.setHex(0x00e5a0);
           child.material.opacity=1;
           child.material.transparent=false;
           child.material.emissive=new THREE.Color(0x00e5a0);
-          child.material.emissiveIntensity=0.3;
+          child.material.emissiveIntensity=0.4;
         }else{
-          child.material=child.material.clone();
-          child.material.color.setHex(0x444444);
-          child.material.opacity=0.25;
+          child.material.color.setHex(0x333333);
+          child.material.opacity=0.2;
           child.material.transparent=true;
+          child.material.emissive=new THREE.Color(0x000000);
           child.material.emissiveIntensity=0;
         }
-      }
-    });
+      });
+    } else {
+      // sem spot correspondente — cinza tudo
+      allMeshes.forEach(child=>{
+        child.material=child.material.clone();
+        child.material.color.setHex(0x333333);
+        child.material.opacity=0.2;
+        child.material.transparent=true;
+        child.material.emissiveIntensity=0;
+      });
+    }
   });
 }
 
 function clearHighlight(){
-  document.querySelectorAll('[id^="cmp-"]').forEach(btn=>{
-    if(btn.tagName==='BUTTON')btn.classList.remove('btn-primary');
-  });
+  document.querySelectorAll('.cmp-struct-btn').forEach(btn=>btn.classList.remove('btn-primary'));
   if(!window._compareMeshes)return;
   window._compareMeshes.forEach(mesh=>{
     if(!mesh)return;
     mesh.group.traverse(child=>{
       if(child.isMesh){
-        const orig=mesh.originalMats.get(child.uuid)||0xcccccc;
-        child.material.color.setHex(orig);
-        child.material.opacity=1;
-        child.material.transparent=false;
+        const orig=mesh.originalMats.get(child.uuid);
+        if(orig!==undefined){
+          child.material=child.material.clone();
+          child.material.color.setHex(orig);
+          child.material.opacity=1;
+          child.material.transparent=false;
+          child.material.emissive=new THREE.Color(0x000000);
+          child.material.emissiveIntensity=0;
+        }
       }
     });
   });
