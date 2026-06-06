@@ -359,8 +359,8 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     </div>
   </nav>
   <div style="padding:1.5rem 2rem;max-width:1200px;margin:0 auto">
-    <h2 id="compare-title" style="margin-bottom:.5rem">Comparar modelos</h2>
-    <p id="compare-desc" style="font-size:.85rem;color:var(--muted);margin-bottom:1.2rem">Clique em uma estrutura para destacá-la em todos os modelos</p>
+    <h2 id="compare-title" style="margin-bottom:.5rem">COMPARE</h2>
+    <p id="compare-desc" style="font-size:.85rem;color:var(--muted);margin-bottom:1.2rem">Clique no nome de uma estrutura para destacá-la em todos os modelos</p>
     <div id="compare-structs" style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem"></div>
     <div id="compare-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.2rem"></div>
   </div>
@@ -480,7 +480,10 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="spots-box">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
         <h4 style="margin:0">Spots — pontos clicáveis</h4>
-        <button class="pick-spot-btn" id="pick-mode-btn" onclick="togglePickMode()">🎯 Clicar no modelo</button>
+        <div style="display:flex;gap:.4rem">
+          <button class="pick-spot-btn" id="pick-mode-btn" onclick="togglePickMode()">🎯 Clicar no modelo</button>
+          <button class="pick-spot-btn" onclick="addSpotByLayerName()" style="background:rgba(0,180,216,.1);border-color:var(--accent2);color:var(--accent2)">📋 Por nome de camada</button>
+        </div>
       </div>
       <!-- Mini viewer 3D para posicionar spots -->
       <div id="admin-viewer-wrap" style="display:none;margin-bottom:.8rem">
@@ -1408,6 +1411,14 @@ function initAdminViewer(glbFile){
   adminLoop();
 }
 
+function addSpotByLayerName(){
+  const layerName=prompt('Nome da camada no C4D (ex: Sphere, Mitocondria):');
+  if(!layerName)return;
+  const legenda=prompt('Legenda explicativa para este elemento:','');
+  // adicionar spot com coordenadas 0,0,0 — o destaque será feito pelo nome
+  addSpotRow({name:layerName.trim(),desc:legenda||'',x:0,y:0,z:0});
+}
+
 function exitPickMode(){
   adminPickMode=false;
   document.getElementById('admin-viewer-wrap').style.display='none';
@@ -1427,7 +1438,7 @@ async function startCompare(group){
 async function goCompare(){
   if(!curCompareGroup)return;
   go('compare');
-  document.getElementById('compare-title').textContent='Comparar: '+curSubName;
+  document.getElementById('compare-title').textContent='COMPARE';
   document.getElementById('compare-back-btn').onclick=()=>openSubSubs(curSubId,curSubName,curSubDesc,curSubHasComparison,curCompareGroup);
   
   // buscar todos os submódulos do mesmo grupo
