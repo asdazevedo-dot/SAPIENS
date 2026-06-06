@@ -1544,28 +1544,23 @@ function highlightStructure(name){
   window._compareMeshes.forEach(mesh=>{
     if(!mesh)return;
     
-    // encontrar quais meshes correspondem ao nome do spot
-    // um spot tem x,y,z — vamos encontrar o mesh mais próximo dessa posição
-    const matchingSpot=(mesh.spots||[]).find(s=>s.name.toLowerCase()===name.toLowerCase());
-    
-    // listar todos os meshes com seus nomes para debug
     const allMeshes=[];
     mesh.group.traverse(child=>{if(child.isMesh)allMeshes.push(child);});
     
-    if(matchingSpot&&allMeshes.length>0){
-      // encontrar o mesh mais próximo da posição do spot
-      const spotPos=new THREE.Vector3(matchingSpot.x||0,matchingSpot.y||0,matchingSpot.z||0);
-      let closestMesh=null,closestDist=Infinity;
-      allMeshes.forEach(child=>{
-        const box=new THREE.Box3().setFromObject(child);
-        const center=box.getCenter(new THREE.Vector3());
-        const dist=center.distanceTo(spotPos);
-        if(dist<closestDist){closestDist=dist;closestMesh=child;}
-      });
-      
+    // Estratégia 1: procurar mesh cujo nome bate exatamente com o nome do spot
+    // O nome do spot deve ser IGUAL ao nome da camada no C4D
+    const matchByName=allMeshes.filter(child=>{
+      const meshName=(child.name||'').toLowerCase().trim();
+      const spotName=name.toLowerCase().trim();
+      return meshName===spotName || meshName.includes(spotName) || spotName.includes(meshName);
+    });
+
+    if(matchByName.length>0){
+      // encontrou pelo nome — destacar esses meshes
       allMeshes.forEach(child=>{
         child.material=child.material.clone();
-        if(child===closestMesh){
+        const isMatch=matchByName.includes(child);
+        if(isMatch){
           child.material.color.setHex(0x00e5a0);
           child.material.opacity=1;
           child.material.transparent=false;
@@ -1580,14 +1575,34 @@ function highlightStructure(name){
         }
       });
     } else {
-      // sem spot correspondente — cinza tudo
-      allMeshes.forEach(child=>{
-        child.material=child.material.clone();
-        child.material.color.setHex(0x333333);
-        child.material.opacity=0.2;
-        child.material.transparent=true;
-        child.material.emissiveIntensity=0;
-      });
+      // Estratégia 2: sem correspondência de nome — usar posição do spot
+      const matchingSpot=(mesh.spots||[]).find(s=>s.name.toLowerCase()===name.toLowerCase());
+      if(matchingSpot&&allMeshes.length>0){
+        const spotPos=new THREE.Vector3(matchingSpot.x||0,matchingSpot.y||0,matchingSpot.z||0);
+        let closestMesh=null,closestDist=Infinity;
+        allMeshes.forEach(child=>{
+          const box=new THREE.Box3().setFromObject(child);
+          const center=box.getCenter(new THREE.Vector3());
+          const dist=center.distanceTo(spotPos);
+          if(dist<closestDist){closestDist=dist;closestMesh=child;}
+        });
+        allMeshes.forEach(child=>{
+          child.material=child.material.clone();
+          if(child===closestMesh){
+            child.material.color.setHex(0x00e5a0);
+            child.material.opacity=1;
+            child.material.transparent=false;
+            child.material.emissive=new THREE.Color(0x00e5a0);
+            child.material.emissiveIntensity=0.4;
+          }else{
+            child.material.color.setHex(0x333333);
+            child.material.opacity=0.2;
+            child.material.transparent=true;
+            child.material.emissive=new THREE.Color(0x000000);
+            child.material.emissiveIntensity=0;
+          }
+        });
+      }
     }
   });
 }
