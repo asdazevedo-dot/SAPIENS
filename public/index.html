@@ -1269,7 +1269,9 @@ function startThree(){
       pop.style.left=Math.min(popX,W2-200)+'px';pop.style.top=popY+'px';
       const behindCam=p.z>1;
       let occluded=false;
-      if(!behindCam){
+      // só verifica oclusão se o spot tem coordenadas reais (não zero)
+      const hasRealCoords=spot&&(Math.abs(spot.x)>0.01||Math.abs(spot.y)>0.01||Math.abs(spot.z)>0.01);
+      if(!behindCam&&hasRealCoords){
         const dir=new THREE.Vector3().subVectors(wp,camera.position).normalize();
         spotRay.set(camera.position,dir);
         const hits=spotRay.intersectObject(meshGroup,true);
