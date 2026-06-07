@@ -1231,11 +1231,26 @@ function startThree(){
   col.ontouchmove=e=>{if(e.touches.length===1)onMove(e.touches[0].clientX,e.touches[0].clientY);if(e.touches.length===2&&pinchDist){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);radius=Math.max(0.5,Math.min(15,radius*(pinchDist/d)));pinchDist=d;updateCam();}e.preventDefault();};
   col.ontouchend=()=>{isDrag=false;pinchDist=null;};
   const spotRay=new THREE.Raycaster();
-  // Para spots com coordenadas 0,0,0 (por nome de camada), encontrar centro do mesh
+  // Cache de posições dos meshes por nome
+  const meshPosCache={};
+  function buildMeshCache(){
+    meshGroup.traverse(child=>{
+      if(child.isMesh&&child.name){
+        const box=new THREE.Box3().setFromObject(child);
+        const center=box.getCenter(new THREE.Vector3());
+        meshPosCache[child.name.toLowerCase()]=center;
+      }
+    });
+  }
+  setTimeout(buildMeshCache,1500); // aguardar modelo carregar
+
   function getSpotWorldPos(spot){
     const v=new THREE.Vector3(spot.x||0,spot.y||0,spot.z||0);
-    // se coordenadas são zero, tentar encontrar mesh pelo nome
-    if(Math.abs(v.x)<0.01&&Math.abs(v.y)<0.01&&Math.abs(v.z)<0.01&&spot.name){
+    const hasRealCoords=Math.abs(v.x)>0.01||Math.abs(v.y)>0.01||Math.abs(v.z)>0.01;
+    if(!hasRealCoords&&spot.name){
+      const cached=meshPosCache[spot.name.toLowerCase()];
+      if(cached)return cached.clone();
+      // tentar encontrar mesh pelo nome agora
       let found=null;
       meshGroup.traverse(child=>{
         if(child.isMesh){
@@ -1246,8 +1261,9 @@ function startThree(){
       });
       if(found){
         const box=new THREE.Box3().setFromObject(found);
-        box.getCenter(v);
-        meshGroup.worldToLocal(v);
+        const center=box.getCenter(new THREE.Vector3());
+        meshPosCache[spot.name.toLowerCase()]=center;
+        return center.clone();
       }
     }
     return v;
@@ -1269,14 +1285,13 @@ function startThree(){
       pop.style.left=Math.min(popX,W2-200)+'px';pop.style.top=popY+'px';
       const behindCam=p.z>1;
       let occluded=false;
-      // só verifica oclusão se o spot tem coordenadas reais (não zero)
-      const hasRealCoords=spot&&(Math.abs(spot.x)>0.01||Math.abs(spot.y)>0.01||Math.abs(spot.z)>0.01);
-      if(!behindCam&&hasRealCoords){
+      if(!behindCam){
+        // verificar se o mesh correspondente está visível da câmera
         const dir=new THREE.Vector3().subVectors(wp,camera.position).normalize();
         spotRay.set(camera.position,dir);
         const hits=spotRay.intersectObject(meshGroup,true);
         const dist=camera.position.distanceTo(wp);
-        if(hits.length>0&&hits[0].distance<dist-0.05)occluded=true;
+        if(hits.length>0&&hits[0].distance<dist-0.08)occluded=true;
       }
       const hidden=behindCam||occluded;
       btn.style.opacity=hidden?'0':'1';btn.style.pointerEvents=hidden?'none':'all';
