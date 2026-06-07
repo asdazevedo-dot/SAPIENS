@@ -1183,6 +1183,7 @@ function startThree(){
       model.position.sub(center);
       model.scale.setScalar(2.5/Math.max(size.x,size.y,size.z));
       meshGroup.add(model);
+      buildMeshCache(); // construir cache após modelo carregar
     },null,()=>buildPlaceholder());
   }else{buildPlaceholder();}
   const spots=curSub?curSub.spots||[]:[];
@@ -1242,7 +1243,6 @@ function startThree(){
       }
     });
   }
-  setTimeout(buildMeshCache,1500); // aguardar modelo carregar
 
   function getSpotWorldPos(spot){
     const v=new THREE.Vector3(spot.x||0,spot.y||0,spot.z||0);
@@ -1304,6 +1304,7 @@ function startThree(){
 function buildPlaceholder(){
   meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1,32,32),new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3,metalness:.4})));
   meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1.01,16,16),new THREE.MeshBasicMaterial({color:0x00e5a0,wireframe:true,opacity:.15,transparent:true})));
+  if(typeof buildMeshCache==='function')buildMeshCache();
 }
 
 // ===== PICK MODE =====
