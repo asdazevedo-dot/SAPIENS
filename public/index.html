@@ -1183,7 +1183,7 @@ function startThree(){
       model.position.sub(center);
       model.scale.setScalar(2.5/Math.max(size.x,size.y,size.z));
       meshGroup.add(model);
-      buildMeshCache(); // construir cache após modelo carregar
+      window.buildMeshCache&&window.buildMeshCache(); // construir cache após modelo carregar
     },null,()=>buildPlaceholder());
   }else{buildPlaceholder();}
   const spots=curSub?curSub.spots||[]:[];
@@ -1233,22 +1233,25 @@ function startThree(){
   col.ontouchend=()=>{isDrag=false;pinchDist=null;};
   const spotRay=new THREE.Raycaster();
   // Cache de posições dos meshes por nome
-  const meshPosCache={};
-  function buildMeshCache(){
+  window.meshPosCache={};
+  window.buildMeshCache=function(){
+    window.meshPosCache={};
     meshGroup.traverse(child=>{
       if(child.isMesh&&child.name){
         const box=new THREE.Box3().setFromObject(child);
         const center=box.getCenter(new THREE.Vector3());
-        meshPosCache[child.name.toLowerCase()]=center;
+        window.meshPosCache[child.name.toLowerCase()]=center.clone();
+        console.log('mesh carregado:',child.name,'pos:',center.x.toFixed(2),center.y.toFixed(2),center.z.toFixed(2));
       }
     });
-  }
+    console.log('cache total:',Object.keys(window.meshPosCache));
+  };
 
   function getSpotWorldPos(spot){
     const v=new THREE.Vector3(spot.x||0,spot.y||0,spot.z||0);
     const hasRealCoords=Math.abs(v.x)>0.01||Math.abs(v.y)>0.01||Math.abs(v.z)>0.01;
     if(!hasRealCoords&&spot.name){
-      const cached=meshPosCache[spot.name.toLowerCase()];
+      const cached=window.meshPosCache&&window.meshPosCache[spot.name.toLowerCase()];
       if(cached)return cached.clone();
       // tentar encontrar mesh pelo nome agora
       let found=null;
@@ -1262,7 +1265,8 @@ function startThree(){
       if(found){
         const box=new THREE.Box3().setFromObject(found);
         const center=box.getCenter(new THREE.Vector3());
-        meshPosCache[spot.name.toLowerCase()]=center;
+        if(!window.meshPosCache)window.meshPosCache={};
+        window.meshPosCache[spot.name.toLowerCase()]=center.clone();
         return center.clone();
       }
     }
@@ -1304,7 +1308,7 @@ function startThree(){
 function buildPlaceholder(){
   meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1,32,32),new THREE.MeshStandardMaterial({color:0x1a3a5c,roughness:.3,metalness:.4})));
   meshGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1.01,16,16),new THREE.MeshBasicMaterial({color:0x00e5a0,wireframe:true,opacity:.15,transparent:true})));
-  if(typeof buildMeshCache==='function')buildMeshCache();
+  if(typeof buildMeshCache==='function')window.buildMeshCache&&window.buildMeshCache();
 }
 
 // ===== PICK MODE =====
