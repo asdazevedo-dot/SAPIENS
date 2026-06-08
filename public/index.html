@@ -1251,24 +1251,28 @@ function startThree(){
     const v=new THREE.Vector3(spot.x||0,spot.y||0,spot.z||0);
     const hasRealCoords=Math.abs(v.x)>0.01||Math.abs(v.y)>0.01||Math.abs(v.z)>0.01;
     if(!hasRealCoords&&spot.name){
-      const cached=window.meshPosCache&&window.meshPosCache[spot.name.toLowerCase()];
+      const sn=spot.name.toLowerCase();
+      // verificar cache primeiro
+      const cached=window.meshPosCache&&window.meshPosCache[sn];
       if(cached)return cached.clone();
-      // tentar encontrar mesh pelo nome agora
+      // procurar mesh pelo nome agora
       let found=null;
       meshGroup.traverse(child=>{
-        if(child.isMesh){
+        if(child.isMesh&&!found){
           const mn=(child.name||'').toLowerCase();
-          const sn=spot.name.toLowerCase();
           if(mn===sn||mn.includes(sn)||sn.includes(mn))found=child;
         }
       });
       if(found){
         const box=new THREE.Box3().setFromObject(found);
-        const center=box.getCenter(new THREE.Vector3());
+        const center=new THREE.Vector3();
+        box.getCenter(center);
         if(!window.meshPosCache)window.meshPosCache={};
-        window.meshPosCache[spot.name.toLowerCase()]=center.clone();
+        window.meshPosCache[sn]=center.clone();
         return center.clone();
       }
+      // se não achou, retornar posição aleatória visível (não centro)
+      return new THREE.Vector3(0.5,0.5,0.5);
     }
     return v;
   }
@@ -1280,7 +1284,9 @@ function startThree(){
     spotEls.forEach(({btn,pop,v,spot})=>{
       // recalcular posição real do spot
       const realV=spot?getSpotWorldPos(spot):v;
-      const wp=realV.clone();meshGroup.localToWorld(wp);
+      const hasRealCoords=spot&&(Math.abs(spot.x||0)>0.01||Math.abs(spot.y||0)>0.01||Math.abs(spot.z||0)>0.01);
+      const wp=realV.clone();
+      if(hasRealCoords)meshGroup.localToWorld(wp); // só converte se tem coords reais
       const p=wp.clone().project(camera);
       const sx=(p.x*.5+.5)*W2,sy=(-.5*p.y+.5)*H2;
       btn.style.left=(sx-13)+'px';btn.style.top=(sy-13)+'px';
