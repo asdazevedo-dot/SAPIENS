@@ -491,7 +491,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
         </div>
       </div>
       <div style="background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:.6rem .9rem;margin-bottom:.8rem;font-size:.78rem;color:var(--muted);line-height:1.6">
-        💡 Digite o <strong style="color:var(--accent)">nome exato da camada</strong> como está salvo no C4D. Use <strong>Offset X/Y</strong> para ajustar a posição do número se estiverem sobrepostos.
+        💡 Use <strong style="color:var(--accent)">🎯 Clicar no modelo</strong> para posicionar os spots clicando diretamente na estrutura. Use <strong>Offset X/Y</strong> para ajuste fino da posição do número.
       </div>
       <div style="display:grid;grid-template-columns:1fr 1.5fr 60px 60px auto;gap:.4rem;margin-bottom:.3rem;font-size:.72rem;color:var(--muted);padding:0 .1rem">
         <span>Camada C4D</span><span>Legenda</span><span style="text-align:center">Offset X</span><span style="text-align:center">Offset Y</span><span></span>
@@ -1306,14 +1306,14 @@ function startThree(){
       pop.style.left=Math.min(popX,W2-200)+'px';pop.style.top=popY+'px';
       const behindCam=p.z>1;
       let occluded=false;
-      // só fazer oclusão se a posição world não é zero
       const wpLen=wp.length();
-      if(!behindCam&&wpLen>0.1){
+      // verificar oclusão para todos os spots com posição válida
+      if(!behindCam&&wpLen>0.05){
         const dir=new THREE.Vector3().subVectors(wp,camera.position).normalize();
         spotRay.set(camera.position,dir);
         const hits=spotRay.intersectObject(meshGroup,true);
         const dist=camera.position.distanceTo(wp);
-        if(hits.length>0&&hits[0].distance<dist-0.08)occluded=true;
+        if(hits.length>0&&hits[0].distance<dist-0.05)occluded=true;
       }
       const hidden=behindCam||occluded;
       btn.style.opacity=hidden?'0':'1';btn.style.pointerEvents=hidden?'none':'all';
@@ -1944,10 +1944,10 @@ function addSpotRow(s){
     <input type="number" class="sox" placeholder="↔" value="${s&&s.ox!=null?s.ox:0}" title="Offset horizontal em pixels">
     <input type="number" class="soy" placeholder="↕" value="${s&&s.oy!=null?s.oy:0}" title="Offset vertical em pixels">
     <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
-  // guardar coordenadas reais como data attributes
-  if(hasCoords){
-    r.dataset.x=s.x||0;r.dataset.y=s.y||0;r.dataset.z=s.z||0;
-  }
+  // guardar coordenadas reais como data attributes (sempre)
+  r.dataset.x=s&&s.x!=null?s.x:0;
+  r.dataset.y=s&&s.y!=null?s.y:0;
+  r.dataset.z=s&&s.z!=null?s.z:0;
   c.appendChild(r);
 }
 function showOk(m){const e=document.getElementById('alert-ok');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),4000);}
