@@ -480,6 +480,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="spots-box">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
         <h4 style="margin:0">Spots — pontos clicáveis</h4>
+        <button class="pick-spot-btn" id="pick-mode-btn" onclick="togglePickMode()">🎯 Clicar no modelo</button>
       </div>
       <!-- Mini viewer 3D para posicionar spots -->
       <div id="admin-viewer-wrap" style="display:none;margin-bottom:.8rem">
@@ -1341,14 +1342,13 @@ function togglePickMode(){
   const btn=document.getElementById('pick-mode-btn');
   
   if(!adminPickMode){
-    // abrir viewer
+    if(!glbFile){alert('Cole o link do arquivo 3D primeiro!');return;}
     wrap.style.display='block';
     btn.classList.add('active');
     btn.textContent='✅ Fechar viewer';
     adminPickMode=true;
     setTimeout(()=>initAdminViewer(glbFile),100);
   } else {
-    // fechar viewer
     wrap.style.display='none';
     btn.classList.remove('active');
     btn.textContent='🎯 Clicar no modelo';
@@ -1444,7 +1444,7 @@ function initAdminViewer(glbFile){
     updateAdminCam();e.preventDefault();
   };
 
-  // clicar para adicionar spot
+  // clicar para adicionar spot com coordenadas reais
   col.onclick=e=>{
     if(adminIsDrag)return;
     const rect=col.getBoundingClientRect();
@@ -1455,11 +1455,14 @@ function initAdminViewer(glbFile){
     const hits=ray.intersectObject(adminMesh,true);
     if(hits.length>0){
       const local=adminMesh.worldToLocal(hits[0].point.clone());
-      const x=+local.x.toFixed(2),y=+local.y.toFixed(2),z=+local.z.toFixed(2);
-      const nome=prompt('Nome deste spot (ex: Núcleo, Veia...):');
+      const x=+local.x.toFixed(3),y=+local.y.toFixed(3),z=+local.z.toFixed(3);
+      // encontrar nome do mesh clicado
+      const meshName=hits[0].object.name||'';
+      const nome=prompt('Nome deste spot:'+(meshName?' (camada: '+meshName+')':''),meshName);
       if(nome){
         const leg=prompt('Legenda explicativa:','');
-        addSpotRow({name:nome,desc:leg||'',x,y,z});
+        // usar coordenadas reais do clique
+        addSpotRow({name:nome,desc:leg||'',x,y,z,ox:0,oy:0});
       }
     }
   };
@@ -1891,7 +1894,11 @@ async function saveSub(){
     const d=row.querySelector('.sd').value.trim();
     const ox=parseInt(row.querySelector('.sox')?.value||0)||0;
     const oy=parseInt(row.querySelector('.soy')?.value||0)||0;
-    if(n)spots.push({name:n,desc:d||'',x:0,y:0,z:0,ox,oy});
+    // usar coordenadas reais se disponíveis (spot clicado no modelo)
+    const x=parseFloat(row.dataset.x||0)||0;
+    const y=parseFloat(row.dataset.y||0)||0;
+    const z=parseFloat(row.dataset.z||0)||0;
+    if(n)spots.push({name:n,desc:d||'',x,y,z,ox,oy});
   });
   const modId=document.getElementById('sub-modal').dataset.modId;
   const hasComp=document.getElementById('s-has-comparison').checked;
@@ -1930,12 +1937,17 @@ function pickE(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(
 function buildSpotRows(s){const c=document.getElementById('spot-rows');c.innerHTML='';s.forEach(x=>addSpotRow(x));}
 function addSpotRow(s){
   const c=document.getElementById('spot-rows'),r=document.createElement('div');r.className='spot-row';
+  const hasCoords=s&&(Math.abs(s.x||0)>0.001||Math.abs(s.y||0)>0.001||Math.abs(s.z||0)>0.001);
   r.style.gridTemplateColumns='1fr 1.5fr 60px 60px auto';
-  r.innerHTML=`<input type="text" class="sn" placeholder="Nome da camada C4D (ex: Sphere)" value="${s?s.name:''}">
+  r.innerHTML=`<input type="text" class="sn" placeholder="Nome da camada C4D" value="${s?s.name:''}" title="${hasCoords?'Coords: '+(s.x||0)+','+(s.y||0)+','+(s.z||0):'Por nome de camada'}">
     <input type="text" class="sd" placeholder="Legenda explicativa" value="${s?s.desc:''}">
-    <input type="number" class="sox" placeholder="X" value="${s&&s.ox!=null?s.ox:0}" title="Offset horizontal (px)" style="text-align:center">
-    <input type="number" class="soy" placeholder="Y" value="${s&&s.oy!=null?s.oy:0}" title="Offset vertical (px)" style="text-align:center">
+    <input type="number" class="sox" placeholder="↔" value="${s&&s.ox!=null?s.ox:0}" title="Offset horizontal em pixels">
+    <input type="number" class="soy" placeholder="↕" value="${s&&s.oy!=null?s.oy:0}" title="Offset vertical em pixels">
     <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
+  // guardar coordenadas reais como data attributes
+  if(hasCoords){
+    r.dataset.x=s.x||0;r.dataset.y=s.y||0;r.dataset.z=s.z||0;
+  }
   c.appendChild(r);
 }
 function showOk(m){const e=document.getElementById('alert-ok');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),4000);}
