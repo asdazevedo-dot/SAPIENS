@@ -490,7 +490,10 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
         </div>
       </div>
       <div style="background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:.6rem .9rem;margin-bottom:.8rem;font-size:.78rem;color:var(--muted);line-height:1.6">
-        💡 Digite o <strong style="color:var(--accent)">nome exato da camada</strong> como está salvo no C4D (ex: <strong>Sphere</strong>, <strong>Mitocondria</strong>) e a legenda que aparecerá ao clicar.
+        💡 Digite o <strong style="color:var(--accent)">nome exato da camada</strong> como está salvo no C4D. Use <strong>Offset X/Y</strong> para ajustar a posição do número se estiverem sobrepostos.
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1.5fr 60px 60px auto;gap:.4rem;margin-bottom:.3rem;font-size:.72rem;color:var(--muted);padding:0 .1rem">
+        <span>Camada C4D</span><span>Legenda</span><span style="text-align:center">Offset X</span><span style="text-align:center">Offset Y</span><span></span>
       </div>
       <div id="spot-rows"></div>
       <button class="add-row-btn" onclick="addSpotRow()">+ Adicionar spot manualmente</button>
@@ -1294,9 +1297,11 @@ function startThree(){
       if(hasRealCoords)meshGroup.localToWorld(wp); // só converte se tem coords reais
       const p=wp.clone().project(camera);
       const sx=(p.x*.5+.5)*W2,sy=(-.5*p.y+.5)*H2;
-      btn.style.left=(sx-13)+'px';btn.style.top=(sy-13)+'px';
+      const ox=spot&&spot.ox!=null?spot.ox:0;
+      const oy=spot&&spot.oy!=null?spot.oy:0;
+      btn.style.left=(sx-13+ox)+'px';btn.style.top=(sy-13+oy)+'px';
       // popup aparece SOBRE o modelo, não na lateral
-      const popX=sx+18,popY=Math.max(10,sy-60);
+      const popX=sx+18+ox,popY=Math.max(10,sy-60+oy);
       pop.style.left=Math.min(popX,W2-200)+'px';pop.style.top=popY+'px';
       const behindCam=p.z>1;
       let occluded=false;
@@ -1882,8 +1887,11 @@ async function saveSub(){
   const name=document.getElementById('s-name').value.trim();if(!name){alert('Preencha o nome');return;}
   const spots=[];
   document.querySelectorAll('#spot-rows .spot-row').forEach(row=>{
-    const n=row.querySelector('.sn').value.trim(),d=row.querySelector('.sd').value.trim();
-    if(n)spots.push({name:n,desc:d||'',x:0,y:0,z:0});
+    const n=row.querySelector('.sn').value.trim();
+    const d=row.querySelector('.sd').value.trim();
+    const ox=parseInt(row.querySelector('.sox')?.value||0)||0;
+    const oy=parseInt(row.querySelector('.soy')?.value||0)||0;
+    if(n)spots.push({name:n,desc:d||'',x:0,y:0,z:0,ox,oy});
   });
   const modId=document.getElementById('sub-modal').dataset.modId;
   const hasComp=document.getElementById('s-has-comparison').checked;
@@ -1922,9 +1930,11 @@ function pickE(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(
 function buildSpotRows(s){const c=document.getElementById('spot-rows');c.innerHTML='';s.forEach(x=>addSpotRow(x));}
 function addSpotRow(s){
   const c=document.getElementById('spot-rows'),r=document.createElement('div');r.className='spot-row';
-  r.style.gridTemplateColumns='1fr 1.5fr auto';
+  r.style.gridTemplateColumns='1fr 1.5fr 60px 60px auto';
   r.innerHTML=`<input type="text" class="sn" placeholder="Nome da camada C4D (ex: Sphere)" value="${s?s.name:''}">
     <input type="text" class="sd" placeholder="Legenda explicativa" value="${s?s.desc:''}">
+    <input type="number" class="sox" placeholder="X" value="${s&&s.ox!=null?s.ox:0}" title="Offset horizontal (px)" style="text-align:center">
+    <input type="number" class="soy" placeholder="Y" value="${s&&s.oy!=null?s.oy:0}" title="Offset vertical (px)" style="text-align:center">
     <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
   c.appendChild(r);
 }
