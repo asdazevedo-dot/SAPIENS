@@ -1,6 +1,4 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const { createClient } = require('@supabase/supabase-js');
-const ws = require('ws');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -9,7 +7,7 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).end();
 
-  const { priceId, userId, userEmail, plan } = req.body;
+  const { priceId, userId, userEmail, plan, cpf, name, phone } = req.body;
   if (!priceId || !userId) return res.status(400).json({ error: 'Dados incompletos' });
 
   try {
@@ -19,8 +17,8 @@ module.exports = async (req, res) => {
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: userEmail,
       success_url: `${process.env.SITE_URL}/?pago=1&sid={CHECKOUT_SESSION_ID}&uid=${userId}&pl=${plan}`,
-      cancel_url: `${process.env.SITE_URL}/cancel`,
-      metadata: { userId, plan },
+      cancel_url: `${process.env.SITE_URL}/`,
+      metadata: { userId, plan, cpf: cpf||'', name: name||'', phone: phone||'' },
       locale: 'pt-BR',
     });
     return res.status(200).json({ url: session.url });

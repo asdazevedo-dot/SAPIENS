@@ -24,6 +24,12 @@ module.exports = async (req, res) => {
         { realtime: { transport: ws } }
       );
 
+      // pegar dados do metadata
+      const cpf = session.metadata?.cpf || '';
+      const name = session.metadata?.name || '';
+      const phone = session.metadata?.phone || '';
+      const planFinal = plan || session.metadata?.plan || 'mensal';
+
       // verificar se perfil existe
       const { data: existing } = await supabase
         .from('profiles')
@@ -31,25 +37,31 @@ module.exports = async (req, res) => {
         .eq('id', user_id);
 
       if (!existing || existing.length === 0) {
-        // perfil não existe ainda — criar agora
+        // criar perfil com CPF
         await supabase.from('profiles').insert({
           id: user_id,
-          plan: plan || 'mensal',
+          name,
+          full_name: name,
+          plan: planFinal,
           active: true,
+          cpf,
+          phone,
           stripe_customer_id: session.customer,
           stripe_subscription_id: session.subscription
         });
       } else {
-        // perfil existe — atualizar
+        // atualizar perfil com plano e CPF
         await supabase.from('profiles').update({
-          plan: plan || 'mensal',
+          plan: planFinal,
           active: true,
+          cpf: cpf||undefined,
+          name: name||undefined,
           stripe_customer_id: session.customer,
           stripe_subscription_id: session.subscription
         }).eq('id', user_id);
       }
 
-      return res.status(200).json({ ok: true, plan });
+      return res.status(200).json({ ok: true, plan: planFinal });
     }
 
     return res.status(400).json({

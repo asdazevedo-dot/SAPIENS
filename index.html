@@ -819,7 +819,7 @@ async function doRegister(){
       const r=await fetch('/api/checkout',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({priceId:plan.priceId,userId:loginTry.user.id,userEmail:email,plan:planKey})
+        body:JSON.stringify({priceId:plan.priceId,userId:loginTry.user.id,userEmail:email,plan:planKey,cpf:cpfVal,name,phone:document.getElementById('reg-phone').value.trim()})
       });
       const data=await r.json();
       if(data.url){window.location.href=data.url;return;}
@@ -851,7 +851,7 @@ async function doRegister(){
       const r=await fetch('/api/checkout',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({priceId:plan.priceId,userId:userId,userEmail:email,plan:planKey})
+        body:JSON.stringify({priceId:plan.priceId,userId:userId,userEmail:email,plan:planKey,cpf:cpfVal,name,phone:document.getElementById('reg-phone').value.trim()})
       });
       const data=await r.json();
       if(data.url){
@@ -868,7 +868,7 @@ async function doRegister(){
         const r=await fetch('/api/checkout',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({priceId:plan.priceId,userId:login.user.id,userEmail:email,plan:planKey})
+          body:JSON.stringify({priceId:plan.priceId,userId:login.user.id,userEmail:email,plan:planKey,cpf:cpfVal,name,phone:document.getElementById('reg-phone').value.trim()})
         });
         const data=await r.json();
         if(data.url){window.location.href=data.url;return;}
