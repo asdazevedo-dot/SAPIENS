@@ -794,6 +794,18 @@ async function doRegister(){
   const cpfVal=document.getElementById('reg-cpf').value.replace(/\D/g,'');
   if(cpfVal&&!validarCPF(cpfVal)){showEl(err,'CPF inválido. Verifique o número digitado.');return;}
   btn.innerHTML='<span class="spinner"></span>Verificando...';btn.disabled=true;
+  // verificar CPF duplicado
+  const cpfCheck=document.getElementById('reg-cpf').value.replace(/\D/g,'');
+  if(cpfCheck){
+    try{
+      const existing=await apiSb('profiles?cpf=eq.'+cpfCheck+'&select=id');
+      if(existing&&existing.length>0){
+        showEl(err,'Este CPF já está cadastrado. Se já tem conta, faça login.');
+        btn.innerHTML='Criar conta e ir para pagamento';btn.disabled=false;
+        return;
+      }
+    }catch(e){console.error('CPF check error:',e);}
+  }
   // tentar fazer login primeiro — se já tem conta vai para pagamento
   try{
     const loginTry=await authApi('token?grant_type=password',{email,password:pass});
