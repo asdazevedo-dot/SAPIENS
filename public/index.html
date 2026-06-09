@@ -1985,8 +1985,15 @@ if(_urlp.get('pago')==='1'){
   (async()=>{
     if(_uid&&_sid){
       try{
-        await fetch('/api/verify-payment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:_sid,user_id:_uid,plan:_pl||'mensal'})});
-        document.getElementById('pmsg').textContent='✅ Acesso ativado! Clique para entrar na plataforma.';
+        const r=await fetch('/api/verify-payment',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:_sid,user_id:_uid,plan:_pl||'mensal'})});
+        const d=await r.json();
+        if(d.code==='CPF_DUPLICATE'){
+          document.getElementById('pmsg').textContent='⚠️ Este CPF já está cadastrado em outra conta. Entre em contato com o suporte.';
+        } else if(d.ok){
+          document.getElementById('pmsg').textContent='✅ Acesso ativado! Clique para entrar na plataforma.';
+        } else {
+          document.getElementById('pmsg').textContent='Pagamento recebido! Faça login para acessar.';
+        }
       }catch(e){
         document.getElementById('pmsg').textContent='Pagamento recebido! Faça login para acessar.';
       }

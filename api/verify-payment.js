@@ -24,11 +24,26 @@ module.exports = async (req, res) => {
         { realtime: { transport: ws } }
       );
 
-      // pegar dados do metadata
       const cpf = session.metadata?.cpf || '';
       const name = session.metadata?.name || '';
       const phone = session.metadata?.phone || '';
       const planFinal = plan || session.metadata?.plan || 'mensal';
+
+      // verificar CPF duplicado (outro usuário com mesmo CPF)
+      if (cpf) {
+        const { data: cpfCheck } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('cpf', cpf)
+          .neq('id', user_id);
+        
+        if (cpfCheck && cpfCheck.length > 0) {
+          return res.status(400).json({ 
+            error: 'CPF já cadastrado', 
+            code: 'CPF_DUPLICATE'
+          });
+        }
+      }
 
       // verificar se perfil existe
       const { data: existing } = await supabase
@@ -37,7 +52,6 @@ module.exports = async (req, res) => {
         .eq('id', user_id);
 
       if (!existing || existing.length === 0) {
-        // criar perfil com CPF
         await supabase.from('profiles').insert({
           id: user_id,
           name,
@@ -50,12 +64,11 @@ module.exports = async (req, res) => {
           stripe_subscription_id: session.subscription
         });
       } else {
-        // atualizar perfil com plano e CPF
         await supabase.from('profiles').update({
           plan: planFinal,
           active: true,
-          cpf: cpf||undefined,
-          name: name||undefined,
+          cpf: cpf || undefined,
+          name: name || undefined,
           stripe_customer_id: session.customer,
           stripe_subscription_id: session.subscription
         }).eq('id', user_id);
