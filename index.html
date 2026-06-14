@@ -1199,6 +1199,15 @@ function startThree(){
       model.position.sub(center);
       model.scale.setScalar(2.5/Math.max(size.x,size.y,size.z));
       meshGroup.add(model);
+      // ativar animações embutidas no GLB, se existirem
+      if(gltf.animations&&gltf.animations.length>0){
+        animMixer=new THREE.AnimationMixer(model);
+        gltf.animations.forEach(clip=>{
+          const action=animMixer.clipAction(clip);
+          action.setLoop(THREE.LoopRepeat);
+          action.play();
+        });
+      }
       // aguardar um frame para o modelo ser escalado antes de construir o cache
       requestAnimationFrame(()=>{
         requestAnimationFrame(()=>{
@@ -1300,6 +1309,7 @@ function startThree(){
 
   function loop(){
     animId=requestAnimationFrame(loop);
+    if(animMixer)animMixer.update(animClock.getDelta());
     renderer.render(scene,camera);
     const W2=col.clientWidth,H2=col.clientHeight;
     spotEls.forEach(({btn,pop,v,spot})=>{
@@ -1583,6 +1593,8 @@ function initCompareViewer(sub, idx){
   const l=new THREE.DirectionalLight(0xffffff,1.5);l.position.set(5,5,5);scene.add(l);
   
   const meshGroup=new THREE.Group();scene.add(meshGroup);
+  let animMixer=null;
+  const animClock=new THREE.Clock();
   if(!window._compareMeshes)window._compareMeshes=[];
   window._compareMeshes[idx]={group:meshGroup,spots:sub.spots||[],originalMats:new Map()};
   
