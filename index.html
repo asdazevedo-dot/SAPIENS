@@ -610,6 +610,7 @@ let curModId=null,curModName='',curSub=null;
 let curSubId=null,curSubName='',curSubDesc='',curSubHasComparison=false,curCompareGroup=null;
 let currentUser=null,currentProfile=null,isAdmin=false;
 let renderer=null,scene,camera,meshGroup,animId=null;
+let animMixer=null,animClock=null;
 let isDrag=false,prevX=0,prevY=0,pinchDist=null,spotEls=[],pickMode=false;
 
 // ===== AUTH =====
@@ -1175,6 +1176,8 @@ function startThree(){
   const l2=new THREE.DirectionalLight(0xffffff,0.8);l2.position.set(-5,3,-5);scene.add(l2);
   const l3=new THREE.DirectionalLight(0xffffff,0.5);l3.position.set(0,-5,0);scene.add(l3);
   meshGroup=new THREE.Group();scene.add(meshGroup);
+  animMixer=null;
+  animClock=new THREE.Clock();
   const glbFile=curSub?curSub.glb||'':'';
   if(glbFile){
     const loader=new THREE.GLTFLoader();
@@ -1593,8 +1596,6 @@ function initCompareViewer(sub, idx){
   const l=new THREE.DirectionalLight(0xffffff,1.5);l.position.set(5,5,5);scene.add(l);
   
   const meshGroup=new THREE.Group();scene.add(meshGroup);
-  let animMixer=null;
-  const animClock=new THREE.Clock();
   if(!window._compareMeshes)window._compareMeshes=[];
   window._compareMeshes[idx]={group:meshGroup,spots:sub.spots||[],originalMats:new Map()};
   
