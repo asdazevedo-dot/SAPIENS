@@ -77,7 +77,12 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .canvas-hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(255,255,255,.4);background:rgba(0,0,0,.5);padding:.25rem .7rem;border-radius:20px;white-space:nowrap;pointer-events:none;z-index:5}
 .spot-btn{position:absolute;width:26px;height:26px;background:var(--accent);border-radius:50%;border:2.5px solid var(--dark);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--dark);z-index:10;transition:transform .15s}
 .spot-btn:hover{transform:scale(1.25)}
-.spot-popup{position:absolute;background:rgba(6,15,30,.97);border:1px solid var(--accent);border-radius:10px;padding:.6rem .9rem;font-size:.78rem;max-width:180px;z-index:20;line-height:1.45;pointer-events:none;opacity:0;transition:opacity .2s}
+.spot-popup{position:absolute;background:rgba(6,15,30,.97);border:1px solid var(--accent);border-radius:12px;padding:.7rem .9rem;font-size:.78rem;width:220px;max-height:180px;z-index:20;line-height:1.5;pointer-events:none;opacity:0;transition:opacity .2s;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.spot-popup.show{pointer-events:all}
+.spot-popup-name{font-weight:600;color:var(--accent);margin-bottom:.3rem;display:flex;align-items:center;justify-content:space-between}
+.spot-popup-toggle{background:none;border:none;color:var(--accent);cursor:pointer;font-size:.9rem;padding:0;line-height:1}
+.spot-popup-desc{font-size:.75rem;color:#a0bfb0;line-height:1.5;max-height:100px;overflow-y:auto;margin-top:.3rem;display:none}
+.spot-popup-desc.open{display:block}
 .spot-popup.show{opacity:1}
 .spot-popup h4{font-size:.8rem;color:var(--accent);margin-bottom:.2rem}
 .side-panel{background:var(--card);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
@@ -85,7 +90,12 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .side-title{font-size:1.1rem;margin-bottom:.4rem}
 .side-desc{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1.2rem}
 .structs-label{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem}
-.struct-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .5rem;border-radius:7px;cursor:pointer;font-size:.83rem;transition:background .2s}
+.struct-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .5rem;border-radius:7px;cursor:pointer;font-size:.82rem;transition:background .15s;flex-wrap:wrap}
+.struct-item-name{flex:1;font-weight:500}
+.struct-item-toggle{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:0 .2rem;transition:transform .2s;line-height:1}
+.struct-item-toggle.open{transform:rotate(90deg)}
+.struct-item-desc{width:100%;font-size:.75rem;color:var(--muted);line-height:1.5;padding:.3rem .5rem;background:rgba(0,229,160,.05);border-radius:5px;margin-top:.2rem;display:none;max-height:120px;overflow-y:auto}
+.struct-item-desc.open{display:block}
 .struct-item:hover{background:rgba(255,255,255,.04)}
 .struct-item.active{background:rgba(0,229,160,.1);color:var(--accent)}
 .struct-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
@@ -475,7 +485,11 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <h3 id="sub-modal-title">Novo subtema</h3>
     <div class="fgroup"><label>Nome</label><input type="text" id="s-name" placeholder="Ex: Membrana Plasmática"></div>
     <div class="fgroup"><label>Descrição</label><input type="text" id="s-desc" placeholder="Breve descrição"></div>
-    <div class="fgroup"><label>Link do vídeo (YouTube ou Vimeo)</label><input type="text" id="s-video" placeholder="https://youtube.com/watch?v=..."></div>
+    <div class="fgroup">
+      <label>Vídeos <span style="color:var(--muted);font-size:.75rem">(adicione quantos quiser)</span></label>
+      <div id="video-rows"></div>
+      <button class="add-row-btn" onclick="addVideoRow()">+ Adicionar vídeo</button>
+    </div>
     <div class="fgroup"><label>Arquivo 3D (.glb)</label><input type="text" id="s-glb" placeholder="alveolos.glb"></div>
     <div class="spots-box">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
@@ -1084,11 +1098,27 @@ function renderStructs(spots){
   const l=document.getElementById('struct-list');
   if(!spots||!spots.length){l.innerHTML='<p style="font-size:.8rem;color:var(--muted)">Nenhum spot cadastrado.</p>';return;}
   l.innerHTML=spots.map((s,i)=>`
-    <div class="struct-item" id="sti-${i}" onclick="focusSpot(${i})">
-      <div class="struct-dot"></div>
-      <span style="font-weight:500;margin-right:.3rem">${i+1}.</span>
-      <span style="flex:1">${s.name}</span>
+    <div class="struct-item" id="sti-${i}">
+      <div class="struct-dot" onclick="focusSpot(${i})"></div>
+      <span style="font-weight:500;color:var(--accent);min-width:18px">${i+1}.</span>
+      <span class="struct-item-name" onclick="focusSpot(${i})">${s.name}</span>
+      ${s.desc?`<button class="struct-item-toggle" id="sit-${i}" onclick="toggleStructDesc(${i})" title="Ver legenda">›</button>`:''}
+      ${s.desc?`<div class="struct-item-desc" id="sid-${i}">${s.desc}</div>`:''}
     </div>`).join('');
+}
+
+function toggleStructDesc(i){
+  const btn=document.getElementById('sit-'+i);
+  const desc=document.getElementById('sid-'+i);
+  if(!btn||!desc)return;
+  const isOpen=desc.classList.contains('open');
+  // fechar todos
+  document.querySelectorAll('.struct-item-desc').forEach(d=>d.classList.remove('open'));
+  document.querySelectorAll('.struct-item-toggle').forEach(b=>b.classList.remove('open'));
+  if(!isOpen){
+    desc.classList.add('open');
+    btn.classList.add('open');
+  }
 }
 
 async function verDetalhes(spotIdx){
@@ -1119,21 +1149,77 @@ async function verDetalhes(spotIdx){
     }
   }catch(e){console.error(e);}
 }
+function switchVideo(i){
+  const videos=window._videos||[];
+  if(!videos[i])return;
+  document.querySelectorAll('[id^="vtab-"]').forEach((b,j)=>{
+    b.classList.toggle('btn-primary',j===i);
+    b.classList.toggle('btn-ghost',j!==i);
+  });
+  const frame=document.getElementById('video-frame');
+  if(!frame)return;
+  const vid=videos[i].url.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/');
+  frame.innerHTML=`<iframe src="${vid}" allowfullscreen style="width:100%;aspect-ratio:16/9;border-radius:8px;border:none"></iframe>`;
+}
+
+function toggleSpotDesc(i){
+  const desc=document.getElementById('spd-'+i);
+  if(!desc)return;
+  const isOpen=desc.classList.contains('open');
+  document.querySelectorAll('.spot-popup-desc').forEach(d=>d.classList.remove('open'));
+  if(!isOpen)desc.classList.add('open');
+}
+
 function focusSpot(i){
   document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
   const el=document.getElementById('sti-'+i);if(el){el.classList.add('active');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
   document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
   const sp=document.getElementById('spp-'+i);if(sp)sp.classList.add('show');
 }
-function setupVideo(url){
+function setupVideo(url, videos){
   const box=document.getElementById('video-box');
-  box.dataset.url=url||'';
-  if(url){
-    box.innerHTML=`<div class="video-placeholder" onclick="loadVideo()"><div class="play-circle">▶</div><div class="video-label-text"><strong>▶ Clique aqui e assista a videoaula</strong><span>Explicação completa sobre este tema</span></div></div>`;
-  }else{
+  // normalizar lista de vídeos
+  const vids=Array.isArray(videos)&&videos.length?videos:(url?[{title:'',url}]:[]);
+  window._videos=vids;
+  if(vids.length===0){
     box.innerHTML=`<div style="padding:.8rem 1rem;font-size:.8rem;color:var(--muted);border:1px dashed var(--border);border-radius:10px;text-align:center">Sem vídeo neste subtema</div>`;
+  }else if(vids.length===1){
+    box.dataset.url=vids[0].url||'';
+    box.innerHTML=`<div class="video-placeholder" onclick="loadVideo()"><div class="play-circle">▶</div><div class="video-label-text"><strong>▶ Clique aqui e assista a videoaula</strong><span>${vids[0].title||'Explicação completa sobre este tema'}</span></div></div>`;
+  }else{
+    // múltiplos vídeos - mostrar botões de seleção
+    box.innerHTML=`
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.6rem">
+        ${vids.map((v,i)=>`<button onclick="selectVideo(${i})" id="vtab-${i}" class="btn btn-sm ${i===0?'btn-primary':'btn-ghost'}" style="font-size:.72rem">${v.title||'Vídeo '+(i+1)}</button>`).join('')}
+      </div>
+      <div id="video-frame-box"></div>`;
+    selectVideo(0);
   }
 }
+
+function selectVideo(i){
+  const vids=window._videos||[];
+  if(!vids[i])return;
+  document.querySelectorAll('[id^="vtab-"]').forEach((b,j)=>{
+    b.className='btn btn-sm '+(j===i?'btn-primary':'btn-ghost');
+    b.style.fontSize='.72rem';
+  });
+  const frame=document.getElementById('video-frame-box');
+  if(frame){
+    frame.innerHTML=`<div class="video-placeholder" onclick="loadSelectedVideo(${i})"><div class="play-circle">▶</div><div class="video-label-text"><strong>▶ ${vids[i].title||'Assistir vídeo'}</strong></div></div>`;
+  }
+  window._selectedVideoIdx=i;
+}
+
+function loadSelectedVideo(i){
+  const vids=window._videos||[];
+  if(!vids[i])return;
+  const url=vids[i].url.replace('watch?v=','embed/').replace('youtu.be/','www.youtube.com/embed/');
+  const frame=document.getElementById('video-frame-box');
+  if(frame)frame.innerHTML=`<iframe src="${url}?autoplay=1" allowfullscreen allow="autoplay" style="width:100%;aspect-ratio:16/9;border-radius:8px;border:none"></iframe>`;
+}
+
+
 function loadVideo(){
   const url=document.getElementById('video-box').dataset.url;if(!url)return;
   const box=document.getElementById('video-box');
@@ -1178,6 +1264,12 @@ function startThree(){
   meshGroup=new THREE.Group();scene.add(meshGroup);
   animMixer=null;
   animClock=new THREE.Clock();
+  // mostrar loading
+  const loadingEl=document.createElement('div');
+  loadingEl.id='model-loading';
+  loadingEl.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,15,30,.85);z-index:10;border-radius:10px;flex-direction:column;gap:.8rem';
+  loadingEl.innerHTML='<div class="spinner" style="width:32px;height:32px;border-width:3px"></div><span style="font-size:.8rem;color:var(--muted)">Carregando modelo 3D...</span>';
+  col.appendChild(loadingEl);
   const glbFile=curSub?curSub.glb||'':'';
   if(glbFile){
     const loader=new THREE.GLTFLoader();
@@ -1211,6 +1303,9 @@ function startThree(){
           action.play();
         });
       }
+      // remover loading
+      const le=document.getElementById('model-loading');
+      if(le)le.remove();
       // aguardar um frame para o modelo ser escalado antes de construir o cache
       requestAnimationFrame(()=>{
         requestAnimationFrame(()=>{
@@ -1223,7 +1318,12 @@ function startThree(){
   spots.forEach((s,i)=>{
     const btn=document.createElement('div');btn.className='spot-btn';btn.id='spb-'+i;btn.textContent=i+1;
     const pop=document.createElement('div');pop.className='spot-popup';pop.id='spp-'+i;
-    pop.innerHTML=`<h4>${s.name}</h4><p>${s.desc||''}</p>`;
+    pop.innerHTML=`
+      <div class="spot-popup-name">
+        <span>${s.name}</span>
+        ${s.desc?`<button class="spot-popup-toggle" onclick="toggleSpotDesc(${i})" title="Ver legenda">›</button>`:''}
+      </div>
+      ${s.desc?`<div class="spot-popup-desc" id="spd-${i}">${s.desc}</div>`:''}`;
     // posicionar popup sobre o canvas, não na lateral
     pop.style.position='absolute';pop.style.zIndex='20';
     btn.addEventListener('click',e=>{
@@ -1892,15 +1992,17 @@ async function saveMod(){
 async function delMod(id){if(!confirm('Excluir módulo e subtemas?'))return;try{await apiSb('submodules?module_id=eq.'+id,'DELETE',null,getToken());await apiSb('modules?id=eq.'+id,'DELETE',null,getToken());loadAdmin();}catch(e){alert('Erro: '+e.message);}}
 
 // SUBTEMA CRUD
-function openNewSub(modId,modName){editSubId=null;document.getElementById('sub-modal-title').textContent='Novo subtema — '+modName;document.getElementById('s-name').value='';document.getElementById('s-desc').value='';document.getElementById('s-video').value='';document.getElementById('s-glb').value='';document.getElementById('sub-modal').dataset.modId=modId;buildSpotRows([]);document.getElementById('sub-modal').classList.add('open');}
+function openNewSub(modId,modName){editSubId=null;document.getElementById('sub-modal-title').textContent='Novo subtema — '+modName;document.getElementById('s-name').value='';document.getElementById('s-desc').value='';document.getElementById('s-glb').value='';buildVideoRows([]);document.getElementById('sub-modal').dataset.modId=modId;buildSpotRows([]);document.getElementById('sub-modal').classList.add('open');}
 function editSub(s){
   if(typeof s==='string')s=JSON.parse(s);
   editSubId=s.id;
   document.getElementById('sub-modal-title').textContent='Editar subtema';
   document.getElementById('s-name').value=s.name||'';
   document.getElementById('s-desc').value=s.desc||'';
-  document.getElementById('s-video').value=s.video||'';
   document.getElementById('s-glb').value=s.glb||'';
+  // carregar vídeos
+  const videos=Array.isArray(s.videos)?s.videos:(s.video?[{title:'',url:s.video}]:[]);
+  buildVideoRows(videos);
   document.getElementById('sub-modal').dataset.modId=s.module_id;
   buildSpotRows(s.spots||[]);
   // comparação
@@ -1928,7 +2030,13 @@ async function saveSub(){
   const modId=document.getElementById('sub-modal').dataset.modId;
   const hasComp=document.getElementById('s-has-comparison').checked;
   const compGroup=document.getElementById('s-comparison-group').value.trim();
-  const data={name,desc:document.getElementById('s-desc').value,video:document.getElementById('s-video').value,glb:document.getElementById('s-glb').value,spots,module_id:modId,has_comparison:hasComp,comparison_group:hasComp?compGroup:null};
+  const videos=[];
+  document.querySelectorAll('#video-rows .spot-row').forEach(row=>{
+    const t=row.querySelector('.vt')?.value.trim()||'';
+    const u=row.querySelector('.vu')?.value.trim()||'';
+    if(u)videos.push({title:t,url:u});
+  });
+  const data={name,desc:document.getElementById('s-desc').value,video:videos[0]?.url||'',videos,glb:document.getElementById('s-glb').value,spots,module_id:modId,has_comparison:hasComp,comparison_group:hasComp?compGroup:null};
   const btn=document.getElementById('sub-btn');btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
   try{if(editSubId)await apiSb('submodules?id=eq.'+editSubId,'PATCH',data,getToken());else await apiSb('submodules','POST',data,getToken());closeSub();showOk('✅ Subtema salvo!');loadAdmin();}
   catch(e){showErr('❌ '+e.message);}
@@ -1960,6 +2068,22 @@ function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;');}
 function buildEmoji(){const p=document.getElementById('emoji-picker');p.innerHTML='';EMOJIS.forEach(e=>{p.innerHTML+=`<span class="emoji-opt${e===selEmoji?' sel':''}" onclick="pickE('${e}',this)">${e}</span>`;});}
 function pickE(e,el){selEmoji=e;document.querySelectorAll('.emoji-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');}
 function buildSpotRows(s){const c=document.getElementById('spot-rows');c.innerHTML='';s.forEach(x=>addSpotRow(x));}
+
+function buildVideoRows(videos){
+  const c=document.getElementById('video-rows');c.innerHTML='';
+  if(!videos||!videos.length){addVideoRow();return;}
+  videos.forEach(v=>addVideoRow(v));
+}
+
+function addVideoRow(v){
+  const c=document.getElementById('video-rows'),r=document.createElement('div');
+  r.className='spot-row';
+  r.style.gridTemplateColumns='1fr 2fr auto';
+  r.innerHTML=`<input type="text" class="vt" placeholder="Título (ex: Transporte de Membrana)" value="${v&&v.title?v.title:''}">
+    <input type="text" class="vu" placeholder="URL do YouTube/Vimeo" value="${v&&v.url?v.url:''}">
+    <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
+  c.appendChild(r);
+}
 function addSpotRow(s){
   const c=document.getElementById('spot-rows'),r=document.createElement('div');r.className='spot-row';
   const hasCoords=s&&(Math.abs(s.x||0)>0.001||Math.abs(s.y||0)>0.001||Math.abs(s.z||0)>0.001);
