@@ -81,7 +81,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .spot-popup.show{pointer-events:all}
 .spot-popup-name{font-weight:600;color:var(--accent);margin-bottom:.3rem;display:flex;align-items:center;justify-content:space-between}
 .spot-popup-toggle{background:none;border:none;color:var(--accent);cursor:pointer;font-size:.9rem;padding:0;line-height:1}
-.spot-popup-desc{font-size:.75rem;color:#a0bfb0;line-height:1.5;max-height:100px;overflow-y:auto;margin-top:.3rem;display:none}
+.spot-popup-desc{font-size:.75rem;color:#a0bfb0;line-height:1.5;max-height:100px;overflow-y:auto;overflow-x:hidden;margin-top:.3rem;display:none;word-break:break-word;white-space:pre-wrap}
 .spot-popup-desc.open{display:block}
 .spot-popup.show{opacity:1}
 .spot-popup h4{font-size:.8rem;color:var(--accent);margin-bottom:.2rem}
@@ -94,7 +94,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
 .struct-item-name{flex:1;font-weight:500}
 .struct-item-toggle{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.8rem;padding:0 .2rem;transition:transform .2s;line-height:1}
 .struct-item-toggle.open{transform:rotate(90deg)}
-.struct-item-desc{width:100%;font-size:.75rem;color:var(--muted);line-height:1.5;padding:.3rem .5rem;background:rgba(0,229,160,.05);border-radius:5px;margin-top:.2rem;display:none;max-height:120px;overflow-y:auto}
+.struct-item-desc{width:100%;font-size:.75rem;color:var(--muted);line-height:1.5;padding:.3rem .5rem;background:rgba(0,229,160,.05);border-radius:5px;margin-top:.2rem;display:none;max-height:120px;overflow-y:auto;overflow-x:hidden;word-break:break-word;white-space:pre-wrap}
 .struct-item-desc.open{display:block}
 .struct-item:hover{background:rgba(255,255,255,.04)}
 .struct-item.active{background:rgba(0,229,160,.1);color:var(--accent)}
@@ -366,6 +366,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <div class="logo">🔬 BioVerse</div>
     <div class="nav-btns">
       <button class="btn btn-ghost btn-sm" id="compare-back-btn">← Voltar</button>
+      <button class="btn btn-ghost btn-sm" onclick="go('modules')" style="margin-left:.3rem">🏠 Início</button>
     </div>
   </nav>
   <div style="padding:1.5rem 2rem;max-width:1200px;margin:0 auto">
@@ -384,6 +385,7 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
       <span id="viewer-bc" style="font-size:.78rem;color:var(--muted)"></span>
       <button class="btn btn-ghost btn-sm" id="compare-viewer-btn" style="display:none;margin-left:.5rem" onclick="goCompare()">🔬 Comparar</button>
       <button class="btn btn-ghost btn-sm" id="back-btn" style="margin-left:.5rem">← Voltar</button>
+      <button class="btn btn-ghost btn-sm" onclick="go('modules')" style="margin-left:.3rem">🏠 Início</button>
     </div>
   </nav>
   <div class="viewer-container">
@@ -535,10 +537,32 @@ nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2
     <h3 id="subsub-modal-title">Nova estrutura</h3>
     <div class="fgroup"><label>Nome</label><input type="text" id="ss-name" placeholder="Ex: Mitocôndria"></div>
     <div class="fgroup"><label>Descrição</label><input type="text" id="ss-desc" placeholder="Breve descrição"></div>
-    <div class="fgroup"><label>Link do vídeo</label><input type="text" id="ss-video" placeholder="https://youtube.com/..."></div>
-    <div class="fgroup"><label>Arquivo 3D (.glb)</label><input type="text" id="ss-glb" placeholder="mitocondria.glb"></div>
+    <div class="fgroup">
+      <label>Vídeos <span style="color:var(--muted);font-size:.75rem">(adicione quantos quiser)</span></label>
+      <div id="ss-video-rows"></div>
+      <button class="add-row-btn" onclick="addSSVideoRow()">+ Adicionar vídeo</button>
+    </div>
+    <div class="fgroup">
+      <label>Arquivo 3D (.glb)</label>
+      <input type="text" id="ss-glb" placeholder="https://pub-...r2.dev/arquivo.glb" oninput="updateSSViewer()">
+    </div>
     <div class="spots-box">
-      <h4 style="margin-bottom:.6rem">Spots</h4>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.7rem">
+        <h4 style="margin:0">Spots — pontos clicáveis</h4>
+        <button class="pick-spot-btn" id="ss-pick-btn" onclick="toggleSSPickMode()">🎯 Clicar no modelo</button>
+      </div>
+      <div style="background:rgba(0,229,160,.06);border:1px solid rgba(0,229,160,.2);border-radius:8px;padding:.6rem .9rem;margin-bottom:.8rem;font-size:.78rem;color:var(--muted);line-height:1.6">
+        💡 Use <strong style="color:var(--accent)">🎯 Clicar no modelo</strong> para posicionar spots, ou adicione pelo nome da camada C4D. Use <strong>Offset X/Y</strong> para ajuste fino.
+      </div>
+      <div id="ss-admin-viewer-wrap" style="display:none;margin-bottom:.8rem">
+        <div id="ss-admin-col" style="position:relative;background:#060f1e;height:220px;border-radius:10px;cursor:crosshair;overflow:hidden">
+          <canvas id="ss-admin-canvas" style="width:100%;height:100%;display:block"></canvas>
+          <div style="position:absolute;bottom:.4rem;left:50%;transform:translateX(-50%);font-size:.7rem;color:rgba(0,229,160,.7)">Clique no modelo para adicionar um spot</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1.5fr 60px 60px auto;gap:.4rem;margin-bottom:.3rem;font-size:.72rem;color:var(--muted);padding:0 .1rem">
+        <span>Camada C4D</span><span>Legenda</span><span style="text-align:center">Offset X</span><span style="text-align:center">Offset Y</span><span></span>
+      </div>
       <div id="ss-spot-rows"></div>
       <button class="add-row-btn" onclick="addSSSpotRow()">+ Adicionar spot</button>
     </div>
@@ -1267,7 +1291,7 @@ function startThree(){
   // mostrar loading
   const loadingEl=document.createElement('div');
   loadingEl.id='model-loading';
-  loadingEl.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,15,30,.85);z-index:10;border-radius:10px;flex-direction:column;gap:.8rem';
+  loadingEl.style.cssText='position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:rgba(6,15,30,.92);z-index:100;flex-direction:column;gap:.8rem';
   loadingEl.innerHTML='<div class="spinner" style="width:32px;height:32px;border-width:3px"></div><span style="font-size:.8rem;color:var(--muted)">Carregando modelo 3D...</span>';
   col.appendChild(loadingEl);
   const glbFile=curSub?curSub.glb||'':'';
@@ -1870,9 +1894,12 @@ function openNewSubSub(subId,subName){
   document.getElementById('subsub-modal-title').textContent='Nova estrutura — '+subName;
   document.getElementById('ss-name').value='';
   document.getElementById('ss-desc').value='';
-  document.getElementById('ss-video').value='';
   document.getElementById('ss-glb').value='';
+  buildSSVideoRows([]);
   document.getElementById('ss-spot-rows').innerHTML='';
+  ssAdminPickMode=false;
+  document.getElementById('ss-admin-viewer-wrap').style.display='none';
+  document.getElementById('ss-pick-btn').textContent='🎯 Clicar no modelo';
   document.getElementById('subsub-modal').classList.add('open');
 }
 
@@ -1882,8 +1909,10 @@ function editSubSub(s){
   document.getElementById('subsub-modal-title').textContent='Editar estrutura';
   document.getElementById('ss-name').value=s.name||'';
   document.getElementById('ss-desc').value=s.description||'';
-  document.getElementById('ss-video').value=s.video||'';
   document.getElementById('ss-glb').value=s.glb||'';
+  // vídeos
+  const ssVids=Array.isArray(s.videos)&&s.videos.length?s.videos:(s.video?[{title:'',url:s.video}]:[]);
+  buildSSVideoRows(ssVids);
   // spots
   const rows=document.getElementById('ss-spot-rows');
   rows.innerHTML='';
@@ -1891,15 +1920,120 @@ function editSubSub(s){
   document.getElementById('subsub-modal').classList.add('open');
 }
 
-function closeSubSub(){document.getElementById('subsub-modal').classList.remove('open');}
+function closeSubSub(){
+  document.getElementById('subsub-modal').classList.remove('open');
+  // parar viewer SS se ativo
+  if(window.ssAdminAnimId){cancelAnimationFrame(window.ssAdminAnimId);window.ssAdminAnimId=null;}
+}
+
+function buildSSVideoRows(videos){
+  const c=document.getElementById('ss-video-rows');c.innerHTML='';
+  if(!videos||!videos.length){addSSVideoRow();return;}
+  videos.forEach(v=>addSSVideoRow(v));
+}
+
+function addSSVideoRow(v){
+  const c=document.getElementById('ss-video-rows'),r=document.createElement('div');
+  r.className='spot-row';
+  r.style.gridTemplateColumns='1fr 2fr auto';
+  r.innerHTML=`<input type="text" class="vt" placeholder="Título" value="${v&&v.title?v.title:''}">
+    <input type="text" class="vu" placeholder="URL YouTube/Vimeo" value="${v&&v.url?v.url:''}">
+    <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
+  c.appendChild(r);
+}
+
+let ssAdminPickMode=false;
+function toggleSSPickMode(){
+  const glb=document.getElementById('ss-glb').value.trim();
+  const wrap=document.getElementById('ss-admin-viewer-wrap');
+  const btn=document.getElementById('ss-pick-btn');
+  if(!ssAdminPickMode){
+    if(!glb){alert('Cole o link do arquivo 3D primeiro!');return;}
+    wrap.style.display='block';
+    btn.textContent='✅ Fechar viewer';
+    ssAdminPickMode=true;
+    setTimeout(()=>initSSAdminViewer(glb),100);
+  }else{
+    wrap.style.display='none';
+    btn.textContent='🎯 Clicar no modelo';
+    ssAdminPickMode=false;
+    if(window.ssAdminAnimId){cancelAnimationFrame(window.ssAdminAnimId);window.ssAdminAnimId=null;}
+  }
+}
+
+function updateSSViewer(){
+  if(ssAdminPickMode)toggleSSPickMode();
+}
+
+function initSSAdminViewer(glbUrl){
+  const col=document.getElementById('ss-admin-col');
+  const canvas=document.getElementById('ss-admin-canvas');
+  if(!col||!canvas)return;
+  const W=col.offsetWidth||300,H=220;
+  canvas.width=W;canvas.height=H;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setSize(W,H,false);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(45,W/H,0.1,100);
+  camera.position.set(0,0,4);
+  scene.add(new THREE.AmbientLight(0xffffff,1.2));
+  const dl=new THREE.DirectionalLight(0xffffff,1.5);dl.position.set(5,5,5);scene.add(dl);
+  const mg=new THREE.Group();scene.add(mg);
+  window.ssMeshGroup=mg;
+  const loader=new THREE.GLTFLoader();
+  loader.load(glbUrl,gltf=>{
+    const model=gltf.scene;
+    const box=new THREE.Box3().setFromObject(model);
+    const center=box.getCenter(new THREE.Vector3());
+    const size=box.getSize(new THREE.Vector3());
+    model.position.sub(center);
+    model.scale.setScalar(2.5/Math.max(size.x,size.y,size.z));
+    mg.add(model);
+  },null,()=>{
+    mg.add(new THREE.Mesh(new THREE.SphereGeometry(1,16,16),new THREE.MeshStandardMaterial({color:0x1a3a5c})));
+  });
+  let drag=false,px=0,py=0,theta=0,phi=Math.PI/2,radius=4,isDrag=false;
+  function updateCam(){camera.position.set(radius*Math.sin(phi)*Math.sin(theta),radius*Math.cos(phi),radius*Math.sin(phi)*Math.cos(theta));camera.lookAt(0,0,0);}
+  updateCam();
+  col.onmousedown=e=>{drag=true;isDrag=false;px=e.clientX;py=e.clientY;};
+  document.addEventListener('mousemove',e=>{if(!drag)return;isDrag=true;theta-=(e.clientX-px)*.008;phi=Math.max(.05,Math.min(Math.PI-.05,phi+(e.clientY-py)*.008));px=e.clientX;py=e.clientY;updateCam();});
+  document.addEventListener('mouseup',()=>drag=false);
+  col.onwheel=e=>{radius=Math.max(1,Math.min(10,radius+e.deltaY*.005));updateCam();e.preventDefault();};
+  col.onclick=e=>{
+    if(isDrag)return;
+    const rect=col.getBoundingClientRect();
+    const nx=((e.clientX-rect.left)/rect.width)*2-1;
+    const ny=-((e.clientY-rect.top)/rect.height)*2+1;
+    const ray=new THREE.Raycaster();
+    ray.setFromCamera(new THREE.Vector2(nx,ny),camera);
+    const hits=ray.intersectObject(mg,true);
+    if(hits.length>0){
+      const local=mg.worldToLocal(hits[0].point.clone());
+      const x=+local.x.toFixed(3),y=+local.y.toFixed(3),z=+local.z.toFixed(3);
+      const meshName=hits[0].object.name||'';
+      const nome=prompt('Nome deste spot:'+(meshName?' (camada: '+meshName+')':''),meshName);
+      if(nome){
+        const leg=prompt('Legenda explicativa:','');
+        addSSSpotRow({name:nome,desc:leg||'',x,y,z,ox:0,oy:0});
+      }
+    }
+  };
+  (function loop(){window.ssAdminAnimId=requestAnimationFrame(loop);renderer.render(scene,camera);})();
+}
 
 function addSSSpotRow(s){
   const c2=document.getElementById('ss-spot-rows'),r=document.createElement('div');
   r.className='spot-row';
-  r.style.gridTemplateColumns='1fr 1.5fr auto';
-  r.innerHTML=`<input type="text" class="sn" placeholder="Nome da camada C4D" value="${s?s.name:''}">
+  r.style.gridTemplateColumns='1fr 1.5fr 60px 60px auto';
+  const hasCoords=s&&(Math.abs(s.x||0)>0.001||Math.abs(s.y||0)>0.001||Math.abs(s.z||0)>0.001);
+  r.innerHTML=`<input type="text" class="sn" placeholder="Nome da camada C4D" value="${s?s.name:''}" title="${hasCoords?'Coords: '+(s.x||0)+','+(s.y||0)+','+(s.z||0):'Por nome de camada'}">
     <input type="text" class="sd" placeholder="Legenda" value="${s?s.desc:''}">
+    <input type="number" class="sox" placeholder="↔" value="${s&&s.ox!=null?s.ox:0}" title="Offset X em pixels">
+    <input type="number" class="soy" placeholder="↕" value="${s&&s.oy!=null?s.oy:0}" title="Offset Y em pixels">
     <button class="mini-btn" onclick="this.parentElement.remove()">✕</button>`;
+  r.dataset.x=s&&s.x!=null?s.x:0;
+  r.dataset.y=s&&s.y!=null?s.y:0;
+  r.dataset.z=s&&s.z!=null?s.z:0;
   c2.appendChild(r);
 }
 
@@ -1908,10 +2042,22 @@ async function saveSubSub(){
   if(!name){alert('Preencha o nome');return;}
   const spots=[];
   document.querySelectorAll('#ss-spot-rows .spot-row').forEach(row=>{
-    const n=row.querySelector('.sn').value.trim(),d=row.querySelector('.sd').value.trim(),pos=row.querySelector('.sp').value.split(',').map(Number);
-    if(n)spots.push({name:n,desc:d||'',x:pos[0]||0,y:pos[1]||0,z:pos[2]||0});
+    const n=row.querySelector('.sn').value.trim();
+    const d=row.querySelector('.sd').value.trim();
+    const ox=parseInt(row.querySelector('.sox')?.value||0)||0;
+    const oy=parseInt(row.querySelector('.soy')?.value||0)||0;
+    const x=parseFloat(row.dataset.x||0)||0;
+    const y=parseFloat(row.dataset.y||0)||0;
+    const z=parseFloat(row.dataset.z||0)||0;
+    if(n)spots.push({name:n,desc:d||'',x,y,z,ox,oy});
   });
-  const data={name,description:document.getElementById('ss-desc').value,video:document.getElementById('ss-video').value,glb:document.getElementById('ss-glb').value,spots,submodule_id:editSSSubId};
+  const ssVideos=[];
+  document.querySelectorAll('#ss-video-rows .spot-row').forEach(row=>{
+    const t=row.querySelector('.vt')?.value.trim()||'';
+    const u=row.querySelector('.vu')?.value.trim()||'';
+    if(u)ssVideos.push({title:t,url:u});
+  });
+  const data={name,description:document.getElementById('ss-desc').value,video:ssVideos[0]?.url||'',videos:ssVideos,glb:document.getElementById('ss-glb').value,spots,submodule_id:editSSSubId};
   const btn=document.getElementById('subsub-btn');btn.innerHTML='<span class="spinner"></span>Salvando...';btn.disabled=true;
   try{
     if(editSSId)await apiSb('sub_submodules?id=eq.'+editSSId,'PATCH',data,getToken());
