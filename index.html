@@ -1083,12 +1083,12 @@ async function openSubSubs(subId, subName, subDesc, hasComparison, compGroup){
 
 function openViewerSubSub(s){
   if(typeof s==='string')s=JSON.parse(s);
-  // converter formato para o viewer
   const viewerData={
     id:s.id,
     name:s.name,
     desc:s.description||'',
     video:s.video||'',
+    videos:Array.isArray(s.videos)?s.videos:[],
     glb:s.glb||'',
     spots:s.spots||[]
   };
