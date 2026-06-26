@@ -1145,16 +1145,20 @@ function toggleStructDesc(i){
     const texto=desc.textContent.trim();
     if(texto&&'speechSynthesis' in window){
       window.speechSynthesis.cancel();
-      const msg=new SpeechSynthesisUtterance(texto);
-      msg.lang='pt-BR';
-      msg.rate=0.9;
-      window.speechSynthesis.speak(msg);
+      setTimeout(()=>{
+        const msg=new SpeechSynthesisUtterance(texto);
+        msg.lang='pt-BR';
+        msg.rate=0.9;
+        window.speechSynthesis.speak(msg);
+      },100);
     }
   } else {
     window.speechSynthesis&&window.speechSynthesis.cancel();
   }
 }
 
+function toggleStructDesc
+  
 async function verDetalhes(spotIdx){
   const spot=curSub?.spots?.[spotIdx];
   if(!spot)return;
