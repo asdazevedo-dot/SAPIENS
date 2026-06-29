@@ -1155,8 +1155,10 @@ function renderStructs(spots){
       <span style="font-weight:500;color:var(--accent);min-width:18px">${i+1}.</span>
       <span class="struct-item-name" onclick="focusSpot(${i})">${s.name}</span>
       ${s.desc?`<button class="struct-item-toggle" id="sit-${i}" onclick="toggleStructDesc(${i})" title="Ver legenda">›</button>`:''}
+      <button onclick="event.stopPropagation();verDetalhes(${i})" title="Ver estrutura em 3D" style="background:transparent;border:1px solid var(--accent);border-radius:5px;padding:.15rem .4rem;font-size:.68rem;color:var(--accent);cursor:pointer;flex-shrink:0">3D</button>
       ${s.desc?`<div class="struct-item-desc" id="sid-${i}">${s.desc}</div>`:''}
     </div>`).join('');
+}
 }
 
 function toggleStructDesc(i){
