@@ -1127,6 +1127,25 @@ function openViewer(s){
   setTimeout(startThree,100);
 }
 
+async function verEstruturas(){
+  const subId=curSub?._subId||curSub?.id;
+  if(!subId)return;
+  try{
+    const subs=await apiSb('sub_submodules?submodule_id=eq.'+subId+'&order=id');
+    if(!subs.length){alert('Nenhuma estrutura cadastrada ainda.');return;}
+    go('subsubs');
+    document.getElementById('subsub-bc').textContent=curModName+' › '+curSub.name+' › Estruturas';
+    document.getElementById('subsub-back-btn').onclick=()=>openViewer(curSub);
+    document.getElementById('subsub-title').textContent='Estruturas — '+curSub.name;
+    document.getElementById('subsub-desc').textContent='';
+    document.getElementById('compare-btn-wrap').style.display='none';
+    const g=document.getElementById('subsubs-grid');
+    g.innerHTML=subs.map((s,i)=>`<div class="mod-card" onclick='openViewerSubSub(${JSON.stringify(s)})'>
+      <div class="mod-thumb" style="background:#0d2b1a;font-size:2.5rem">🔬</div>
+      <div class="mod-body"><h3>${s.name}</h3><p>${s.description||''}</p></div></div>`).join('');
+  }catch(e){alert('Erro: '+e.message);}
+}
+
 function renderStructs(spots){
   const l=document.getElementById('struct-list');
   if(!spots||!spots.length){l.innerHTML='<p style="font-size:.8rem;color:var(--muted)">Nenhum spot cadastrado.</p>';return;}
