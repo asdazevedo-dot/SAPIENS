@@ -1102,7 +1102,6 @@ function openViewer(s){
   curSub=s;
   document.getElementById('viewer-bc').textContent=curModName+' › '+s.name;
   document.getElementById('back-btn').onclick=()=>openMod(curModId,curModName,'');
-  // mostrar botão comparar se disponível
   const cmpBtn=document.getElementById('compare-viewer-btn');
   if(s._hasComparison&&s._compGroup){
     curCompareGroup=s._compGroup;
@@ -1111,9 +1110,18 @@ function openViewer(s){
   }else{
     cmpBtn.style.display='none';
   }
+  const estBtn=document.getElementById('estruturas-btn');
+  if(estBtn){
+    const subId=s._subId||s.id;
+    if(subId){
+      apiSb('sub_submodules?submodule_id=eq.'+subId+'&select=id').then(r=>{
+        estBtn.style.display=r&&r.length>0?'inline-block':'none';
+      }).catch(()=>estBtn.style.display='none');
+    }else{estBtn.style.display='none';}
+  }
   document.getElementById('viewer-title').textContent=s.name;
   document.getElementById('viewer-desc-text').textContent=s.desc||'';
-  setupVideo(s.video);
+  setupVideo(s.video,Array.isArray(s.videos)?s.videos:[]);
   renderStructs(s.spots||[]);
   go('viewer');
   setTimeout(startThree,100);
