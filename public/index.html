@@ -1356,6 +1356,7 @@ function startThree(){
   const l2=new THREE.DirectionalLight(0xffffff,0.8);l2.position.set(-5,3,-5);scene.add(l2);
   const l3=new THREE.DirectionalLight(0xffffff,0.5);l3.position.set(0,-5,0);scene.add(l3);
   meshGroup=new THREE.Group();scene.add(meshGroup);
+  window.meshGroup=meshGroup;
   animMixer=null;
   animClock=new THREE.Clock();
   // mostrar loading
