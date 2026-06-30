@@ -1228,6 +1228,47 @@ function focusSpot(i){
   const el=document.getElementById('sti-'+i);if(el){el.classList.add('active');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
   document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
   const sp=document.getElementById('spp-'+i);if(sp)sp.classList.add('show');
+  // destacar estrutura clicada, deixar outras cinza
+  const spots=curSub?.spots||[];
+  const clickedSpot=spots[i];
+  if(clickedSpot&&meshGroup){
+    meshGroup.traverse(child=>{
+      if(child.isMesh){
+        const mn=(child.name||'').toLowerCase();
+        const sn=(clickedSpot.name||'').toLowerCase();
+        const isMatch=mn===sn||mn.includes(sn)||sn.includes(mn);
+        child.material=child.material.clone();
+        if(isMatch){
+          child.material.color.setHex(0x00e5a0);
+          child.material.opacity=1;
+          child.material.transparent=false;
+          child.material.emissive=new THREE.Color(0x00e5a0);
+          child.material.emissiveIntensity=0.3;
+        }else{
+          child.material.color.setHex(0x333333);
+          child.material.opacity=0.25;
+          child.material.transparent=true;
+          child.material.emissive=new THREE.Color(0x000000);
+          child.material.emissiveIntensity=0;
+        }
+      }
+    });
+  }
+}
+
+function clearSpotHighlight(){
+  if(!meshGroup)return;
+  meshGroup.traverse(child=>{
+    if(child.isMesh){
+      const orig=window.meshPosCache&&window.meshPosCache['_orig_'+child.uuid];
+      child.material=child.material.clone();
+      child.material.color.setHex(orig||0xcccccc);
+      child.material.opacity=1;
+      child.material.transparent=false;
+      child.material.emissive=new THREE.Color(0x000000);
+      child.material.emissiveIntensity=0;
+    }
+  });
 }
 function setupVideo(url, videos){
   const box=document.getElementById('video-box');
