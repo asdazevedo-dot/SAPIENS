@@ -1223,17 +1223,53 @@ function toggleSpotDesc(i){
   if(!isOpen)desc.classList.add('open');
 }
 
+let _activeSpotIdx=null;
+function restoreOriginalMaterials(){
+  if(!window.meshGroup)return;
+  window.meshGroup.traverse(child=>{
+    if(child.isMesh){
+      const orig=child.userData.origColor;
+      if(orig!=null){
+        child.material=child.material.clone();
+        child.material.color.setHex(orig);
+        child.material.opacity=1;
+        child.material.transparent=false;
+        child.material.emissive=new THREE.Color(0x000000);
+        child.material.emissiveIntensity=0;
+      }
+    }
+  });
+}
+
 function focusSpot(i){
+  // toggle — clicar na mesma estrutura restaura as cores
+  if(_activeSpotIdx===i){
+    _activeSpotIdx=null;
+    document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
+    restoreOriginalMaterials();
+    return;
+  }
+  _activeSpotIdx=i;
   document.querySelectorAll('.struct-item').forEach(x=>x.classList.remove('active'));
   const el=document.getElementById('sti-'+i);if(el){el.classList.add('active');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
   document.querySelectorAll('.spot-popup').forEach(x=>x.classList.remove('show'));
   const sp=document.getElementById('spp-'+i);if(sp)sp.classList.add('show');
-  // destacar estrutura clicada, deixar outras cinza
   const spots=curSub?.spots||[];
   const clickedSpot=spots[i];
-  if(clickedSpot&&meshGroup){
-    meshGroup.traverse(child=>{
-      if(isMatch){
+  if(clickedSpot&&window.meshGroup){
+    const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/_/g,' ').replace(/\s*\d+\s*/g,' ').trim();
+    const sn=norm(clickedSpot.name||'');
+    window.meshGroup.traverse(child=>{
+      if(child.isMesh){
+        // salvar cor original na primeira vez
+        if(child.userData.origColor==null){
+          child.userData.origColor=child.material.color.getHex();
+        }
+        const mn=norm(child.name||'');
+        const isMatch=mn===sn||mn.startsWith(sn)||sn.startsWith(mn)||mn.includes(sn)||sn.includes(mn);
+        child.material=child.material.clone();
+        if(isMatch){
           child.material.color.setHex(0xff6b2b);
           child.material.opacity=1;
           child.material.transparent=false;
