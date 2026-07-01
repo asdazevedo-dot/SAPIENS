@@ -1412,7 +1412,7 @@ function startThree(){
             map:oldMat.map||null,normalMap:oldMat.normalMap||null,side:THREE.DoubleSide
           });
           if(child.material.map){child.material.map.encoding=THREE.sRGBEncoding;child.material.map.needsUpdate=true;}
-          child.userData.origColor=color;
+          child.userData.origColor=color;         
         }
       });
       const box=new THREE.Box3().setFromObject(model);
