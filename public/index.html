@@ -1233,16 +1233,11 @@ function focusSpot(i){
   const clickedSpot=spots[i];
   if(clickedSpot&&meshGroup){
     meshGroup.traverse(child=>{
-      if(child.isMesh){
-        const mn=(child.name||'').toLowerCase().replace(/_/g,' ').replace(/\s+\d+$/,'').trim();
-        const sn=(clickedSpot.name||'').toLowerCase().replace(/_/g,' ').trim();
-        const isMatch=mn===sn||mn.startsWith(sn)||sn.startsWith(mn)||mn.includes(sn)||sn.includes(mn);
-        child.material=child.material.clone();
-        if(isMatch){
-          child.material.color.setHex(0x00e5a0);
+      if(isMatch){
+          child.material.color.setHex(0xff6b2b);
           child.material.opacity=1;
           child.material.transparent=false;
-          child.material.emissive=new THREE.Color(0x00e5a0);
+          child.material.emissive=new THREE.Color(0xff6b2b);
           child.material.emissiveIntensity=0.3;
         }else{
           child.material.color.setHex(0x333333);
